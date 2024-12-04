@@ -3,7 +3,7 @@
 For Development:
 
 From the main folder, 
-- npm install express mongoose cors
+- npm install express mongoose cors axios
 
 Run server:
 - node server.js
