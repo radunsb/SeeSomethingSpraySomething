@@ -1,3 +1,17 @@
+# See Something Spray Something App
+
+For Development:
+
+From the main folder, 
+- npm install express mongoose cors
+
+Run server:
+- node server.js
+
+Run front-end:
+- npm run dev
+
+
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
