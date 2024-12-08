@@ -1,32 +1,55 @@
 from flask import Blueprint, request, jsonify
-from db import get_controllers, get_db
+from db import get_controllers, get_users, get_projects_by_user, get_nozzles, get_guns
 from flask_cors import CORS
 from datetime import datetime
-
-class Controller():
-    _id: int
-    controller_name: str
-    doc_link: str
-    def to_json(self):
-        return {
-            '_id': self._id,
-            'controller_name': self.controller_name,
-            'doc_link': self.doc_link
-        }
-    @staticmethod
-    def from_json(response):
-        return Controller(_id=response._id, controller_name=response.controller_name, doc_link=response.doc_link)
 
 api_v1 = Blueprint(
     'api_v1', 'api_v1', url_prefix='/api/v1')
 
 CORS(api_v1)
 
-@api_v1.route('/controllers')
+@api_v1.route('/controllers/')
 def api_get_controllers():
-    controllers = list(map(Controller.from_json(request.json), get_controllers()))
+    controllers = get_controllers()
     return jsonify({
         "retrieved": datetime.utcnow().isoformat(),
 		"count": len(controllers),
-		"comments": [map(lambda controller: controller.toJson(), controllers)]
+		"controllers": controllers
+    })
+
+@api_v1.route('/nozzles/')
+def api_get_nozzles():
+    nozzles = get_nozzles()
+    return jsonify({
+        "retrieved": datetime.utcnow().isoformat(),
+		"count": len(nozzles),
+		"nozzles": nozzles
+    })
+
+@api_v1.route('/guns/')
+def api_get_guns():
+    guns = get_guns()
+    return jsonify({
+        "retrieved": datetime.utcnow().isoformat(),
+		"count": len(guns),
+		"guns": guns
+    })
+
+
+@api_v1.route('/users/')
+def api_get_users():
+    users = get_users()
+    return jsonify({
+        "retrieved": datetime.utcnow().isoformat(),
+		"count": len(users),
+		"users": users
+    })
+
+@api_v1.route('/users/<int:user_id>/')
+def api_get_user_projects(user_id):
+    projects = get_projects_by_user(user_id)
+    return jsonify({
+        "retrieved": datetime.utcnow().isoformat(),
+		"count": len(projects),
+		"projects": projects
     })

@@ -2,8 +2,13 @@
 
 For Development:
 
+(Not sure if you actually need to do all these, check without if you can
+so we know what to delete from here)
+
+- pip install cors, flask, pymongo, flask-pymongo
+
 From the main folder, 
-- npm install express mongoose cors axios
+- npm install cors axios
 
 Run server:
 - node server.js

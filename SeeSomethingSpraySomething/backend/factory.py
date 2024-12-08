@@ -1,20 +1,16 @@
 import os
 
-from flask import Flask, render_template
+from flask import Flask
 from flask_cors import CORS
-##from flask_bcrypt import Bcrypt
-##from flask_jwt_extended import JWTManager
-
-from bson import json_util, ObjectId
-from datetime import datetime, timedelta
+import configparser
+config = configparser.ConfigParser()
+config.read(os.path.abspath(os.path.join(".ini")))
 
 from routes import api_v1
 
-
 def create_app():
-
     app = Flask(__name__)
     CORS(app)
     app.register_blueprint(api_v1)
-
+    app.config['MONGO_URI'] = config['PROD']['CLIENT_URI']
     return app

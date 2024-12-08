@@ -1,13 +1,7 @@
-import bson
 
 from flask import current_app, g
 from werkzeug.local import LocalProxy
 from flask_pymongo import PyMongo
-
-from pymongo.errors import DuplicateKeyError, OperationFailure
-from bson.objectid import ObjectId
-from bson.errors import InvalidId
-
 
 def get_db():
     """
@@ -27,6 +21,31 @@ db = LocalProxy(get_db)
 
 def get_controllers():
     try:
-        return list(db.controllers.find())
+        return list(db.Controllers.find({}))
+    except Exception as e:
+        return e
+    
+def get_users():
+    try:
+        return list(db.Users.find({}))
+    except Exception as e:
+        return e
+
+def get_nozzles():
+    try:
+        return list(db.Nozzles.find({}))
+    except Exception as e:
+        return e
+
+def get_guns():
+    try:
+        return list(db.Guns.find({}))
+    except Exception as e:
+        return e
+
+def get_projects_by_user(user_id):
+    try:
+        user = db.Users.find_one({'_id': user_id})
+        return list(user['owned_projects']) + list(user['collaborating_projects'])
     except Exception as e:
         return e
