@@ -12,8 +12,8 @@ namespace Controllers{
 function Controller() {
   const [controllers, setControllers] = useState<Array<Controllers.Controller>>();
   useEffect(() => {
-    axios.get("http://localhost:5000/api/controllers")
-      .then(response => setControllers(response.data))
+    axios.get("http://localhost:5000/api/v1/controllers")
+      .then(response => setControllers(response.data.controllers))
       .catch(error => console.error(error));
   }, []);
   if(controllers){
