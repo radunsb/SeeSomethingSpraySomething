@@ -20,16 +20,16 @@ const Drawer = ({
   direction = DrawerDirection.Right,
   onClose,
 }: Props) => {
-  const classNames = `${styles.Drawer} ${styles[direction]} ${
-    isOpen ? styles.Open : ''
+  const classNames = `Drawer ${direction} ${
+    isOpen ? 'Open' : ''
   }`;
 
   return (
     <div className={classNames}>
-      <div className={styles.Close} onClick={onClose}>
+      <div className='Close' onClick={onClose}>
         X
       </div>
-      <div className={styles.Content}>{children}</div>
+      <div className='Content'>{children}</div>
     </div>
   );
 };

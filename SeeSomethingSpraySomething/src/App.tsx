@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { Drawer } from './components/Drawer';
+import { Drawer } from './Drawers';
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
