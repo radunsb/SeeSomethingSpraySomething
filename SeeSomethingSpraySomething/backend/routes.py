@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from db import get_controllers, get_users, get_projects_by_user, get_nozzles, get_guns
+from db import get_controllers, get_users, get_user_by_id, get_nozzles, get_guns
 from flask_cors import CORS
 from datetime import datetime
 
@@ -47,9 +47,8 @@ def api_get_users():
 
 @api_v1.route('/users/<int:user_id>/')
 def api_get_user_projects(user_id):
-    projects = get_projects_by_user(user_id)
+    user = get_user_by_id(user_id)
     return jsonify({
         "retrieved": datetime.utcnow().isoformat(),
-		"count": len(projects),
-		"projects": projects
+		"user": user
     })

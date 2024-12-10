@@ -31,6 +31,13 @@ def get_users():
     except Exception as e:
         return e
 
+def get_user_by_id(user_id):
+    try:
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e
+
 def get_nozzles():
     try:
         return list(db.Nozzles.find({}))
@@ -43,9 +50,8 @@ def get_guns():
     except Exception as e:
         return e
 
-def get_projects_by_user(user_id):
+def get_projects_by_user(user):
     try:
-        user = db.Users.find_one({'_id': user_id})
         return list(user['owned_projects']) + list(user['collaborating_projects'])
     except Exception as e:
         return e
