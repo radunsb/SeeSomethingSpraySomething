@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import { Drawer } from './Drawers';
+import { NavLink, Link } from "react-router";
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -12,6 +13,11 @@ export default function App() {
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <p>Drawer</p>
       </Drawer>
+      <div>
+          <Link to="/results">
+            <button> Results </button>
+          </Link>
+      </div>
     </div>
   );
 }
