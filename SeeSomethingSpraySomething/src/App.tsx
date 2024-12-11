@@ -17,6 +17,9 @@ export default function App() {
           <Link to="/results">
             <button> Results </button>
           </Link>
+          <Link to="/parameters">
+            <button> Parameters </button>
+          </Link>
       </div>
     </div>
   );
