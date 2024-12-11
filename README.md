@@ -10,6 +10,8 @@ so we know what to delete from here)
 From the main folder, 
 - npm install cors axios
 
+- npm i react-router
+
 Run server:
 - node server.js
 
