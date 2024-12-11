@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { Drawer } from './Drawers';
 import { NavLink, Link } from "react-router";
+import MainScreenVisual from './mainScreenVisual';
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -20,6 +21,9 @@ export default function App() {
           <Link to="/parameters">
             <button> Parameters </button>
           </Link>
+      </div>
+      <div>
+        <MainScreenVisual/>
       </div>
     </div>
   );
