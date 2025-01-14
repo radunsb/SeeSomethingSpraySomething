@@ -13,9 +13,13 @@ From the main folder,
 - npm i react-router
 
 Run server:
+- navigate to SeeSomethingSpraySomething/backend
+- open terminal
 - node server.js
 
 Run front-end:
+- navigate to SeeSomethingSpraySomething folder
+- open terminal
 - npm run dev
 
 
