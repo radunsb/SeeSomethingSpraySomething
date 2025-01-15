@@ -1,9 +1,10 @@
 import React from 'react';
 import './App.css';
-import { Drawer } from './Drawers';
+import { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers';
 import { NavLink, Link } from "react-router";
 import {createProjectMap} from './ProjectUtilities';
 import { useState, useEffect } from "react";
+import MainScreenVisual from './MainScreenVisual';
 
 export default function App() {
   const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
@@ -30,6 +31,27 @@ export default function App() {
   
   return (
     <div>
+      <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
+
+      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        <p>Drawer</p>
+        <p>Drawer</p>
+        <p>Drawer</p>
+        <p>Drawer</p>
+      </Drawer>
+
+      <button onClick={() => setIsDrawerOpen(true)}>Line</button>
+
+      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        <p>Drawer</p>
+      </Drawer>
+
+      <button onClick={() => setIsDrawerOpen(true)}>Controller</button>
+
+      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+        <p>Drawer</p>
+      </Drawer>
+
       <button onClick={() => setIsDrawerOpen(true)}>Open Drawer</button>
 
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
