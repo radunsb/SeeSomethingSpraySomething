@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {Models} from './models.ts'
+import {Modals} from './Models.ts'
 import "./main.css"
 
 function Project({userID}: {userID:number}) {
-  const [user, setUser] = useState<Models.User>();
+  const [user, setUser] = useState<Modals.User>();
   useEffect(() => {
     axios.get(`http://localhost:5000/api/v1/users/${userID}`)
       .then(response => setUser(response.data.user))
