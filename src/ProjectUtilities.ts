@@ -1,5 +1,5 @@
 import axios from "axios";
-import {Models} from './models.ts'
+import {Models} from './Models.ts'
 
 //Async function that constructs a map with project data
 //TODO: This currently just takes the user's first project.
