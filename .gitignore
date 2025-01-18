@@ -23,3 +23,6 @@ dist-ssr
 *.sln
 *.sw?
 __pycache__
+
+# authentication
+backend/authentication/pepper.bin
