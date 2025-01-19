@@ -1,5 +1,5 @@
 // import React, { useState } from 'react';
-import Project from './Project'; // Import the Project component
+import Project from './Project.tsx'; // Import the Project component
 
 interface VisualProps {
   // lineSpeed: number;
