@@ -1,6 +1,6 @@
 import React from 'react';
 
-import "./Drawer.css";
+import "./styles/Drawer.css";
 
 enum DrawerDirection {
   Left = 'Left',

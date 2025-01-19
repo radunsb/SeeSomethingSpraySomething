@@ -1,10 +1,16 @@
+// Can probably ignore this file
+//All it does is print out the parameters of a project, which is eclipsed by
+//the stuff in the App file. Not deleting it because some other things are still
+//dependent on it
+
+
 import { useState, useEffect } from "react";
 import axios from "axios";
-import {Modals} from './Models.ts'
-import "./main.css"
+import {Models} from './utility/models.ts'
+import "./styles/main.css"
 
 function Project({userID}: {userID:number}) {
-  const [user, setUser] = useState<Modals.User>();
+  const [user, setUser] = useState<Models.User>();
   useEffect(() => {
     axios.get(`http://localhost:5000/api/v1/users/${userID}`)
       .then(response => setUser(response.data.user))
