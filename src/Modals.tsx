@@ -1,5 +1,5 @@
 import React from "react";
-import './Modals.css';
+import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 
 interface ModalProps{

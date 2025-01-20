@@ -1,20 +1,32 @@
 import axios from "axios";
-import {Models} from './Models.ts'
+import {Models} from './models.ts'
 
 //Async function that constructs a map with project data
 //TODO: This currently just takes the user's first project.
 //Should make version with a projectID as well
-export async function createProjectMap(userID: number){
+export async function createProjectMap(userID: number, projectID: number){
+    //Partial lets us use an interface without explicitly setting the values
+    //Shouldn't be used if you need to use a lot of those values, but since we
+    //only have to check if user.projects is occupied (which we would do anyways)
+    //this is fine.
     let user: Partial<Models.User> = {};
+
+    //Obtain user data specified in parameters
     await axios.get(`http://localhost:5000/api/v1/users/${userID}`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
         .catch(error => console.error(error));
+
     const parameterMap = new Map();
-    if(user.projects){
-        const projectToFetch = 0;
-        const project = user.projects[projectToFetch];        
+
+    //Make sure the project actually exists
+    if(user.projects && user.projects.length > projectID){
+        const projectToFetch = projectID;
+        const project = user.projects[projectToFetch];
+        
+        //Currently unpack all of the other interfaces(nozzle, gun, etc.) and store
+        //their parameters as simple values
         Object.entries(project).map(entry => {
             const key = entry[0]
             const value = entry[1]
@@ -38,6 +50,7 @@ export async function createProjectMap(userID: number){
             const value = entry[1]
             parameterMap.set(key, value)
         })
+        //Remove the interface parameters since we unpacked their contents
         parameterMap.delete('controller');
         parameterMap.delete('nozzle');
         parameterMap.delete('gun');
