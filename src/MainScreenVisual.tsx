@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 //import {createProjectMap} from './utility/ProjectUtilities.ts';
 import changeParameterList from './App.tsx';
 
-const MainScreenVisual = (parameterMap: Map<string, string>, setParameterMap: Function) => {
+const MainScreenVisual = (parameterMap: Map<string, any>, setParameterMap: Function) => {
 
   const [inputValue, setInputValue] = useState('');
 

@@ -6,7 +6,7 @@ import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models"
-//import MainScreenVisual from './MainScreenVisual';
+import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
   parameterMapProp: Map<string, UtilityInterfaces.Parameter>;
