@@ -50,3 +50,18 @@ export namespace Models{
         gun:Models.Gun
     }
 }
+
+export namespace UtilityInterfaces{
+    export enum types{
+        INT,
+        FLOAT,
+        STRING
+    }
+    export interface Parameter{
+        name: string,
+        type: types,
+        min?: number,
+        max?: number
+        value: string|number,
+    }
+}
