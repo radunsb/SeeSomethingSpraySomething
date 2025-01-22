@@ -5,10 +5,11 @@ import { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.ts
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
+import { UtilityInterfaces } from "./utility/models"
 //import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
-  parameterMapProp: Map<string, string>;
+  parameterMapProp: Map<string, UtilityInterfaces.Parameter>;
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
@@ -34,9 +35,22 @@ export default function App({parameterMapProp}: AppProps) {
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
   for(const parameterInput of parameterInputs){
     parameterInput.addEventListener("change", () => {
-        const key = parameterInput.id.replace("_input", "");
-        setParameterMap(parameterMap.set(key, parameterInput.value));
+      const key = parameterInput.id.replace("_input", "");
+      const currentParameter = parameterMap.get(key);
+      //Type of value can be either string or number
+      let newVal: string|number;
+      //Should always be true since a project should always be loaded
+      if(currentParameter){
+        if(currentParameter.type != UtilityInterfaces.types.STRING){
+          newVal = Number(parameterInput.value)
+        }
+        else{
+          newVal = parameterInput.value;
+        }
+        currentParameter.value = newVal;
+        setParameterMap(parameterMap.set(key, currentParameter));
         changeParameterList();
+      }
     });
   }
   
@@ -46,12 +60,24 @@ export default function App({parameterMapProp}: AppProps) {
   function changeParameterList(){
     parameterList = [];
     for(const [key, value] of parameterMap){
-      parameterList.push(
-        <li id={key + "_list"} key={key}>
-          <p>{key}</p>
-          <input className="parameter_input" id={key + "_input"} type="text" defaultValue={value}></input>
-        </li>
-      )
+      //Make a text input field for string parameters
+      if(value.type==UtilityInterfaces.types.STRING){
+        parameterList.push(
+          <li id={key + "_list"} key={key}>
+            <p>{key}</p>
+            <input className="parameter_input" id={key + "_input"} type="text" defaultValue={value.value}></input>
+          </li>
+        );
+      }
+      //Make a number input field for integer or float parameters
+      else{
+        parameterList.push(
+          <li id={key + "_list"} key={key}>
+            <p>{key}</p>
+            <input className="parameter_input" id={key + "_input"} type="number" defaultValue={value.value}></input>
+          </li>
+        );
+      }
     }
   }
 
