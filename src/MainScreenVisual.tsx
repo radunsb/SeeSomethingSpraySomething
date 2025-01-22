@@ -1,41 +1,28 @@
-// import React, { useState } from 'react';
-import Project from './Project.tsx'; // Import the Project component
+import React, { useState } from 'react';
+//import Project from './Project.tsx'; // Import the Project component
+//import Models from './utility/models.ts';
+//import {createProjectMap} from './utility/ProjectUtilities.ts';
+import changeParameterList from './App.tsx';
 
-interface VisualProps {
-  // lineSpeed: number;
-  // setLineSpeed: React.Dispatch<React.SetStateAction<number>>;
-}
+const MainScreenVisual = (parameterMap: Map<string, string>, setParameterMap: Function) => {
 
-const MainScreenVisual: React.FC<VisualProps> = (/*{ lineSpeed, setLineSpeed }*/) => {
-  // const handleLineSpeedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const inputValue = Number(event.target.value);
-  //   if (!isNaN(inputValue)) {
-  //     setLineSpeed(inputValue);
-  //   }
-  // };
+  const [inputValue, setInputValue] = useState('');
 
-  const userID = 1;
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>){
+    setInputValue(e.target.value);
+    //parameterMap.set(e.target.name, e.target.value);
+    setParameterMap(parameterMap.set(e.target.name, e.target.value));
+    changeParameterList
+  }
 
   return (
     <div>
-      {/* <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-        <label htmlFor="lineSpeedInput" style={{ whiteSpace: 'nowrap' }}>
-          LineSpeed:
-        </label>
-        <input
-          type="text"
-          id="lineSpeedInput"
-          name="lineSpeedInput"
-          value={lineSpeed}
-          onChange={handleLineSpeedChange}
-          style={{ width: '25px' }}
-        />
-        <span>ft/s</span>
-      </div> */}
-
       <div>
         <h2>Project Details</h2>
-        <Project userID={userID} /> 
+        {parameterMap.get("line_speed")}
+        {/*{parameterMap.get("line_width")}
+        {parameterMap.get("nozzle_height")}*/}
+        {/*<input name='line_speed' value={inputValue} onChange={handleChange}/>*/}
       </div>
     </div>
   );

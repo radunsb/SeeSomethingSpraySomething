@@ -5,7 +5,7 @@ import { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.ts
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
-//import MainScreenVisual from './MainScreenVisual';
+import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
   parameterMapProp: Map<string, string>;
@@ -57,6 +57,9 @@ export default function App({parameterMapProp}: AppProps) {
 
   return (
     <div>
+
+      {MainScreenVisual(parameterMap, setParameterMap)}
+
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 
       <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
