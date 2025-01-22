@@ -1,5 +1,6 @@
 import axios from "axios";
 import {Models} from './models.ts'
+import {UtilityInterfaces} from './models.ts'
 
 //Async function that constructs a map with project data
 //TODO: This currently just takes the user's first project.
@@ -19,6 +20,29 @@ export async function createProjectMap(userID: number, projectID: number){
         .catch(error => console.error(error));
 
     const parameterMap = new Map();
+    
+    function constructMapEntry(entry:[string, string|number]){
+        const key = entry[0];
+        const value = entry[1];
+        let type: UtilityInterfaces.types;
+        if(typeof value === "number"){
+            if(Number.isInteger(value)){
+                type = UtilityInterfaces.types.INT;
+            }
+            else{
+                type = UtilityInterfaces.types.FLOAT;
+            }
+        }
+        else{
+            type = UtilityInterfaces.types.STRING;
+        }
+        const parameter: UtilityInterfaces.Parameter = {
+            name:key,
+            type: type,
+            value: value,
+        }
+        parameterMap.set(key, parameter);
+    }
 
     //Make sure the project actually exists
     if(user.projects && user.projects.length > projectID){
@@ -27,29 +51,13 @@ export async function createProjectMap(userID: number, projectID: number){
         
         //Currently unpack all of the other interfaces(nozzle, gun, etc.) and store
         //their parameters as simple values
-        Object.entries(project).map(entry => {
-            const key = entry[0]
-            const value = entry[1]
-            parameterMap.set(key, value)
-        })
+        Object.entries(project).map(entry => constructMapEntry(entry))
         const nozzle = project.nozzle;
-        Object.entries(nozzle).map(entry => {
-            const key = entry[0]
-            const value = entry[1]
-            parameterMap.set(key, value)
-        })
+        Object.entries(nozzle).map(entry => constructMapEntry(entry))
         const controller = project.controller;
-        Object.entries(controller).map(entry => {
-            const key = entry[0]
-            const value = entry[1]
-            parameterMap.set(key, value)
-        })
+        Object.entries(controller).map(entry => constructMapEntry(entry))
         const gun = project.gun;
-        Object.entries(gun).map(entry => {
-            const key = entry[0]
-            const value = entry[1]
-            parameterMap.set(key, value)
-        })
+        Object.entries(gun).map(entry => constructMapEntry(entry))
         //Remove the interface parameters since we unpacked their contents
         parameterMap.delete('controller');
         parameterMap.delete('nozzle');
