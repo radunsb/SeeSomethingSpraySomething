@@ -1,8 +1,13 @@
 import { NavLink, Link } from "react-router";
 import { computeSprayPattern } from "./utility/SpraySimulation";
+import {UtilityInterfaces} from "./utility/models.ts"
 
-const Results = () => {
-    const productAspray = computeSprayPattern();
+interface ResultsProps{
+    params: Map<string, UtilityInterfaces.Parameter>;
+}
+
+const Results = ({params}:ResultsProps) => {
+    const productAspray = computeSprayPattern(params);
     return (
         <div>
             <table>

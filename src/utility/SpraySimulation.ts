@@ -1,3 +1,5 @@
+import {UtilityInterfaces} from "./models.ts"
+
 /* A NOTE ON UNITS AND COORDINATES
 
 all lengths are stored in inches, all times in seconds, and all angles in degrees
@@ -6,7 +8,7 @@ Let the direction the conveyor belt moves be the positive x direction
 Let up from the conveyor belt be the positve z direction
 Let to the left of the positive x direction be positive y
 
-If you face the positive x direction, the origin is the right-most point on conveyor belt that is directly beneath the spray manifold
+If you face the positive x direction, the origin is the right-most point on the conveyor belt that is directly beneath the spray manifold
 
 t=0 at the instant the product reaches the sensor
 
@@ -24,16 +26,17 @@ function distance(x1:number, y1:number, x2:number, y2:number) : number{
 
 namespace GlobalParams{
     //once this is integrated into the application, these will be acquired from the drawer
-    export const SENSOR_DISTANCE = 18;
-    export const LINE_SPEED = 10; //50 ft/min *12in/foot * 1min/60sec = 10 in/sec
+    //THESE VALUES SHOULD NOT BE CHANGED OUTSIDE OF THE SETGLOBALPARAMS METHOD
+    export let SENSOR_DISTANCE = 18;
+    export let LINE_SPEED = 10; //50 ft/min *12in/foot * 1min/60sec = 10 in/sec
 
-    export const LINE_WIDTH = 24;
+    export let LINE_WIDTH = 24;
 
-    export const PRODUCT_WIDTH = 20;
-    export const PRODUCT_LENGTH = 36;
-    export const PRODUCT_HEIGHT = 2;
+    export let PRODUCT_WIDTH = 20;
+    export let PRODUCT_LENGTH = 36;
+    export let PRODUCT_HEIGHT = 2;
 
-    export const NOZZLE_HEIGHT = 6;
+    export let NOZZLE_HEIGHT = 6;
 
     export class Nozzle{
         readonly sprayAngle: number; //should be on the order of 60 degrees
@@ -50,8 +53,62 @@ namespace GlobalParams{
             this.yPos = yPos;
         }
     }
-    export const NOZZLE_LIST : Nozzle[] = [new Nozzle(100, 3, 5, 2, 18),
+    export let NOZZLE_LIST : Nozzle[] = [new Nozzle(100, 3, 5, 2, 18),
                                             new Nozzle(100, 3, 5, 2, 11)];
+}
+
+export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>){
+    const new_sensor_distance = parameterMap.get("sensor_distance");
+    if(typeof new_sensor_distance === "number"){
+        GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance);
+    }
+
+    const new_line_speed = parameterMap.get("line_speed");
+    if(typeof new_line_speed === "number"){
+        GlobalParams.LINE_SPEED = Number(new_line_speed);
+    }
+
+    const new_line_width = parameterMap.get("line_width");
+    if(typeof new_line_width === "number"){
+        GlobalParams.LINE_WIDTH = Number(new_line_width);
+    }
+
+    const new_product_width = parameterMap.get("product_width");
+    if(typeof new_product_width === "number"){
+        GlobalParams.PRODUCT_WIDTH = Number(new_product_width);
+    }
+
+    const new_product_length = parameterMap.get("product_length");
+    if(typeof new_product_length === "number"){
+        GlobalParams.PRODUCT_LENGTH = Number(new_product_length);
+    }
+
+    const new_product_height = parameterMap.get("product_height");
+    if(typeof new_product_height === "number"){
+        GlobalParams.PRODUCT_HEIGHT = Number(new_product_height);
+    }
+
+    const new_nozzle_height = parameterMap.get("nozzle_height");
+    if(typeof new_nozzle_height === "number"){
+        GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height);
+    }
+    
+    //Nozzles!
+    let new_nozzle_count = parameterMap.get("nozzle_count");
+    let new_nozzle_spacing = parameterMap.get("nozzle_spacing:number");
+    let new_nozzle_id = parameterMap.get("nozzle");
+    if(typeof new_nozzle_id === "number"){
+        //do stuff to get the spray + twist angles of this nozzle
+    }
+
+    if(typeof new_nozzle_count === "number" && typeof new_nozzle_spacing === "number"){
+        GlobalParams.NOZZLE_LIST = [];
+        for (let i = 0; i < new_nozzle_count; i++){
+            const this_pos = 0.5 * GlobalParams.LINE_WIDTH + new_nozzle_spacing * (0.5 - 0.5*new_nozzle_count + i);
+            const new_nozzle = new GlobalParams.Nozzle(100,3,5,2,this_pos);//read and replace parameters
+            GlobalParams.NOZZLE_LIST.push(new_nozzle);
+        }
+    }
 }
 
 namespace LocalConstants{
@@ -177,7 +234,10 @@ function InitializeProductArray() : ProductElement[][]{
     return product
 }
 
-export function computeSprayPattern() : ProductElement[][]{
+export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
+    //update the local copies of global parameters
+    updateGlobalParams(parameterMap);
+
     //create product array
     let productASPRAY = InitializeProductArray();
 
