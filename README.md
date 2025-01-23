@@ -9,6 +9,8 @@ so we know what to delete from here)
 
 From the main folder, 
 - npm install cors axios
+- npm install three @types/three @react-three/fiber
+- npm install @react-three/drei
 
 - npm i react-router
 
