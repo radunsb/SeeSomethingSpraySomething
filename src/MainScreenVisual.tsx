@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
-import { UtilityInterfaces } from "./utility/models"
-import {Canvas} from "@react-three/fiber"
-import { OrbitControls, Line } from "@react-three/drei"
+import { UtilityInterfaces } from "./utility/models";
+import {Canvas} from "@react-three/fiber";
+import { OrbitControls, Line } from "@react-three/drei";
 import * as THREE from 'three';
 
-const Cube = ({position, size, color}) => {
+type CubeProps = {
+  position: [number, number, number];
+  size: [number, number, number];
+  color: string;
+};
+
+const Cube: React.FC<CubeProps> = ({position, size, color}) => {
     return (
       <mesh position={position}>
         <boxGeometry args={size}/>
@@ -15,14 +21,14 @@ const Cube = ({position, size, color}) => {
 
 const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>, setParameterMap: Function) => {
 
-  const conveyor_piece_size = [12,.25,1.5]
-  const nozzle_size = [.5,.5,.5]
+  const conveyor_piece_size: [number, number, number] = [12,.25,1.5]
+  const nozzle_size: [number, number, number] = [.5,.5,.5]
 
   // TODO: Get all of the valus from the current model that we need to build the visual
-  const line_speed = parameterMap.get('line_speed').value;
-  const line_width = parameterMap.get('line_width').value;
-  const nozzle_height = parameterMap.get('nozzle_height').value;
-  const spray_angle = parameterMap.get('angle').value;
+  // const line_speed = parameterMap.get('line_speed').value;
+  // const line_width = parameterMap.get('line_width').value;
+  // const nozzle_height = parameterMap.get('nozzle_height').value;
+  // const spray_angle = parameterMap.get('angle').value;
 
   // console.log(spray_angle);
 
@@ -64,7 +70,14 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
 
 export default MainScreenVisual;
 
-const Triangle = ({ vertices, width = 1, color = "#ffffff", transparency = 1 }) => {
+type TriangleProps = {
+  vertices: [[number, number, number], [number, number, number], [number, number, number]];
+  width: number;
+  color: string;
+  transparency: number;
+};
+
+const Triangle: React.FC<TriangleProps> = ({ vertices, width = 1, color = "#ffffff", transparency = 1 }) => {
   if (!vertices || vertices.length !== 3) {
     console.error("Triangle requires exactly 3 vertices.");
     return null;
