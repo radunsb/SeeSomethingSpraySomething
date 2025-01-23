@@ -59,52 +59,53 @@ namespace GlobalParams{
 
 export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>){
     const new_sensor_distance = parameterMap.get("sensor_distance");
-    if(typeof new_sensor_distance === "number"){
-        GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance);
+    if(typeof new_sensor_distance !== "undefined"){
+        GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance.value);
     }
 
     const new_line_speed = parameterMap.get("line_speed");
-    if(typeof new_line_speed === "number"){
-        GlobalParams.LINE_SPEED = Number(new_line_speed);
+    if(typeof new_line_speed !== "undefined"){
+        console.log(`old line speed: ${GlobalParams.LINE_SPEED}\nnew line speed:${new_line_speed.value}`);
+        GlobalParams.LINE_SPEED = Number(new_line_speed.value);
     }
 
     const new_line_width = parameterMap.get("line_width");
-    if(typeof new_line_width === "number"){
-        GlobalParams.LINE_WIDTH = Number(new_line_width);
+    if(typeof new_line_width !== "undefined"){
+        GlobalParams.LINE_WIDTH = Number(new_line_width.value);
     }
 
     const new_product_width = parameterMap.get("product_width");
-    if(typeof new_product_width === "number"){
-        GlobalParams.PRODUCT_WIDTH = Number(new_product_width);
+    if(typeof new_product_width !== "undefined"){
+        GlobalParams.PRODUCT_WIDTH = Number(new_product_width.value);
     }
 
     const new_product_length = parameterMap.get("product_length");
-    if(typeof new_product_length === "number"){
-        GlobalParams.PRODUCT_LENGTH = Number(new_product_length);
+    if(typeof new_product_length !== "undefined"){
+        GlobalParams.PRODUCT_LENGTH = Number(new_product_length.value);
     }
 
     const new_product_height = parameterMap.get("product_height");
-    if(typeof new_product_height === "number"){
-        GlobalParams.PRODUCT_HEIGHT = Number(new_product_height);
+    if(typeof new_product_height !== "undefined"){
+        GlobalParams.PRODUCT_HEIGHT = Number(new_product_height.value);
     }
 
     const new_nozzle_height = parameterMap.get("nozzle_height");
-    if(typeof new_nozzle_height === "number"){
-        GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height);
+    if(typeof new_nozzle_height !== "undefined"){
+        GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height.value);
     }
     
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
     let new_nozzle_spacing = parameterMap.get("nozzle_spacing:number");
     let new_nozzle_id = parameterMap.get("nozzle");
-    if(typeof new_nozzle_id === "number"){
+    if(typeof new_nozzle_id !== "undefined"){
         //do stuff to get the spray + twist angles of this nozzle
     }
 
-    if(typeof new_nozzle_count === "number" && typeof new_nozzle_spacing === "number"){
+    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined"){
         GlobalParams.NOZZLE_LIST = [];
-        for (let i = 0; i < new_nozzle_count; i++){
-            const this_pos = 0.5 * GlobalParams.LINE_WIDTH + new_nozzle_spacing * (0.5 - 0.5*new_nozzle_count + i);
+        for (let i = 0; i < Number(new_nozzle_count.value); i++){
+            const this_pos = 0.5 * GlobalParams.LINE_WIDTH + Number(new_nozzle_spacing.value) * (0.5 - 0.5*Number(new_nozzle_count.value) + i);
             const new_nozzle = new GlobalParams.Nozzle(100,3,5,2,this_pos);//read and replace parameters
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
@@ -235,6 +236,8 @@ function InitializeProductArray() : ProductElement[][]{
 }
 
 export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
+    console.log("computing spray pattern");
+    
     //update the local copies of global parameters
     updateGlobalParams(parameterMap);
 

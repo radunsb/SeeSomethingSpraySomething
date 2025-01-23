@@ -11,7 +11,9 @@ const Results = ({params}:ResultsProps) => {
     return (
         <div>
             <table>
-                {productAspray.map(row => <tr>{row.map(element => <td>{element.getVolumeApplied().toFixed(4)}</td>)}</tr>)}
+                <tbody>
+                {productAspray.map((row, rowIndex) => <tr key={rowIndex}>{row.map((element, eIndex) => <td key={eIndex}>{element.getVolumeApplied().toFixed(4)}</td>)}</tr>)}
+                </tbody>
             </table>
             <div>
                 <Link to="/">
