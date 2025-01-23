@@ -17,11 +17,8 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
   const nozzle_spacing: number = (parameterMap.get('nozzle_spacing')?.value ?? 0) as number;
   const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
 
-  // Size of one conveyor piece
-  const conveyor_piece_size: [number, number, number] = [line_width/2,.25,1.5]
-
   // Size of the nozzles (currently just black cubes)
-  const nozzle_size: [number, number, number] = [.25,.25,.25]
+  const nozzle_size: [number, number, number] = [.25,.25,.25];
 
   return (
     <div id='model_container'>
@@ -35,19 +32,8 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
         <hemisphereLight args={["#fff", "#333", 1]}/>
         <ambientLight intensity={.5}/>
         
-        {/* Conveyor belt components */}
-        <group>
-          <Box position={[0,-1,5.25]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,3.5]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,1.75]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,0]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-1.75]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-3.5]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-5.25]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-7]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-8.75]} color={"gray"} size={conveyor_piece_size}/>
-          <Box position={[0,-1,-10.5]} color={"gray"} size={conveyor_piece_size}/>
-        </group>
+        {/* Conveyor belt */}
+        <Conveyor width={line_width/2} length={20} height={5} piece_height={.25} piece_length={1.5}/>
 
         {/* Nozzles */}
         <Box position={[-2,3,0]} color={"black"} size={nozzle_size}/>
@@ -68,6 +54,34 @@ export default MainScreenVisual;
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
+// Conveyor Component
+type ConveyorProps = {
+  width: number;
+  length: number;
+  height: number;
+  piece_height: number;
+  piece_length: number;
+};
+
+const Conveyor: React.FC<ConveyorProps> = ({ width, length, height, piece_height, piece_length }) => {
+  const num_pieces: number = Math.floor(length / 1.75); // Ensure it's an integer
+
+  return (
+    <group>
+      {Array.from({ length: num_pieces }).map((_, index) => (
+        <Box
+          key={index}
+          position={[0, -1, index * (piece_length+.25) * -1]} // Space each piece with a .25 gap and extend the belt away from camera
+          size={[width, piece_height, piece_length]} 
+          color="gray" 
+        />
+      ))}
+    </group>
+  );
+};
+//------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
 // Typing for box components
 type BoxProps = {
   position: [number, number, number];
@@ -83,7 +97,7 @@ const Box: React.FC<BoxProps> = ({position, size, color}) => {
         <meshStandardMaterial color={color}/>
       </mesh>
     );
-}
+};
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
