@@ -55,3 +55,6 @@ def get_projects_by_user(user):
         return list(user['owned_projects']) + list(user['collaborating_projects'])
     except Exception as e:
         return e
+    
+def save_new_project(user):
+    pass

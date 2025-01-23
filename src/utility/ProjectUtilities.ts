@@ -65,3 +65,75 @@ export async function createProjectMap(userID: number, projectID: number){
     }
     return parameterMap;
 }
+
+export async function saveAsNewProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
+    const newProject = createProjectFromMap(project);
+    if(newProject !== undefined){
+        await axios.post(`http://localhost:5000/api/v1/users/${userID}/new`,
+            newProject
+        );
+    }    
+}
+
+function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
+    const possibleReturn = map.get(key);
+    if(possibleReturn !== undefined){
+        return possibleReturn;
+    }
+    else{
+        throw new ReferenceError("Value for parameter \"" + key + "\" is undefined");
+    }
+}
+
+function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>): Models.Project|undefined{
+    try{
+    const lmd: Date = new Date(getOrException(project, 'last_modified_date').value)
+    const nozzle: Models.Nozzle = {
+        nozzle_id: Number(getOrException(project, 'nozzle_id').value),
+        nozzle_name: String(getOrException(project, "nozzle_name").value),
+        nozzle_doc_link: String(getOrException(project, 'nozzle_doc_link').value),
+        flow_rate: Number(getOrException(project, 'flow_rate').value),
+        angle: Number(getOrException(project, 'angle').value),
+        spray_shape: String(getOrException(project, 'spray_shape').value),
+        twist_angle: Number(getOrException(project, 'twist_angle').value)
+    }
+    const gun: Models.Gun = {
+        gun_id: Number(getOrException(project, 'gun_id').value),
+        gun_name: String(getOrException(project, 'gun_name').value),
+        max_frequency: Number(getOrException(project, 'max_frequency').value)  
+    }
+    const controller: Models.Controller = {
+        controller_id: Number(getOrException(project, 'controller_id').value),
+        controller_name: String(getOrException(project, 'controller_name').value),
+        controller_doc_link: String(getOrException(project, 'controller_doc_link').value)
+    }
+    const newProject: Models.Project = {
+        project_id: Number(getOrException(project, "project_id").value),
+        owner_id: Number(getOrException(project, 'owner_id').value),
+        project_name: String(getOrException(project, 'project_name').value),
+        project_description: String(getOrException(project, 'project_description').value),
+        last_modified_date: lmd,
+        line_speed: Number(getOrException(project, 'line_speed').value),
+        line_width: Number(getOrException(project, 'line_width').value),
+        sensor_distance: Number(getOrException(project, 'sensor_distance').value),
+        product_width: Number(getOrException(project, 'product_width').value),
+        product_length: Number(getOrException(project, 'product_length').value),
+        product_height: Number(getOrException(project, 'product_height').value),
+        nozzle_count: Number(getOrException(project, 'nozzle_count').value),
+        nozzle_spacing: Number(getOrException(project, 'nozzle_spacing').value),
+        nozzle_height: Number(getOrException(project, 'nozzle_height').value),
+        fluid_pressure: Number(getOrException(project, 'fluid_pressure').value),
+        duty_cycle: Number(getOrException(project, 'duty_cycle').value),
+        start_delay: Number(getOrException(project, 'start_delay').value),
+        stop_delay: Number(getOrException(project, 'stop_delay').value),
+        spray_duration: Number(getOrException(project, 'spray_duration').value),
+        nozzle: nozzle,
+        gun: gun,
+        controller: controller
+    }
+    return newProject;
+    } catch(error){
+        console.log("One or more parameters was undefined");
+        console.log(error);
+    }
+}

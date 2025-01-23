@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from db import get_controllers, get_users, get_user_by_id, get_nozzles, get_guns
+from db import save_new_project
 from flask_cors import CORS
 from datetime import datetime
 
@@ -52,3 +53,7 @@ def api_get_user_projects(user_id):
         "retrieved": datetime.utcnow().isoformat(),
 		"user": user
     })
+
+@api_v1.route('/users/<int:user_id>/new')
+def api_post_new_project(user_id):
+    save_new_project(user_id)
