@@ -17,12 +17,12 @@
   }
   
   .modal {
-    width: 800px;
-    height: 540px;
+    width: 250px;
+    height: 170px;
     background: white;
     color: white;
     z-index: 10;
-    border-radius: 8px;
+    border-radius: 16px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
   }
   
@@ -73,8 +73,9 @@
     background: white;
     transition: all 0.25s ease;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: 3;
-    top: 3;
+    position: absolute;
+    right: 0;
+    top: 0;
     align-self: flex-end;
     margin-top: -7px;
     margin-right: -7px;
@@ -90,8 +91,9 @@
     background: white;
     transition: all 0.25s ease;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: 1;
-    top: 3;
+    position: absolute;
+    right: 0;
+    top: 0;
     align-self: flex-end;
     margin-top: -7px;
     margin-right: -7px;
@@ -107,6 +109,7 @@
     background: white;
     transition: all 0.25s ease;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+    position: absolute;
     right: 0;
     top: 0;
     align-self: flex-end;
@@ -124,6 +127,7 @@
     background: white;
     transition: all 0.25s ease;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+    position: absolute;
     right: 0;
     top: 0;
     align-self: flex-end;

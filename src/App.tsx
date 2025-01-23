@@ -1,26 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import './styles/App.css';
-import { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
+import './App.css';
+import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers';
 import { NavLink, Link } from "react-router";
-import { useState } from "react";
-import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
-import { UtilityInterfaces } from "./utility/models"
-//import MainScreenVisual from './MainScreenVisual';
+import {createProjectMap} from './ProjectUtilities';
+import { useState, useEffect } from "react";
+import { Profile, SignIn, Documentation, SaveLoad, TextField } from './Modals.tsx';
+import MainScreenVisual from './MainScreenVisual';
 
-interface AppProps{
-  parameterMapProp: Map<string, UtilityInterfaces.Parameter>;
-}
+export default function App() {
+  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
+  const [parameterMap, setParameterMap] = useState(new Map());
+  //Immediately loads the first project of the first user(default project)
+  //sets the parameter map to it
 
-//Props: Render the app with a specific set of parameters that are determined beforehand
-//This keeps it from resetting them when navigating react router, and it will
-//be easier to work in loading saved projects
-export default function App({parameterMapProp}: AppProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  //Map of parameter names -> parameter values. Updates on event of input field changing
-  const [parameterMap, setParameterMap] = useState(parameterMapProp);
-
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
@@ -85,51 +78,51 @@ export default function App({parameterMapProp}: AppProps) {
     <div>
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <NozzleDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <p>Drawer</p>
         <p>Drawer</p>
         <p>Drawer</p>
         <p>Drawer</p>
-      </Drawer>
+      </NozzleDrawer>
 
       <button onClick={() => setIsDrawerOpen(true)}>Line</button>
 
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <LineDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <p>Drawer</p>
-      </Drawer>
+      </LineDrawer>
 
       <button onClick={() => setIsDrawerOpen(true)}>Controller</button>
 
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <ControllerDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
         <p>Drawer</p>
-      </Drawer>
+      </ControllerDrawer>
 
           <main>
             <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
               Sign In
             </button>
-            {isSignInOpen && <Modal isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
+            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
           </main>
 
           <main>
             <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
               Profile
             </button>
-            {isProfileOpen && <Modal isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
+            {isProfileOpen && <Profile isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
           </main>
 
           <main>
             <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
               Documentation
             </button>
-            {isDocumentationOpen && <Modal isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
+            {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
           </main>
 
           <main>
             <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
               Save Load
             </button>
-            {isSaveLoadOpen && <Modal isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} />}
+            {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} />}
           </main>
 
           <Link to="/animation">
@@ -140,10 +133,6 @@ export default function App({parameterMapProp}: AppProps) {
             <button> Top View </button>
           </Link>
 
-      <Drawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <p>Drawer</p>
-        <ul>{parameterList}</ul>
-      </Drawer>
       <div>
           <Link to="/results">
             <button> See Results </button>
