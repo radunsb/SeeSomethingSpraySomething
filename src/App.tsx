@@ -76,6 +76,9 @@ export default function App() {
 
   return (
     <div>
+
+      {MainScreenVisual(parameterMap, setParameterMap)}
+
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 
       <NozzleDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
