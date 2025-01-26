@@ -69,10 +69,19 @@ export async function createProjectMap(userID: number, projectID: number){
 export async function saveAsNewProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
     const newProject = createProjectFromMap(project);
     if(newProject !== undefined){
-        await axios.post(`http://localhost:5000/api/v1/users/${userID}/new`,
-            newProject
-        );
-    }    
+        console.log(JSON.stringify(newProject));
+        await axios.post(`http://localhost:5000/api/v1/users/${userID}/new`,{
+            data:newProject,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
+    }
 }
 
 function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{

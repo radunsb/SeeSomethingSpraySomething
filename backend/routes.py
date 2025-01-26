@@ -54,6 +54,11 @@ def api_get_user_projects(user_id):
 		"user": user
     })
 
-@api_v1.route('/users/<int:user_id>/new')
+@api_v1.route('/users/<int:user_id>/new', methods=['GET', 'POST'])
 def api_post_new_project(user_id):
-    save_new_project(user_id)
+    project = request.get_json()
+    user = save_new_project(user_id, project['data'])
+    return jsonify({
+        "retrieved": datetime.utcnow().isoformat(),
+		"user": user
+    })
