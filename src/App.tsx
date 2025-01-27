@@ -1,19 +1,26 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
-import './App.css';
-import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers';
+import './styles/App.css';
+import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { NavLink, Link } from "react-router";
-import {createProjectMap} from './ProjectUtilities';
-import { useState, useEffect } from "react";
-import { Profile, SignIn, Documentation, SaveLoad, TextField } from './Modals.tsx';
+import { useState } from "react";
+import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
+import { UtilityInterfaces } from "./utility/models"
 import MainScreenVisual from './MainScreenVisual';
 
-export default function App() {
-  const [isDrawerOpen, setIsDrawerOpen] = React.useState(false);
-  const [parameterMap, setParameterMap] = useState(new Map());
-  //Immediately loads the first project of the first user(default project)
-  //sets the parameter map to it
+interface AppProps{
+  parameterMapProp: Map<string, UtilityInterfaces.Parameter>;
+}
 
+//Props: Render the app with a specific set of parameters that are determined beforehand
+//This keeps it from resetting them when navigating react router, and it will
+//be easier to work in loading saved projects
+export default function App({parameterMapProp}: AppProps) {
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  //Map of parameter names -> parameter values. Updates on event of input field changing
+  const [parameterMap, setParameterMap] = useState(parameterMapProp);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
@@ -82,9 +89,6 @@ export default function App() {
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 
       <NozzleDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
-        <p>Drawer</p>
-        <p>Drawer</p>
-        <p>Drawer</p>
         <p>Drawer</p>
       </NozzleDrawer>
 
