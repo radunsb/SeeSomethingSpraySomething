@@ -52,6 +52,39 @@ def get_guns():
 
 def get_projects_by_user(user):
     try:
-        return list(user['owned_projects']) + list(user['collaborating_projects'])
+        return list(user['projects'])
     except Exception as e:
         return e
+    
+def does_project_exist(user_id, pid):
+    try:
+        user = db.Users.find_one({'_id': user_id})
+        projects = list(user['projects'])
+        for project in projects:
+            if(project['project_id'] == pid):
+                return True
+        return False
+    except Exception as e:
+        return e
+    
+def find_user_max_project_id(user_id):
+    try:
+        user = db.Users.find_one({'_id': user_id})
+        projects = get_projects_by_user(user)
+        return projects[len(projects)-1]['project_id']
+    except Exception as e:
+        return e
+    
+def save_new_project(user_id, projectJSON):
+    try:
+        projectJSON['project_id'] = find_user_max_project_id(user_id) + 1
+        print(projectJSON)
+        db.Users.update_one(
+            {"_id": user_id},
+            {"$push": {"projects": projectJSON}}
+        )
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e
+    

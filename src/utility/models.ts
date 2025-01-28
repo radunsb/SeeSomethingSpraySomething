@@ -1,26 +1,26 @@
 /* eslint-disable @typescript-eslint/no-namespace */
 export namespace Models{
     export interface Controller{
-        _id: number,
+        controller_id: number,
         controller_name:string,
-        doc_link:string
+        controller_doc_link:string
     }
     export interface Nozzle{
-        _id: number,
+        nozzle_id: number,
         nozzle_name:string,
-        doc_link:string,
+        nozzle_doc_link:string,
         flow_rate:number,
         angle:number,
         spray_shape:string,
         twist_angle:number
     }
     export interface Gun{
-        _id:number,
+        gun_id:number,
         gun_name:string,
         max_frequency:number
     }
     export interface User{
-        _id: number,
+        user_id: number,
         username:string,
         role:string,
         projects:Array<Models.Project>
