@@ -93,20 +93,20 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     if(typeof new_nozzle_height !== "undefined"){
         GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height.value);
     }
+
+    const new_flow_rate = parameterMap.get("flow_rate");
     
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
-    let new_nozzle_spacing = parameterMap.get("nozzle_spacing:number");
-    let new_nozzle_id = parameterMap.get("nozzle");
-    if(typeof new_nozzle_id !== "undefined"){
-        //do stuff to get the spray + twist angles of this nozzle
-    }
+    let new_nozzle_spacing = parameterMap.get("nozzle_spacing");
+    let new_spray_angle = parameterMap.get("angle");
+    let new_twist_angle = parameterMap.get("twist_angle");
 
-    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined"){
+    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof new_flow_rate !== "undefined"){
         GlobalParams.NOZZLE_LIST = [];
         for (let i = 0; i < Number(new_nozzle_count.value); i++){
             const this_pos = 0.5 * GlobalParams.LINE_WIDTH + Number(new_nozzle_spacing.value) * (0.5 - 0.5*Number(new_nozzle_count.value) + i);
-            const new_nozzle = new GlobalParams.Nozzle(100,3,5,2,this_pos);//read and replace parameters
+            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),3,Number(new_twist_angle.value),Number(new_flow_rate.value),this_pos);//read and replace parameters
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
     }

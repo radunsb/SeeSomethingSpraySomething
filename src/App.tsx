@@ -5,7 +5,8 @@ import { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.ts
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
-import { UtilityInterfaces } from "./utility/models"
+import { UtilityInterfaces } from "./utility/models";
+import { saveAsNewProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
@@ -85,6 +86,8 @@ export default function App({parameterMapProp}: AppProps) {
     <div>
 
       {MainScreenVisual(parameterMap, setParameterMap)}
+
+      <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
 
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 
