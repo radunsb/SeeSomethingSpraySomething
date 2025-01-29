@@ -17,6 +17,9 @@ interface AppProps{
 //be easier to work in loading saved projects
 export default function App({parameterMapProp}: AppProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
+  const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
+  const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
   //Map of parameter names -> parameter values. Updates on event of input field changing
   const [parameterMap, setParameterMap] = useState(parameterMapProp);
 
@@ -88,21 +91,21 @@ export default function App({parameterMapProp}: AppProps) {
 
       <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
 
-      <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
+      <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
 
-      <NozzleDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
         <p>Drawer</p>
       </NozzleDrawer>
 
-      <button onClick={() => setIsDrawerOpen(true)}>Line</button>
+      <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
 
-      <LineDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
         <p>Drawer</p>
       </LineDrawer>
 
-      <button onClick={() => setIsDrawerOpen(true)}>Controller</button>
+      <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
 
-      <ControllerDrawer isOpen={isDrawerOpen} onClose={() => setIsDrawerOpen(false)}>
+      <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
         <p>Drawer</p>
       </ControllerDrawer>
 
