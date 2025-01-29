@@ -6,7 +6,7 @@ import * as THREE from 'three';
 
 //------------------------------------------------------------------------------------------------------
 // Component for the simulation model
-const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>, setParameterMap: Function) => {
+const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>) => {
 
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
@@ -16,9 +16,6 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
   const nozzle_spacing: number = (parameterMap.get('nozzle_spacing')?.value ?? 0) as number;
   const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
-
-  // Size of the nozzles (currently just black cubes)
-  const nozzle_size: [number, number, number] = [.25,.25,.25];
 
   return (
     <div id='model_container'>
@@ -35,16 +32,53 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
         {/* Conveyor belt */}
         <Conveyor position={[0,0,0]} width={line_width/2} length={20}/>
 
-        <Nozzle location={[-2,3,0]} spray_angle={spray_angle} />
+        <NozzleApparatus
+          num_nozzles={nozzle_count}
+          nozzle_spacing={nozzle_spacing/2}
+          nozzle_height={nozzle_height/2}
+          spray_angle={spray_angle}
+        />
+        {/* <NozzleApparatus
+          num_nozzles={3}
+          nozzle_spacing={6/2}
+          nozzle_height={6/2}
+          spray_angle={110}
+        /> */}
 
         {/* Allows the camera to be movable and zoomable */}
-        <OrbitControls target={[0, 3, 0]} />
+        <OrbitControls target={[0, nozzle_height/4, 0]} />
       </Canvas>
     </div>
   );
 };
 export default MainScreenVisual;
 //------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
+// Nozzle Apparatus
+type NozzleApparatusProps = {
+  num_nozzles: number;
+  nozzle_spacing: number;
+  nozzle_height: number;
+  spray_angle: number;
+};
+
+const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
+  num_nozzles,
+  nozzle_spacing,
+  nozzle_height,
+  spray_angle,
+}) => {
+  const nozzles = Array.from({ length: num_nozzles }).map((_, index) => {
+    const xPosition = index * nozzle_spacing - (nozzle_spacing * (num_nozzles - 1)) / 2;
+    const location: [number, number, number] = [xPosition, nozzle_height, 0];
+    return <Nozzle key={index} location={location} spray_angle={spray_angle} />;
+  });
+
+  return <group>{nozzles}</group>;
+};
+//------------------------------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------------------------------
 // Nozzle Component

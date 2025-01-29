@@ -85,7 +85,7 @@ export default function App({parameterMapProp}: AppProps) {
   return (
     <div>
 
-      {MainScreenVisual(parameterMap, setParameterMap)}
+      {MainScreenVisual(parameterMap)}
 
       <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
 
