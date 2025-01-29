@@ -5,6 +5,9 @@ import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
+import { UtilityInterfaces } from "./utility/models";
+import { saveAsNewProject } from "./utility/ProjectUtilities";
+import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models"
 import MainScreenVisual from './MainScreenVisual';
 
