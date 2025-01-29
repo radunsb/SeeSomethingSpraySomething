@@ -6,7 +6,7 @@ import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Modal, Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models";
-import { saveAsNewProject } from "./utility/ProjectUtilities";
+import { saveProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
@@ -20,7 +20,6 @@ export default function App({parameterMapProp}: AppProps) {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   //Map of parameter names -> parameter values. Updates on event of input field changing
   const [parameterMap, setParameterMap] = useState(parameterMapProp);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -81,13 +80,16 @@ export default function App({parameterMapProp}: AppProps) {
       }
     }
   }
+  function save(){
+    saveProject(1, parameterMap)
+  }
 
   return (
     <div>
 
       {MainScreenVisual(parameterMap, setParameterMap)}
 
-      <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
+      <button onClick={save}>Save Project</button>
 
       <button onClick={() => setIsDrawerOpen(true)}>Nozzle</button>
 

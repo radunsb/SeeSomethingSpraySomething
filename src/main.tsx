@@ -10,8 +10,10 @@ import {UtilityInterfaces} from './utility/models.ts'
 
 //Startup to load the default Project
 let defaultMap: Map<string, UtilityInterfaces.Parameter>;
+
 async function loadDefaultProject(){
   //Default Map is always User with id of 1's first project
+  
   defaultMap = await createProjectMap(1, 0);
   createRoot(document.getElementById('root')!).render(
     // <StrictMode>

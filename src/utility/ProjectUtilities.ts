@@ -66,7 +66,9 @@ export async function createProjectMap(userID: number, projectID: number){
     return parameterMap;
 }
 
-export async function saveAsNewProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
+//Takes the current parameters and saves it in your projects folder
+//with the first unused ID
+export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
     const newProject = createProjectFromMap(project);
     if(newProject !== undefined){
         console.log(JSON.stringify(newProject));
