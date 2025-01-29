@@ -2,7 +2,7 @@ import React from 'react';
 
 import "./styles/Drawer.css";
 
-enum DrawerDirection {
+export enum DrawerDirection {
   Left = 'Left',
   Right = 'Right',
 }
@@ -14,7 +14,29 @@ type Props = {
   onClose: () => void;
 };
 
-const Drawer = ({
+export const NozzleDrawer = ({
+  isOpen,
+  children,
+  direction = DrawerDirection.Left,
+  onClose,
+}: Props) => {
+  const classNames = `Drawer ${direction} ${
+    isOpen ? 'Open' : ''
+  }`;
+
+  return (
+    <div className={classNames}>
+      <div className='Close' onClick={onClose}>
+        X
+      </div>
+      <div className="scrollable-container">
+      <div className='Content'>{children}</div>
+      </div>
+    </div>
+  );
+};
+
+export const LineDrawer = ({
   isOpen,
   children,
   direction = DrawerDirection.Left,
@@ -34,7 +56,7 @@ const Drawer = ({
   );
 };
 
-const NozzleDrawer = ({
+export const ControllerDrawer = ({
   isOpen,
   children,
   direction = DrawerDirection.Left,
@@ -53,45 +75,3 @@ const NozzleDrawer = ({
     </div>
   );
 };
-
-const LineDrawer = ({
-  isOpen,
-  children,
-  direction = DrawerDirection.Left,
-  onClose,
-}: Props) => {
-  const classNames = `Drawer ${direction} ${
-    isOpen ? 'Open' : ''
-  }`;
-
-  return (
-    <div className={classNames}>
-      <div className='Close' onClick={onClose}>
-        X
-      </div>
-      <div className='Content'>{children}</div>
-    </div>
-  );
-};
-
-const ControllerDrawer = ({
-  isOpen,
-  children,
-  direction = DrawerDirection.Left,
-  onClose,
-}: Props) => {
-  const classNames = `Drawer ${direction} ${
-    isOpen ? 'Open' : ''
-  }`;
-
-  return (
-    <div className={classNames}>
-      <div className='Close' onClick={onClose}>
-        X
-      </div>
-      <div className='Content'>{children}</div>
-    </div>
-  );
-};
-
-export { Drawer, NozzleDrawer, LineDrawer, ControllerDrawer, DrawerDirection };
