@@ -4,9 +4,14 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
 
+
 //------------------------------------------------------------------------------------------------------
 // Component for the simulation model
-const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>) => {
+type MainScreenVisualProps = {
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+};
+
+const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
@@ -114,18 +119,40 @@ type ConveyorProps = {
 };
 
 const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
-  const num_pieces: number = Math.floor(length / 1.75); // Ensure it's an integer
+  const num_pieces: number = Math.floor(length / 1.75);
+  const firstPieceZ = 0;
+  const lastPieceZ = (num_pieces - 1) * (1.5 + 0.25) * -1;
+  const pieceHeight = 0.25;
 
   return (
-    <group>
+    <group position={position}>
       {Array.from({ length: num_pieces }).map((_, index) => (
-        <Box
-          key={index}
-          position={[0, 0, index * (1.5+.25) * -1]} // Space each piece with a .25 gap and extend the belt away from camera
-          size={[width, .25, 1.5]} 
-          color="gray" 
-        />
+        <>
+          <Box
+            key={`main-${index}`}
+            position={[0, 0, index * (1.5 + 0.25) * -1]}
+            size={[width, pieceHeight, 1.5]}
+            color="gray"
+          />
+          {/* Smaller pieces */}
+          {index < num_pieces - 1 && (
+            <Box
+              key={`small-${index}`}
+              position={[0, 0, (index * (1.5 + 0.25) - 0.875) * -1]}
+              size={[width, pieceHeight / 2, 0.25]}
+              color="#636a73"
+            />
+          )}
+        </>
       ))}
+      {/* <mesh position={[0, -0.875, firstPieceZ]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[.75, .75, width]} />
+        <meshStandardMaterial color="black" />
+      </mesh>
+      <mesh position={[0, -0.875, lastPieceZ]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[.75, .75, width]} />
+        <meshStandardMaterial color="black" />
+      </mesh> */}
     </group>
   );
 };

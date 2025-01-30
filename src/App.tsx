@@ -7,8 +7,6 @@ import { useState } from "react";
 import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models";
 import { saveAsNewProject } from "./utility/ProjectUtilities";
-import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
-import { UtilityInterfaces } from "./utility/models"
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
@@ -90,7 +88,7 @@ export default function App({parameterMapProp}: AppProps) {
   return (
     <div>
 
-      {MainScreenVisual(parameterMap)}
+      <MainScreenVisual parameterMap={parameterMap}/>
 
       <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
 
