@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { UtilityInterfaces } from "./utility/models";
-import {Canvas} from "@react-three/fiber";
-import { OrbitControls, Line } from "@react-three/drei";
+import { Canvas } from "@react-three/fiber";
+import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
+
 
 //------------------------------------------------------------------------------------------------------
 // Component for the simulation model
-const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>, setParameterMap: Function) => {
+type MainScreenVisualProps = {
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+};
+
+const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
@@ -16,9 +21,6 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
   const nozzle_spacing: number = (parameterMap.get('nozzle_spacing')?.value ?? 0) as number;
   const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
-
-  // Size of the nozzles (currently just black cubes)
-  const nozzle_size: [number, number, number] = [.25,.25,.25];
 
   return (
     <div id='model_container'>
@@ -33,19 +35,23 @@ const MainScreenVisual = (parameterMap: Map<string, UtilityInterfaces.Parameter>
         <ambientLight intensity={.5}/>
         
         {/* Conveyor belt */}
-        <Conveyor width={line_width/2} length={20} height={5} piece_height={.25} piece_length={1.5}/>
+        <Conveyor position={[0,0,0]} width={line_width/2} length={20}/>
 
-        {/* Nozzles */}
-        <Box position={[-2,3,0]} color={"black"} size={nozzle_size}/>
-        <Box position={[2,3,0]} color={"black"} size={nozzle_size}/>
-
-        {/* Current Spray Patterns */}
-        <Triangle vertices={[[-2, 3, 0],[-5, -1, 0],[1, -1, 0],]} color="blue" transparency={.3}/>
-        <Triangle vertices={[[2, 3, 0],[-1, -1, 0],[5, -1, 0],]} color="blue" transparency={.3}/>
-
+        <NozzleApparatus
+          num_nozzles={nozzle_count}
+          nozzle_spacing={nozzle_spacing/2}
+          nozzle_height={nozzle_height/2}
+          spray_angle={spray_angle}
+        />
+        {/* <NozzleApparatus
+          num_nozzles={3}
+          nozzle_spacing={6/2}
+          nozzle_height={6/2}
+          spray_angle={110}
+        /> */}
 
         {/* Allows the camera to be movable and zoomable */}
-        <OrbitControls />
+        <OrbitControls target={[0, nozzle_height/4, 0]} />
       </Canvas>
     </div>
   );
@@ -54,28 +60,99 @@ export default MainScreenVisual;
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
-// Conveyor Component
-type ConveyorProps = {
-  width: number;
-  length: number;
-  height: number;
-  piece_height: number;
-  piece_length: number;
+// Nozzle Apparatus
+type NozzleApparatusProps = {
+  num_nozzles: number;
+  nozzle_spacing: number;
+  nozzle_height: number;
+  spray_angle: number;
 };
 
-const Conveyor: React.FC<ConveyorProps> = ({ width, length, height, piece_height, piece_length }) => {
-  const num_pieces: number = Math.floor(length / 1.75); // Ensure it's an integer
+const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
+  num_nozzles,
+  nozzle_spacing,
+  nozzle_height,
+  spray_angle,
+}) => {
+  const nozzles = Array.from({ length: num_nozzles }).map((_, index) => {
+    const xPosition = index * nozzle_spacing - (nozzle_spacing * (num_nozzles - 1)) / 2;
+    const location: [number, number, number] = [xPosition, nozzle_height, 0];
+    return <Nozzle key={index} location={location} spray_angle={spray_angle} />;
+  });
+
+  return <group>{nozzles}</group>;
+};
+//------------------------------------------------------------------------------------------------------
+
+
+//------------------------------------------------------------------------------------------------------
+// Nozzle Component
+type NozzleProps = {
+  location: [number, number, number];
+  spray_angle: number;
+};
+
+const Nozzle: React.FC<NozzleProps> = ({location, spray_angle}) => {
 
   return (
     <group>
+      <mesh position = {[location[0], location[1] + .125, location[2]]}>
+      <cylinderGeometry args={[.2, .2, .2]}/>
+      <meshStandardMaterial color={'gray'}/>
+      </mesh>
+      <mesh position={location}>
+        <cylinderGeometry args={[.1, .1, .05]}/>
+        <meshStandardMaterial color={'yellow'}/>
+      </mesh>
+      <Triangle top_vertex={location} angle={spray_angle} height={location[1]}/>
+    </group>
+  );
+};
+//------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
+// Conveyor Component
+type ConveyorProps = {
+  position: [number, number, number];
+  width: number;
+  length: number;
+};
+
+const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
+  const num_pieces: number = Math.floor(length / 1.75);
+  const firstPieceZ = 0;
+  const lastPieceZ = (num_pieces - 1) * (1.5 + 0.25) * -1;
+  const pieceHeight = 0.25;
+
+  return (
+    <group position={position}>
       {Array.from({ length: num_pieces }).map((_, index) => (
-        <Box
-          key={index}
-          position={[0, -1, index * (piece_length+.25) * -1]} // Space each piece with a .25 gap and extend the belt away from camera
-          size={[width, piece_height, piece_length]} 
-          color="gray" 
-        />
+        <>
+          <Box
+            key={`main-${index}`}
+            position={[0, 0, index * (1.5 + 0.25) * -1]}
+            size={[width, pieceHeight, 1.5]}
+            color="gray"
+          />
+          {/* Smaller pieces */}
+          {index < num_pieces - 1 && (
+            <Box
+              key={`small-${index}`}
+              position={[0, 0, (index * (1.5 + 0.25) - 0.875) * -1]}
+              size={[width, pieceHeight / 2, 0.25]}
+              color="#636a73"
+            />
+          )}
+        </>
       ))}
+      {/* <mesh position={[0, -0.875, firstPieceZ]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[.75, .75, width]} />
+        <meshStandardMaterial color="black" />
+      </mesh>
+      <mesh position={[0, -0.875, lastPieceZ]} rotation={[0, 0, Math.PI / 2]}>
+        <cylinderGeometry args={[.75, .75, width]} />
+        <meshStandardMaterial color="black" />
+      </mesh> */}
     </group>
   );
 };
@@ -102,20 +179,30 @@ const Box: React.FC<BoxProps> = ({position, size, color}) => {
 
 //------------------------------------------------------------------------------------------------------
 // Typing for Triangle Component
+
 type TriangleProps = {
-  vertices: [[number, number, number], [number, number, number], [number, number, number]];
-  color: string;
-  transparency: number;
+  top_vertex: [number, number, number];
+  angle: number; // Assume this is in degrees
+  height: number;
+  color?: string;
+  transparency?: number;
 };
 
-// Triangle Component
-const Triangle: React.FC<TriangleProps> = ({ vertices, color = "#ffffff", transparency = 1 }) => {
-  // Flatten the vertices array for the buffer attribute
+const Triangle: React.FC<TriangleProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
+  const [x, y, z] = top_vertex;
+  const angleInRadians = angle * (Math.PI / 180); // Convert to radians
+  const r = height * Math.tan(angleInRadians / 2); // Half the base width
+
+  const vertices = [
+    top_vertex,
+    [x - r, y - height, z],
+    [x + r, y - height, z],
+  ];
+
   const flattenedVertices = new Float32Array(vertices.flat());
 
   return (
     <group>
-      {/* Filled triangle */}
       <mesh>
         <bufferGeometry>
           <bufferAttribute

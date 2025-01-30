@@ -43,3 +43,8 @@
   .Drawer.Open {
     transform: translateX(0%);
   }
+
+  .scrollable-container {
+    height: 200px; 
+    overflow-y: auto;
+  }
