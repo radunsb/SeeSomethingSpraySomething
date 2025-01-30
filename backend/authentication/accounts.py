@@ -34,10 +34,10 @@ def account_exists(un:str, email:str) -> bool:
             return True
     return False
 
-        
-def create_user_account(un:str, pwd:str, email:str) -> bool:
+#Returns None if the account already exists. Otherwise, returns user_id        
+def create_user_account(un:str, pwd:str, email:str) -> int:
     if account_exists(un, email):
-        return False
+        return None
 
     user_id = len(get_users()) + 1
     pwd_hash = global_hasher.hash_password(pwd)
@@ -52,4 +52,4 @@ def create_user_account(un:str, pwd:str, email:str) -> bool:
     
     #TODO: change the status of the app so that the user is logged in
 
-    return True
+    return user_id
