@@ -13,7 +13,7 @@ export async function createProjectMap(userID: number, projectID: number){
     let user: Partial<Models.User> = {};
 
     //Obtain user data specified in parameters
-    await axios.get(`http://localhost:5000/api/v1/users/${userID}`)
+    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })

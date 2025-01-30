@@ -6,7 +6,7 @@ import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models";
-import { saveAsNewProject } from "./utility/ProjectUtilities";
+import { saveProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
