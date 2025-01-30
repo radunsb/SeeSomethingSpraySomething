@@ -22,7 +22,7 @@ async function loadDefaultProject(){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App parameterMapProp={defaultMap}/>} />
+      <Route path="/" element={<App parameterMapProp={defaultMap} />} />
       <Route path="/results" element={<Results params={defaultMap} />} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
