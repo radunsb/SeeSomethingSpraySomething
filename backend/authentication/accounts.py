@@ -33,9 +33,9 @@ def account_exists(un:str, email:str) -> bool:
         if user["email"] == email:
             return True
     return False
-
-#Returns None if the account already exists. Otherwise, returns user_id        
+  
 def create_user_account(un:str, pwd:str, email:str) -> int:
+    """Returns None if the account already exists. Otherwise, returns user_id"""
     if account_exists(un, email):
         return None
 
@@ -50,6 +50,6 @@ def create_user_account(un:str, pwd:str, email:str) -> int:
     collection = db.get_collection("Users")
     collection.insert_one(user_object)
     
-    #TODO: change the status of the app so that the user is logged in
+    #When this is called, the session saves the user_id
 
     return user_id
