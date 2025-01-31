@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import './styles/Modals.css';
+import { listUserProjects } from "./utility/ProjectUtilities";
 import { RiCloseLine } from "react-icons/ri";
 import { FaHandLizard } from "react-icons/fa";
-
+import { Models } from "./utility/models";
 interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
@@ -185,7 +186,14 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
   };
 
   export const SaveLoad = ({ isOpen, setIsOpen }: ModalProps) => {
+    const projects = listUserProjects(1);
+    projects.sort((a:Models.ProjectBase, b:Models.ProjectBase) => 
+      a.last_modified_date.getTime()-b.last_modified_date.getTime());
+    const projectList = projects.map(project => <li>
+      <button>{project.project_name}</button>
+    </li>)
     if (!isOpen){ return null}
+
     return (
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
@@ -197,6 +205,9 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
+            <div className= "modalContent">
+              {projectList}
+            </div>
             <div className= "modalActions">
               <div className= "actionsContainer">
                 <button className= "deleteBtn" onClick={() => setIsOpen(false)}>

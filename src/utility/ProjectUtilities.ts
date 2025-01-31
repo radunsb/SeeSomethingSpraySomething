@@ -148,3 +148,25 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
         console.log(error);
     }
 }
+
+export function listUserProjects(userID: number){
+    let user: Partial<Models.User> = {};
+    axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+        .then(response => {
+            user = <Models.User> response.data.user;
+        })
+        .catch(error => console.error(error));
+    const projectList = Array<Models.ProjectBase>();
+    if(user.projects){
+        for(const project of user.projects){
+            const partProject: Models.ProjectBase = {
+                project_id: project['project_id'],
+                owner_id: userID,
+                project_name: project['project_name'],
+                last_modified_date: project['last_modified_date']
+            }
+            projectList.push(partProject);
+        }
+    }
+    return projectList;
+}
