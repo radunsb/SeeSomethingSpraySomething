@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
 import { UtilityInterfaces } from "./utility/models";
-import { Canvas } from "@react-three/fiber";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
+import { useRef } from "react";
 
 
 //------------------------------------------------------------------------------------------------------
@@ -23,37 +23,36 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
   const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
 
   return (
-    <div id='model_container'>
-      <Canvas>
-        {/* Lighting of the model:
-        - Directional light coming in from the right (of the original camera angle)
-        - Hemisphere light to light from top to bottom (white to gray)
-        - ambient light to light everything at a low intensity
-        */}
-        <directionalLight position={[5,2,2]} intensity={2} />
-        <hemisphereLight args={["#fff", "#333", 1]}/>
-        <ambientLight intensity={.5}/>
-        
-        {/* Conveyor belt */}
-        <Conveyor position={[0,0,0]} width={line_width/2} length={20}/>
+    <Canvas>
+      {/* Origin Marker */}
+      {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
-        <NozzleApparatus
-          num_nozzles={nozzle_count}
-          nozzle_spacing={nozzle_spacing/2}
-          nozzle_height={nozzle_height/2}
-          spray_angle={spray_angle}
-        />
-        {/* <NozzleApparatus
-          num_nozzles={3}
-          nozzle_spacing={6/2}
-          nozzle_height={6/2}
-          spray_angle={110}
-        /> */}
+      {/* Camera Controls: Moveable, Zoomable, Focus Point */}
+      <OrbitControls />
 
-        {/* Allows the camera to be movable and zoomable */}
-        <OrbitControls target={[0, nozzle_height/4, 0]} />
-      </Canvas>
-    </div>
+      {/* Model Lighting:
+      - Directional light coming in from the right (of the original camera angle)
+      - Hemisphere light to light from top to bottom (white to gray)
+      - ambient light to light everything at a low intensity
+      */}
+      <directionalLight position={[5,2,2]} intensity={2} />
+      <hemisphereLight args={["#fff", "#333", 1]}/>
+      <ambientLight intensity={.5}/>
+      
+      {/* Conveyor belt */}
+      {/* TODO: Refactor position z and length */}
+      <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
+      <Sensor distance={sensor_distance/2} />
+
+      {/* Nozzle Apparatus */}
+      <NozzleApparatus
+        position={[0,-1,0]}
+        num_nozzles={nozzle_count}
+        nozzle_spacing={nozzle_spacing/2}
+        nozzle_height={nozzle_height/2}
+        spray_angle={spray_angle}
+      />
+    </Canvas>
   );
 };
 export default MainScreenVisual;
@@ -62,6 +61,7 @@ export default MainScreenVisual;
 //------------------------------------------------------------------------------------------------------
 // Nozzle Apparatus
 type NozzleApparatusProps = {
+  position: [number, number, number];
   num_nozzles: number;
   nozzle_spacing: number;
   nozzle_height: number;
@@ -69,6 +69,7 @@ type NozzleApparatusProps = {
 };
 
 const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
+  position,
   num_nozzles,
   nozzle_spacing,
   nozzle_height,
@@ -80,7 +81,7 @@ const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
     return <Nozzle key={index} location={location} spray_angle={spray_angle} />;
   });
 
-  return <group>{nozzles}</group>;
+  return <group position={position}>{nozzles}</group>;
 };
 //------------------------------------------------------------------------------------------------------
 
@@ -98,7 +99,7 @@ const Nozzle: React.FC<NozzleProps> = ({location, spray_angle}) => {
     <group>
       <mesh position = {[location[0], location[1] + .125, location[2]]}>
       <cylinderGeometry args={[.2, .2, .2]}/>
-      <meshStandardMaterial color={'gray'}/>
+      <meshStandardMaterial color={'silver'}/>
       </mesh>
       <mesh position={location}>
         <cylinderGeometry args={[.1, .1, .05]}/>
@@ -140,7 +141,7 @@ const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
               key={`small-${index}`}
               position={[0, 0, (index * (1.5 + 0.25) - 0.875) * -1]}
               size={[width, pieceHeight / 2, 0.25]}
-              color="#636a73"
+              color="darkgray"
             />
           )}
         </>
@@ -220,6 +221,23 @@ const Triangle: React.FC<TriangleProps> = ({ top_vertex, angle, height, color = 
         />
       </mesh>
     </group>
+  );
+};
+//------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
+// Sensor Component
+
+type SensorProps = {
+  distance: number;
+};
+
+const Sensor: React.FC<SensorProps> = ({distance}) => {
+  return (
+    <mesh position={[0, -.875, distance]}>
+      <cylinderGeometry args={[.25,.25,.01]}/>
+      <meshStandardMaterial color={'red'}/>
+    </mesh>
   );
 };
 //------------------------------------------------------------------------------------------------------
