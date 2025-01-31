@@ -25,6 +25,13 @@ export namespace Models{
         role:string,
         projects:Array<Models.Project>
     }
+
+    export interface ProjectBase{
+        project_id:number,
+        owner_id:number,
+        project_name:string,
+        last_modified_date:Date
+    }
     export interface Project{
         project_id:number,
         owner_id:number,

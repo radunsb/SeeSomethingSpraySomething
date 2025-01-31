@@ -13,7 +13,7 @@ export async function createProjectMap(userID: number, projectID: number){
     let user: Partial<Models.User> = {};
 
     //Obtain user data specified in parameters
-    await axios.get(`http://localhost:5000/api/v1/users/${userID}`)
+    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
@@ -66,7 +66,12 @@ export async function createProjectMap(userID: number, projectID: number){
     return parameterMap;
 }
 
-export async function saveAsNewProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
+//Takes the current parameters and saves it in your projects folder
+//with the first unused ID
+export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
+    if(!project){
+        return;
+    }
     const newProject = createProjectFromMap(project);
     if(newProject !== undefined){
         console.log(JSON.stringify(newProject));
@@ -145,4 +150,27 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
         console.log("One or more parameters was undefined");
         console.log(error);
     }
+}
+
+export async function listUserProjects(userID: number){
+    let user: Partial<Models.User> = {};
+    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+        .then(response => {
+            user = <Models.User> response.data.user;
+        })
+        .catch(error => console.error(error));
+    const projectList = Array<Models.ProjectBase>();
+    if(user.projects){
+        console.log("Hi");
+        for(const project of user.projects){
+            const partProject: Models.ProjectBase = {
+                project_id: project['project_id'],
+                owner_id: userID,
+                project_name: project['project_name'],
+                last_modified_date: project['last_modified_date']
+            }
+            projectList.push(partProject);
+        }
+    }
+    return projectList;
 }
