@@ -4,6 +4,8 @@ import { listUserProjects } from "./utility/ProjectUtilities";
 import { RiCloseLine } from "react-icons/ri";
 import { FaHandLizard } from "react-icons/fa";
 import { Models } from "./utility/models";
+import { createAccount } from "./utility/auth_requests";
+
 interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
@@ -57,10 +59,19 @@ return (
 //  };
 
   export const SignIn = ({ isOpen, setIsOpen }: ModalProps) => {
-    const [inputValue, setInputValue] = useState('');
+    const [username, setUserName] = useState('');
+    const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
 
-    const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-      setInputValue(event.target.value);}
+    const handleUnChange = (newUn:string) => {
+      setUserName(newUn);}
+
+    const handlePwChange = (newPw:string) => {
+      setPassword(newPw);}
+
+    const handleEmChange = (newEm:string) => {
+        setEmail(newEm);}
+
     if (!isOpen){ return null}
     return (
       <>
@@ -80,12 +91,16 @@ return (
             </div>
             <div>
               <div>
-                  //TextField for email
-                  <TextField onChange={() => onchange} ></TextField>
+                  <p>Username</p>
+                  <TextField value={username} onChange={handleUnChange} ></TextField>
               </div>
               <div>
-                  //TextField for password
-                  <TextField onChange={() => onchange} ></TextField>
+                  <p>Email</p>
+                  <TextField value={email} onChange={handleEmChange} ></TextField>
+              </div>
+              <div>
+                  <p>Password</p>
+                  <TextField value={password} onChange={ handlePwChange} ></TextField>
               </div>
               &nbsp;
               <div>
@@ -94,7 +109,7 @@ return (
                 </button>
                 </div>
                 <div>
-                <button className= "loginBtn" onClick={() => setIsOpen(false)}>
+                <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsOpen(false)}}>
                   Login
                 </button>
                 </div>
