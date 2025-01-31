@@ -2,7 +2,7 @@
 import React from 'react';
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
-import { SignIn, Profile, Documentation, SaveLoad } from './Modals.tsx';
+import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword } from './Modals.tsx';
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { UtilityInterfaces } from "./utility/models";
@@ -24,6 +24,8 @@ export default function App({parameterMapProp}: AppProps) {
   const [parameterMap, setParameterMap] = useState(parameterMapProp);
 
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
@@ -89,6 +91,8 @@ export default function App({parameterMapProp}: AppProps) {
 // 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Angle, 20 = Flow Rate,
 // 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Twist Angle, 
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
+
+// Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
   return (
     <div>
 
@@ -140,7 +144,28 @@ export default function App({parameterMapProp}: AppProps) {
             <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
               Sign In
             </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
+            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+          </main>
+
+          <main>
+            <button className= "primaryBtn" onClick={() => setIsCreateAccountOpen(true)}>
+              Create Account
+            </button>
+            {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+          </main>
+
+          <main>
+            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+              Sign In
+            </button>
+            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+          </main>
+
+          <main>
+            <button className= "primaryBtn" onClick={() => setIsResetPasswordOpen(true)}>
+              Forget Password
+            </button>
+            {isResetPasswordOpen && <ResetPassword isOpen = {isResetPasswordOpen} setIsOpen = {setIsResetPasswordOpen}/>}
           </main>
 
           <main>

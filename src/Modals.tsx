@@ -9,6 +9,12 @@ interface ModalProps{
   setIsOpen: (arg0: boolean) => void;
 }
 
+interface AccountModalProps{
+  isOpen: boolean;
+  setIsLIOpen: (arg0: boolean) => void;
+  setIsCAOpen: (arg0: boolean) => void;
+}
+
 interface TextFieldProps {
   value?: string;
   onChange: (val: string) => void;
@@ -56,10 +62,68 @@ return (
 //    setMyBoolean(!myBoolean);
 //  };
 
-  export const SignIn = ({ isOpen, setIsOpen }: ModalProps) => {
+export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+
+  const handleUnChange = (newUn:string) => {
+    setUserName(newUn);}
+
+  const handlePwChange = (newPw:string) => {
+    setPassword(newPw);}
+
+  const handleEmChange = (newEm:string) => {
+      setEmail(newEm);}
+
+  if (!isOpen){ return null}
+  return (
+    <>
+      <div className= "darkBG" onClick={() => setIsCAOpen(false)} />
+      <div className= "centered">
+        <div className= "modal">
+          <button className= "closeBtn" onClick={() => setIsCAOpen(false)}>
+            <RiCloseLine style={{ marginBottom: "-3px" }} />
+          </button>
+          <div className="button-container">
+          <button className= "loginSwitchBtn" onClick={() => setIsLIOpen(true)}>
+                Log In
+          </button>
+          <button className= "createSwitchBtn">
+                Create Account
+          </button>
+          </div>
+          <div>
+            <div>
+                <p>Username</p>
+                <TextField value={username} onChange={handleUnChange} ></TextField>
+            </div>
+            <div>
+                <p>Email</p>
+                <TextField value={email} onChange={handleEmChange} ></TextField>
+            </div>
+            <div>
+                <p>Password</p>
+                <TextField value={password} onChange={ handlePwChange} ></TextField>
+            </div>
+            &nbsp;
+            <div>
+              </div>
+              <div>
+              <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsCAOpen(false)}}>
+                Login
+              </button>
+              </div>
+            </div>
+          </div>
+        </div>
+    </>
+  );
+};
+
+  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
 
     const handleUnChange = (newUn:string) => {
       setUserName(newUn);}
@@ -67,23 +131,20 @@ return (
     const handlePwChange = (newPw:string) => {
       setPassword(newPw);}
 
-    const handleEmChange = (newEm:string) => {
-        setEmail(newEm);}
-
     if (!isOpen){ return null}
     return (
       <>
-        <div className= "darkBG" onClick={() => setIsOpen(false)} />
+        <div className= "darkBG" onClick={() => setIsLIOpen(false)} />
         <div className= "centered">
           <div className= "modal">
-            <button className= "closeBtn" onClick={() => setIsOpen(false)}>
+            <button className= "closeBtn" onClick={() => setIsLIOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
             <div className="button-container">
-            <button className= "loginSwitchBtn" onClick={() => setIsOpen(false)}>
+            <button className= "loginSwitchBtn">
                   Log In
             </button>
-            <button className= "createSwitchBtn" onClick={() => setIsOpen(false)}>
+            <button className= "createSwitchBtn" onClick={() => setIsCAOpen(true)}>
                   Create Account
             </button>
             </div>
@@ -93,21 +154,17 @@ return (
                   <TextField value={username} onChange={handleUnChange} ></TextField>
               </div>
               <div>
-                  <p>Email</p>
-                  <TextField value={email} onChange={handleEmChange} ></TextField>
-              </div>
-              <div>
                   <p>Password</p>
                   <TextField value={password} onChange={ handlePwChange} ></TextField>
               </div>
               &nbsp;
               <div>
-                <button className= "forgetBtn" onClick={() => setIsOpen(false)}>
+                <button className= "forgetBtn" onClick={() => setIsLIOpen(false)}>
                   Forget Password
                 </button>
                 </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsLIOpen(false)}}>
                   Login
                 </button>
                 </div>
@@ -118,31 +175,88 @@ return (
     );
   };
 
+export const ResetPassword = ({isOpen, setIsOpen }: ModalProps) => {
+    const [email, setEmail] = useState('');
+    const handleEmChange = (newEm:string) => {
+        setEmail(newEm);}
+if (!isOpen){ return null}
+  return (
+    <>
+      <div className= "darkBG" onClick={() => setIsOpen(false)} />
+      <div className= "centered">
+        <div className= "modal">
+            <h5>Please Enter Your Email So That We Can Send You A Password Recovery Link</h5>
+          <button className= "closeBtn" onClick={() => setIsOpen(false)}>
+            <RiCloseLine style={{ marginBottom: "-3px" }} />
+          </button>
+          <div className= "modalActions">
+            <div className= "actionsContainer">
+              <div>
+                  <p>Change Email</p>
+                  <TextField value={email} onChange={handleEmChange} ></TextField>
+              </div>
+             </div>
+           </div>
+           <button className= "forgetBtn" onClick={() => setIsOpen(false)}>
+                  Recover Password
+            </button>
+
+         </div>
+       </div>
+     </>
+  );  
+};
+
 export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
+  const [username, setUserName] = useState('');
+  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const handleUnChange = (newUn:string) => {
+    setUserName(newUn);}
+
+  const handlePwChange = (newPw:string) => {
+    setPassword(newPw);}
+
+  const handleEmChange = (newEm:string) => {
+      setEmail(newEm);}
   if (!isOpen){ return null}
   return (
     <>
       <div className= "darkBG" onClick={() => setIsOpen(false)} />
       <div className= "centered">
         <div className= "modal">
-            <h5>Dialog</h5>
+            <h5>Profile</h5>
           <button className= "closeBtn" onClick={() => setIsOpen(false)}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
             <div className= "modalContent">
-            Are you sure you want to delete the item?
+            <button className = "forgetBtn" onClick={ () => setIsOpen(false)}>
+                  Delete Account
+            </button>
           </div>
           <div className= "modalActions">
             <div className= "actionsContainer">
-              <button className= "deleteBtn" onClick={() => setIsOpen(false)}>
-                 Delete
-               </button>
-               <button
-                 className= "cancelBtn"
-                 onClick={() => setIsOpen(false)}
-               >
-                 Cancel
-               </button>
+            <div>
+                  <p>Change Username</p>
+                  <TextField value={username} onChange={handleUnChange} ></TextField>
+                  <button className = "forgetBtn" onClick={ () =>handleUnChange}>
+                    →
+                  </button>
+              </div>
+              <div>
+                  <p>Change Email</p>
+                  <TextField value={email} onChange={handleEmChange} ></TextField>
+                  <button className = "forgetBtn" onClick={ () =>handleEmChange}>
+                    →
+                  </button>
+              </div>
+              <div>
+                  <p>Change Password</p>
+                  <TextField value={password} onChange={ handlePwChange} ></TextField>
+                  <button className = "forgetBtn" onClick={ () =>handlePwChange}>
+                    →
+                  </button>
+              </div>
              </div>
            </div>
          </div>
@@ -189,20 +303,20 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
               <div>
-                <button className= "CancelBtn" onClick={() => handleNozzleClick("nozzle")}>
-                  Nozzle Information
-                </button>
-                <Dropdown
+              <Dropdown
                 options={nozzleOptions}
                 onChange={(value) => setSelectedValue(value)}/>
+                <button className= "CancelBtn" onClick={() => handleNozzleClick("nozzle")}>
+                →
+                </button>
               </div>
               <div>
-              <button className= "CancelBtn" onClick={() => handleControllerClick("controller")}>
-                  Controller Manual
-                </button>
-                <Dropdown
-                options={controllerOptions}
+              <Dropdown
+                options={nozzleOptions}
                 onChange={(value) => setSelectedValue(value)}/>
+                <button className= "CancelBtn" onClick={() => handleControllerClick("controller")}>
+                →
+                </button>
               </div>
             <div>
               Direct guestions to
