@@ -26,3 +26,4 @@ __pycache__
 
 # authentication
 backend/authentication/pepper.bin
+backend/authentication/session_key.txt
