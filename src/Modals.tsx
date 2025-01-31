@@ -1,14 +1,16 @@
 import React, { useState } from "react";
 import './styles/Modals.css';
-import { listUserProjects } from "./utility/ProjectUtilities";
 import { RiCloseLine } from "react-icons/ri";
 import { FaHandLizard } from "react-icons/fa";
-import { Models } from "./utility/models";
+import { Models, UtilityInterfaces } from "./utility/models";
 import { createAccount } from "./utility/auth_requests";
+import { saveProject } from "./utility/ProjectUtilities";
 
 interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
+  projects?: Models.ProjectBase[];
+  parameterMap?: Map<string, UtilityInterfaces.Parameter>;
 }
 
 interface TextFieldProps {
@@ -200,12 +202,20 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
     );
   };
 
-  export const SaveLoad = ({ isOpen, setIsOpen }: ModalProps) => {
-    const projects = listUserProjects(1);
+
+  export const SaveLoad = ({ isOpen, setIsOpen, projects, parameterMap}: ModalProps) => {
+    function save(){
+      saveProject(1, parameterMap)
+    }
+    console.log(projects);
     projects.sort((a:Models.ProjectBase, b:Models.ProjectBase) => 
-      a.last_modified_date.getTime()-b.last_modified_date.getTime());
+      new Date(a.last_modified_date).getTime() - new Date(b.last_modified_date).getTime());
     const projectList = projects.map(project => <li>
-      <button>{project.project_name}</button>
+      key = {project.project_id}
+      <button onClick={() => {
+        document.getElementById("open_project_button")?.removeAttribute("disabled");
+        document.getElementById("delete_project_button")?.removeAttribute("disabled");
+      }}>{project.project_name}</button>
     </li>)
     if (!isOpen){ return null}
 
@@ -221,12 +231,16 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
             <div className= "modalContent">
+            <button onClick={save}>Save Project</button>
               {projectList}
             </div>
             <div className= "modalActions">
               <div className= "actionsContainer">
-                <button className= "deleteBtn" onClick={() => setIsOpen(false)}>
+                <button id="delete_project_button" className= "deleteBtn" disabled onClick={() => setIsOpen(false)}>
                   Delete
+                </button>
+                <button id="open_project_button" className= "openBtn" disabled onClick={() => openProject()}>
+                  Open
                 </button>
                 <button
                   className= "cancelBtn"

@@ -68,7 +68,10 @@ export async function createProjectMap(userID: number, projectID: number){
 
 //Takes the current parameters and saves it in your projects folder
 //with the first unused ID
-export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>){
+export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
+    if(!project){
+        return;
+    }
     const newProject = createProjectFromMap(project);
     if(newProject !== undefined){
         console.log(JSON.stringify(newProject));
@@ -149,15 +152,16 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
     }
 }
 
-export function listUserProjects(userID: number){
+export async function listUserProjects(userID: number){
     let user: Partial<Models.User> = {};
-    axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
         .catch(error => console.error(error));
     const projectList = Array<Models.ProjectBase>();
     if(user.projects){
+        console.log("Hi");
         for(const project of user.projects){
             const partProject: Models.ProjectBase = {
                 project_id: project['project_id'],
