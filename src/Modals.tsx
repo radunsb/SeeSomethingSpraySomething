@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { FaHandLizard } from "react-icons/fa";
@@ -153,6 +153,24 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
 
   export const Documentation = ({ isOpen, setIsOpen }: ModalProps) => {
     const [selectedValue, setSelectedValue] = useState<string>("");
+    const [nozzleData, setNozzleData] = useState<any>(null);
+    const [controllerData, setConctrollerData] = useState<any>(null);
+
+    const handleNozzleClick = (type: "nozzle") => {
+      const baseUrl = "https://portal.spray.com/en-us/products/"
+      let selectedValue = nozzleOptions;
+      if (selectedValue) {
+        window.open('${baseUrl}${selectedData.value}')
+      }
+    }
+
+    const handleControllerClick = (type: "controller") => {
+      const baseUrl = "https://www.spray.com/products/spray-control-options/"
+      let selectedValue = controllerOptions;
+      if (selectedValue) {
+        window.open('${baseUrl}${selectedData.value}')
+      }
+    }
 
     const nozzleOptions: Option[] = [
       { value: "nozzle-info", label: "Nozzle Information"},
@@ -171,7 +189,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
               <div>
-                <button className= "CancelBtn" onClick={() => setIsOpen(false)}>
+                <button className= "CancelBtn" onClick={() => handleNozzleClick("nozzle")}>
                   Nozzle Information
                 </button>
                 <Dropdown
@@ -179,7 +197,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
                 onChange={(value) => setSelectedValue(value)}/>
               </div>
               <div>
-                <button className= "CancelBtn" onClick={() => setIsOpen(false)}>
+              <button className= "CancelBtn" onClick={() => handleControllerClick("controller")}>
                   Controller Manual
                 </button>
                 <Dropdown

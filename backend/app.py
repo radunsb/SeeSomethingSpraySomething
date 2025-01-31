@@ -1,4 +1,26 @@
-from factory import create_app
+from factory import create_app, jsonify
+from db import get_nozzles, get_controllers, get_guns
+
+def fetch_nozzles():
+    try:
+        nozzles = get_nozzles()
+        return(jsonify(nozzles))
+    except Exception as e:
+        return e
+    
+def fetch_controllers():
+    try:
+        controllers = get_controllers()
+        return(jsonify(controllers))
+    except Exception as e:
+        return e
+    
+def fetch_guns():
+    try:
+        guns = get_guns()
+        return(jsonify(guns))
+    except Exception as e:
+        return e
 
 #delete after debugging auth
 from authentication import accounts
