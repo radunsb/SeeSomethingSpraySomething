@@ -23,16 +23,16 @@ def authenticate_account(un:str, pwd:str) -> int:
                 return True
     return False
 
-def account_exists(un:str, email:str) -> bool:
+def account_exists(un:str, email:str="") -> int:
+    """Returns the user id if the account exists. Returns None otherwise."""
     user_list = get_users()
-
 
     for user in user_list:
         if user["username"] == un:
-            return True
+            return user["_id"]
         if user["email"] == email:
-            return True
-    return False
+            return user["_id"]
+    return None
   
 def create_user_account(un:str, pwd:str, email:str) -> int:
     """Returns None if the account already exists. Otherwise, returns user_id"""
