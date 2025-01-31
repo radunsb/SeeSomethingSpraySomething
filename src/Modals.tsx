@@ -124,6 +124,8 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
   export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
+    const [email, setEmail] = useState('');
+    
 
     const handleUnChange = (newUn:string) => {
       setUserName(newUn);}
