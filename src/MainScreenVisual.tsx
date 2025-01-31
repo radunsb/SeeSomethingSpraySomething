@@ -23,39 +23,36 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
   const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
 
   return (
-    <div id='model_container'>
-      <Canvas>
-        {/* Origin Marker */}
-        {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
+    <Canvas>
+      {/* Origin Marker */}
+      {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
-        {/* Camera Controls: Moveable, Zoomable, Focus Point */}
-        <OrbitControls />
+      {/* Camera Controls: Moveable, Zoomable, Focus Point */}
+      <OrbitControls />
 
-        {/* Model Lighting:
-        - Directional light coming in from the right (of the original camera angle)
-        - Hemisphere light to light from top to bottom (white to gray)
-        - ambient light to light everything at a low intensity
-        */}
-        <directionalLight position={[5,2,2]} intensity={2} />
-        <hemisphereLight args={["#fff", "#333", 1]}/>
-        <ambientLight intensity={.5}/>
-        
-        {/* Conveyor belt */}
-        {/* TODO: Refactor position z and length */}
-        <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
-        <Sensor distance={sensor_distance/2} />
+      {/* Model Lighting:
+      - Directional light coming in from the right (of the original camera angle)
+      - Hemisphere light to light from top to bottom (white to gray)
+      - ambient light to light everything at a low intensity
+      */}
+      <directionalLight position={[5,2,2]} intensity={2} />
+      <hemisphereLight args={["#fff", "#333", 1]}/>
+      <ambientLight intensity={.5}/>
+      
+      {/* Conveyor belt */}
+      {/* TODO: Refactor position z and length */}
+      <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
+      <Sensor distance={sensor_distance/2} />
 
-        {/* Nozzle Apparatus */}
-        <NozzleApparatus
-          position={[0,-1,0]}
-          num_nozzles={nozzle_count}
-          nozzle_spacing={nozzle_spacing/2}
-          nozzle_height={nozzle_height/2}
-          spray_angle={spray_angle}
-        />
-
-      </Canvas>
-    </div>
+      {/* Nozzle Apparatus */}
+      <NozzleApparatus
+        position={[0,-1,0]}
+        num_nozzles={nozzle_count}
+        nozzle_spacing={nozzle_spacing/2}
+        nozzle_height={nozzle_height/2}
+        spray_angle={spray_angle}
+      />
+    </Canvas>
   );
 };
 export default MainScreenVisual;

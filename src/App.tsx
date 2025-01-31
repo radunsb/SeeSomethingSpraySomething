@@ -89,63 +89,53 @@ export default function App({parameters, owned, projects}: AppProps) {
   return (
     <div>
 
-      <MainScreenVisual parameterMap={parameterMap}/>
+      <div id='drawers'>
+        <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
 
-      <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
+        <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
+          <p>Drawer</p>
+        </NozzleDrawer>
 
-      <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-        <p>Drawer</p>
-      </NozzleDrawer>
+        <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
 
-      <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
+        <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
+          <p>Drawer</p>
+        </LineDrawer>
 
-      <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
-        <p>Drawer</p>
-      </LineDrawer>
+        <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
 
-      <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
+        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+          <p>Drawer</p>
+        </ControllerDrawer>
+      </div>
 
-      <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-        <p>Drawer</p>
-      </ControllerDrawer>
+      <div id='sprayModel'>
+        <MainScreenVisual parameterMap={parameterMap}/>
+      </div>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-              Sign In
-            </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
-          </main>
+      <div id='navigation'>
+        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+          Sign In
+        </button>
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
+            
+        <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
+          Profile
+        </button>
+        {isProfileOpen && <Profile isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
+      
+        <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
+          Documentation
+        </button>
+        {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
+      
+        <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
+          Save Load
+        </button>
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap}/>}
+      </div>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
-              Profile
-            </button>
-            {isProfileOpen && <Profile isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
-          </main>
-
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
-              Documentation
-            </button>
-            {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
-          </main>
-
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
-              Save Load
-            </button>
-            {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap}/>}
-          </main>
-
-          <Link to="/animation">
-            <button> Arrow </button>
-          </Link>
-
-          <Link to="/topview">
-            <button> Top View </button>
-          </Link>
-
-      <div>
+      <div id='results'>
           <Link to="/results">
             <button> See Results </button>
           </Link>
@@ -153,6 +143,7 @@ export default function App({parameters, owned, projects}: AppProps) {
             <button> Parameters </button>
           </Link>
       </div>
+
     </div>
   );
 }
