@@ -29,7 +29,7 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
         {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
         {/* Camera Controls: Moveable, Zoomable, Focus Point */}
-        <OrbitControls target={[0, (nozzle_height/4)-1, 0]} />
+        <OrbitControls />
 
         {/* Model Lighting:
         - Directional light coming in from the right (of the original camera angle)
@@ -42,7 +42,7 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
         
         {/* Conveyor belt */}
         {/* TODO: Refactor position z and length */}
-        <Conveyor position={[0,-1,(sensor_distance/2)+1]} width={line_width/2} length={20}/>
+        <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
         <Sensor distance={sensor_distance/2} />
 
         {/* Nozzle Apparatus */}
