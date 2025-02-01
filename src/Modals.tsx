@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
-import { createAccount } from "./utility/auth_requests";
+import { createAccount, login } from "./utility/auth_requests";
 import { saveProject, listUserProjects} from "./utility/ProjectUtilities";
 import { createProjectMap } from "./utility/ProjectUtilities";
 
@@ -96,7 +96,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
           <div className="button-container">
-          <button className= "loginSwitchBtn" onClick={() => setIsLIOpen(true)}>
+          <button className= "loginSwitchBtn" onClick={() => {setIsLIOpen(true); setIsCAOpen(false)}}>
                 Log In
           </button>
           <button className= "createSwitchBtn">
@@ -121,7 +121,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
               </div>
               <div>
               <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsCAOpen(false)}}>
-                Login
+                Create
               </button>
               </div>
             </div>
@@ -134,8 +134,6 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
   export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
-    
 
     const handleUnChange = (newUn:string) => {
       setUserName(newUn);}
@@ -156,7 +154,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
             <button className= "loginSwitchBtn">
                   Log In
             </button>
-            <button className= "createSwitchBtn" onClick={() => setIsCAOpen(true)}>
+            <button className= "createSwitchBtn" onClick={() => {setIsLIOpen(false); setIsCAOpen(true)}}>
                   Create Account
             </button>
             </div>
@@ -176,7 +174,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
                 </button>
                 </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsLIOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {login(username, password); setIsLIOpen(false)}}>
                   Login
                 </button>
                 </div>
