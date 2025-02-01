@@ -89,33 +89,55 @@ export default function App({parameters, owned, projects}: AppProps) {
   }
   return (
     <div>
+
       <h3>{parameterMap.get("project_name").value}</h3>
       <MainScreenVisual parameterMap={parameterMap}/>
 
-      <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
+      <div id='drawers'>
+        <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
 
-      <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-        <p>Drawer</p>
-      </NozzleDrawer>
+        <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
+          <p>Drawer</p>
+        </NozzleDrawer>
 
-      <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
+        <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
 
-      <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
-        <p>Drawer</p>
-      </LineDrawer>
+        <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
+          <p>Drawer</p>
+        </LineDrawer>
 
-      <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
+        <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
 
-      <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-        <p>Drawer</p>
-      </ControllerDrawer>
+        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+          <p>Drawer</p>
+        </ControllerDrawer>
+      </div>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-              Sign In
-            </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
-          </main>
+      <div id='sprayModel'>
+        <MainScreenVisual parameterMap={parameterMap}/>
+      </div>
+
+      <div id='navigation'>
+        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+          Sign In
+        </button>
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
+            
+        <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
+          Profile
+        </button>
+        {isProfileOpen && <Profile isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
+      
+        <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
+          Documentation
+        </button>
+        {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
+      
+        <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
+          Save Load
+        </button>
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
+      </div>
 
           <main>
             <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
@@ -147,6 +169,7 @@ export default function App({parameters, owned, projects}: AppProps) {
           </Link>
 
       <div>
+      <div id='results'>
           <Link to="/results">
             <button> See Results </button>
           </Link>
@@ -154,6 +177,7 @@ export default function App({parameters, owned, projects}: AppProps) {
             <button> Parameters </button>
           </Link>
       </div>
+    </div>
     </div>
   );
 }
