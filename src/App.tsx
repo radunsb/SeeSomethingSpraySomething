@@ -102,85 +102,85 @@ export default function App({parameters, owned, projects}: AppProps) {
   return (
     <div>
 
-      <MainScreenVisual parameterMap={parameterMap}/>
+      {/* TODO: CHECK THIS OUT */}
+      {/* THIS CODE USED TO READ saveAsNewProject I CHANGED IT BECAUSE IT WAS AN ERROR SO MAKE SURE ITS OKAY */}
+      <button onClick={() => saveProject(1, parameterMap)}>Save Project</button>
 
-      <button onClick={() => saveAsNewProject(1, parameterMap)}>Save Project</button>
-
-      <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
-
-      <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-        <p>Nozzle</p>
-        {parameterList[23]} <button>?</button>
-        {parameterList[24]} <button>?</button>
-        {parameterList[6]} <button>?</button>
-        {parameterList[5]} <button>?</button>
-        {parameterList[7]} <button>?</button>
-        {parameterList[1]} <button>?</button>
-        {parameterList[19]} <button>?</button>
-        {parameterList[20]} <button>?</button>
-        {parameterList[25]} <button>?</button>
-      </NozzleDrawer>
-
-      <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
-
-      <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
-        <p>Line</p>
-        {parameterList[3]} <button>?</button>
-        {parameterList[4]} <button>?</button>
-        {parameterList[9]} <button>?</button>
-        {parameterList[10]} <button>?</button>
-        {parameterList[11]} <button>?</button>
-        {parameterList[15]} <button>?</button>
-      </LineDrawer>
-
-
+      <div id='drawers'>
+        <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-          <p>Drawer</p>
+          <p>Nozzle</p>
+          {parameterList[23]} <button>?</button>
+          {parameterList[24]} <button>?</button>
+          {parameterList[6]} <button>?</button>
+          {parameterList[5]} <button>?</button>
+          {parameterList[7]} <button>?</button>
+          {parameterList[1]} <button>?</button>
+          {parameterList[19]} <button>?</button>
+          {parameterList[20]} <button>?</button>
+          {parameterList[25]} <button>?</button>
         </NozzleDrawer>
 
-      <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-        <p>Controller</p>
-        {parameterList[17]} <button>?</button>
-        {parameterList[18]} <button>?</button>
-        {parameterList[16]} <button>?</button>
-        {parameterList[27]} <button>?</button>
-        {parameterList[28]} <button>?</button>
-        {parameterList[31]} <button>?</button>
-        {parameterList[0]} <button>?</button>
-      </ControllerDrawer>
+        <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
+        <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
+          <p>Line</p>
+          {parameterList[3]} <button>?</button>
+          {parameterList[4]} <button>?</button>
+          {parameterList[9]} <button>?</button>
+          {parameterList[10]} <button>?</button>
+          {parameterList[11]} <button>?</button>
+          {parameterList[15]} <button>?</button>
+        </LineDrawer>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-              Sign In
-            </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-          </main>
+        <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
+        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+          <p>Controller</p>
+          {parameterList[17]} <button>?</button>
+          {parameterList[18]} <button>?</button>
+          {parameterList[16]} <button>?</button>
+          {parameterList[27]} <button>?</button>
+          {parameterList[28]} <button>?</button>
+          {parameterList[31]} <button>?</button>
+          {parameterList[0]} <button>?</button>
+        </ControllerDrawer>
+      </div>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsCreateAccountOpen(true)}>
-              Create Account
-            </button>
-            {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-          </main>
+      {/* IT FEELS LIKE THIS STUFF SHOULDNT BE HERE BUT I DONT REALLY KNOW THE STRUCTURE LOL */}
+      <div id='login_stuff'>
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+            Sign In
+          </button>
+          {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-              Sign In
-            </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-          </main>
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsCreateAccountOpen(true)}>
+            Create Account
+          </button>
+          {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
 
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsResetPasswordOpen(true)}>
-              Forget Password
-            </button>
-            {isResetPasswordOpen && <ResetPassword isOpen = {isResetPasswordOpen} setIsOpen = {setIsResetPasswordOpen}/>}
-          </main>
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+            Sign In
+          </button>
+          {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
+
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsResetPasswordOpen(true)}>
+            Forget Password
+          </button>
+          {isResetPasswordOpen && <ResetPassword isOpen = {isResetPasswordOpen} setIsOpen = {setIsResetPasswordOpen}/>}
+        </main>
+      </div>
 
       <div id='sprayModel'>
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
             
+      <div id='navigation'>
         <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
           Profile
         </button>
@@ -198,12 +198,12 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
 
       <div id='results'>
-          <Link to="/results">
-            <button> See Results </button>
-          </Link>
-          <Link to="/parameters">
-            <button> Parameters </button>
-          </Link>
+        <Link to="/results">
+          <button> See Results </button>
+        </Link>
+        <Link to="/parameters">
+          <button> Parameters </button>
+        </Link>
       </div>
 
     </div>
