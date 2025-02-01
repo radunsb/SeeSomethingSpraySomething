@@ -90,9 +90,6 @@ export default function App({parameters, owned, projects}: AppProps) {
   return (
     <div>
 
-      <h3>{parameterMap.get("project_name").value}</h3>
-      <MainScreenVisual parameterMap={parameterMap}/>
-
       <div id='drawers'>
         <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
 
@@ -114,6 +111,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
 
       <div id='sprayModel'>
+        <h3>{parameterMap.get("project_name").value}</h3>
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
 
@@ -138,36 +136,6 @@ export default function App({parameters, owned, projects}: AppProps) {
         </button>
         {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
       </div>
-
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
-              Profile
-            </button>
-            {isProfileOpen && <Profile isOpen = {isProfileOpen} setIsOpen={setIsProfileOpen} />}
-          </main>
-
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
-              Documentation
-            </button>
-            {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
-          </main>
-
-          <main>
-            <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
-              Save Load
-            </button>
-            {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
-          </main>
-
-          <Link to="/animation">
-            <button> Arrow </button>
-          </Link>
-
-          <Link to="/topview">
-            <button> Top View </button>
-          </Link>
-
       <div>
       <div id='results'>
           <Link to="/results">
