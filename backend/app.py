@@ -1,5 +1,4 @@
 from factory import create_app
-from db import get_nozzles, get_controllers, get_guns
 
 #delete after debugging auth
 from authentication import accounts
