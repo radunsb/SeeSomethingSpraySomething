@@ -103,10 +103,6 @@ export default function App({parameters, owned, projects}: AppProps) {
   return (
     <div>
 
-      {/* TODO: CHECK THIS OUT */}
-      {/* THIS CODE USED TO READ saveAsNewProject I CHANGED IT BECAUSE IT WAS AN ERROR SO MAKE SURE ITS OKAY */}
-      <button onClick={() => saveProject(1, parameterMap)}>Save Project</button>
-
       <div id='drawers'>
         <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
@@ -147,13 +143,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
 
       {/* IT FEELS LIKE THIS STUFF SHOULDNT BE HERE BUT I DONT REALLY KNOW THE STRUCTURE LOL */}
-      <div id='login_stuff'>
-        <main>
-          <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-            Sign In
-          </button>
-          {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-        </main>
+      <div id='login_stuff'>     
 
         <main>
           <button className= "primaryBtn" onClick={() => setIsCreateAccountOpen(true)}>
