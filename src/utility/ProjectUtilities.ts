@@ -45,9 +45,8 @@ export async function createProjectMap(userID: number, projectID: number){
     }
 
     //Make sure the project actually exists
-    if(user.projects && user.projects.length > projectID){
-        const projectToFetch = projectID;
-        const project = user.projects[projectToFetch];
+    if(user.projects){
+        const project = user.projects.filter((project) => project.project_id === projectID)[0];
         
         //Currently unpack all of the other interfaces(nozzle, gun, etc.) and store
         //their parameters as simple values
@@ -113,6 +112,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
     }
     const newProject = createProjectFromMap(project);
     if(newProject !== undefined){
+        newProject.last_modified_date = new Date();
         console.log(JSON.stringify(newProject));
         await axios.post(`http://localhost:5000/api/v1/users/${userID}/new`,{
             data:newProject,
