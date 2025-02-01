@@ -88,3 +88,13 @@ def save_new_project(user_id, projectJSON):
     except Exception as e:
         return e
     
+def overwrite_existing_project(user_id, projectJSON):
+    try:
+        db.Users.update_one(
+            {"_id": user_id, "projects.project_id": projectJSON['project_id']},
+            { "$set": { "projects.$" : projectJSON } }
+        )
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e   
