@@ -1,13 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React from 'react';
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { NavLink, Link } from "react-router";
-import { useState } from "react";
+import { useState, useEffect} from "react";
 import { Models } from './utility/models';
 import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
 import { UtilityInterfaces } from "./utility/models";
-import { saveProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
@@ -20,17 +18,20 @@ interface AppProps{
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
 export default function App({parameters, owned, projects}: AppProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
   //Map of parameter names -> parameter values. Updates on event of input field changing
   const [parameterMap, setParameterMap] = useState(parameters);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+
+  function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
+    setParameterMap(params);
+    changeParameterList();
+  }
 
   //Construct a list of the parameters and the values given
   //to App.tsx as props
@@ -88,7 +89,7 @@ export default function App({parameters, owned, projects}: AppProps) {
   }
   return (
     <div>
-
+      <h3>{parameterMap.get("project_name").value}</h3>
       <MainScreenVisual parameterMap={parameterMap}/>
 
       <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
@@ -134,7 +135,7 @@ export default function App({parameters, owned, projects}: AppProps) {
             <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
               Save Load
             </button>
-            {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap}/>}
+            {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
           </main>
 
           <Link to="/animation">

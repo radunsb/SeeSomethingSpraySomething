@@ -12,7 +12,7 @@ import "./styles/main.css"
 function Project({userID}: {userID:number}) {
   const [user, setUser] = useState<Models.User>();
   useEffect(() => {
-    axios.get(`http://localhost:5000/api/v1/users/${userID}`)
+    axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
       .then(response => setUser(response.data.user))
       .catch(error => console.error(error));
   }, [userID]);

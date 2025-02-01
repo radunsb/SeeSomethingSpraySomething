@@ -1,16 +1,22 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
-import { FaHandLizard } from "react-icons/fa";
 import { Models, UtilityInterfaces } from "./utility/models";
 import { createAccount } from "./utility/auth_requests";
-import { saveProject } from "./utility/ProjectUtilities";
+import { saveProject, listUserProjects} from "./utility/ProjectUtilities";
+import { createProjectMap } from "./utility/ProjectUtilities";
 
 interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
-  projects?: Models.ProjectBase[];
-  parameterMap?: Map<string, UtilityInterfaces.Parameter>;
+}
+interface SaveLoadProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  projects: Models.ProjectBase[];
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+  owned: boolean;
+  onLoad: (arg0: Map<string, UtilityInterfaces.Parameter>) => void;
 }
 
 interface TextFieldProps {
@@ -203,22 +209,42 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
   };
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, projects, parameterMap}: ModalProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, parameterMap, owned, onLoad}: SaveLoadProps) => {
+    const [selectedButton, setSelectedButton] = useState(-1);
     function save(){
       saveProject(1, parameterMap)
+      setIsOpen(false);
     }
+    async function loadProject(){
+      console.log("Loading Project " + selectedButton);
+      parameterMap = await createProjectMap(1, selectedButton);
+      console.log(parameterMap);
+      onLoad(parameterMap);
+      setIsOpen(false);
+    }
+    function deleteProject(){
+
+    }
+    function clickedProjectButton(project_id: number){
+      document.getElementById("open_project_button")?.removeAttribute("disabled");
+      document.getElementById("delete_project_button")?.removeAttribute("disabled");
+      setSelectedButton(project_id);
+    }
+    const [projects, setProjects] = useState(Array<Models.ProjectBase>())
+    useEffect(() => {
+      async function renderProjectList(){
+        setProjects(await listUserProjects(1));
+      }
+      renderProjectList();
+    }, [])
     console.log(projects);
     projects.sort((a:Models.ProjectBase, b:Models.ProjectBase) => 
-      new Date(a.last_modified_date).getTime() - new Date(b.last_modified_date).getTime());
-    const projectList = projects.map(project => <li>
-      key = {project.project_id}
-      <button onClick={() => {
-        document.getElementById("open_project_button")?.removeAttribute("disabled");
-        document.getElementById("delete_project_button")?.removeAttribute("disabled");
-      }}>{project.project_name}</button>
+      new Date(b.last_modified_date).getTime() - new Date(a.last_modified_date).getTime());
+    const projectList = projects.map(project => <li
+      key = {project.project_id}>
+      <button id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)}>{project.project_name}</button>
     </li>)
     if (!isOpen){ return null}
-
     return (
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
@@ -239,7 +265,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
                 <button id="delete_project_button" className= "deleteBtn" disabled onClick={() => setIsOpen(false)}>
                   Delete
                 </button>
-                <button id="open_project_button" className= "openBtn" disabled onClick={() => openProject()}>
+                <button id="open_project_button" className= "openBtn" onClick={() => loadProject()}>
                   Open
                 </button>
                 <button
