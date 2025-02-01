@@ -65,6 +65,45 @@ export async function createProjectMap(userID: number, projectID: number){
     return parameterMap;
 }
 
+export async function createNozzleMap(nozzleID: number) {
+    const NozzleMap = new Map();
+
+    await axios.get(`http://localhost:5000/api/v1/nozzles/`)
+    .then(response => {
+        const nozzles = response.data;
+        if (nozzles.length > 0) {
+            const nozzle = nozzles[0];
+            //Object.entries(nozzle).map(entry => constructMapEntry(entry));
+        }
+    })
+    .catch(error => console.error(error));
+
+    function constructMapEntry(entry: [string, string]){
+        const key = entry[0];
+        const value = entry[1];
+        let type: UtilityInterfaces.types;
+        if(typeof value === "number"){
+            if(Number.isInteger(value)){
+                type = UtilityInterfaces.types.INT;
+            }
+            else{
+                type = UtilityInterfaces.types.FLOAT;
+            }
+        }
+        else{
+            type = UtilityInterfaces.types.STRING;
+        }
+        const Nozzle: UtilityInterfaces.Parameter = {
+            name: key,
+            type: type,
+            value: value,
+        }
+        NozzleMap.set(key, Nozzle);
+    }
+
+    return NozzleMap;
+}
+
 //Takes the current parameters and saves it in your projects folder
 //with the first unused ID
 export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){

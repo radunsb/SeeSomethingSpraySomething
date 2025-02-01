@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
+import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword } from './Modals.tsx';
 import { NavLink, Link } from "react-router";
 import { useState, useEffect} from "react";
 import { Models } from './utility/models';
-import { Profile, SignIn, Documentation, SaveLoad } from './Modals.tsx';
+
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
 
@@ -24,6 +25,8 @@ export default function App({parameters, owned, projects}: AppProps) {
   //Map of parameter names -> parameter values. Updates on event of input field changing
   const [parameterMap, setParameterMap] = useState(parameters);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
+  const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
@@ -87,40 +90,99 @@ export default function App({parameters, owned, projects}: AppProps) {
       }
     }
   }
+
+// ParameterList Indexes
+// 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
+// 6 = Nozzle Height, 7 = Nozzle Spacing, 8 = Owner ID, 9 = Product Height, 10 = Product Length,
+// 11 = Product Width, 12 = Project Desc., 13 = Project ID , 14 = Project Name, 15 = Sensor Distance, 
+// 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Angle, 20 = Flow Rate,
+// 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Twist Angle, 
+// 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
+
+// Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
   return (
     <div>
 
+      {/* TODO: CHECK THIS OUT */}
+      {/* THIS CODE USED TO READ saveAsNewProject I CHANGED IT BECAUSE IT WAS AN ERROR SO MAKE SURE ITS OKAY */}
+      <button onClick={() => saveProject(1, parameterMap)}>Save Project</button>
+
       <div id='drawers'>
         <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
-
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-          <p>Drawer</p>
+          <p>Nozzle</p>
+          {parameterList[23]} <button>?</button>
+          {parameterList[24]} <button>?</button>
+          {parameterList[6]} <button>?</button>
+          {parameterList[5]} <button>?</button>
+          {parameterList[7]} <button>?</button>
+          {parameterList[1]} <button>?</button>
+          {parameterList[19]} <button>?</button>
+          {parameterList[20]} <button>?</button>
+          {parameterList[25]} <button>?</button>
         </NozzleDrawer>
 
         <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
-
         <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
-          <p>Drawer</p>
+          <p>Line</p>
+          {parameterList[3]} <button>?</button>
+          {parameterList[4]} <button>?</button>
+          {parameterList[9]} <button>?</button>
+          {parameterList[10]} <button>?</button>
+          {parameterList[11]} <button>?</button>
+          {parameterList[15]} <button>?</button>
         </LineDrawer>
 
         <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
-
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-          <p>Drawer</p>
+          <p>Controller</p>
+          {parameterList[17]} <button>?</button>
+          {parameterList[18]} <button>?</button>
+          {parameterList[16]} <button>?</button>
+          {parameterList[27]} <button>?</button>
+          {parameterList[28]} <button>?</button>
+          {parameterList[31]} <button>?</button>
+          {parameterList[0]} <button>?</button>
         </ControllerDrawer>
+      </div>
+
+      {/* IT FEELS LIKE THIS STUFF SHOULDNT BE HERE BUT I DONT REALLY KNOW THE STRUCTURE LOL */}
+      <div id='login_stuff'>
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+            Sign In
+          </button>
+          {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
+
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsCreateAccountOpen(true)}>
+            Create Account
+          </button>
+          {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
+
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+            Sign In
+          </button>
+          {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+        </main>
+
+        <main>
+          <button className= "primaryBtn" onClick={() => setIsResetPasswordOpen(true)}>
+            Forget Password
+          </button>
+          {isResetPasswordOpen && <ResetPassword isOpen = {isResetPasswordOpen} setIsOpen = {setIsResetPasswordOpen}/>}
+        </main>
       </div>
 
       <div id='sprayModel'>
         <h3>{parameterMap.get("project_name").value}</h3>
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
-
-      <div id='navigation'>
-        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-          Sign In
-        </button>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsOpen={setIsSignInOpen} />}
             
+      <div id='navigation'>
         <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
           Profile
         </button>
@@ -138,12 +200,12 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
       <div>
       <div id='results'>
-          <Link to="/results">
-            <button> See Results </button>
-          </Link>
-          <Link to="/parameters">
-            <button> Parameters </button>
-          </Link>
+        <Link to="/results">
+          <button> See Results </button>
+        </Link>
+        <Link to="/parameters">
+          <button> Parameters </button>
+        </Link>
       </div>
     </div>
     </div>
