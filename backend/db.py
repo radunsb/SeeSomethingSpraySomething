@@ -1,5 +1,5 @@
 
-from flask import current_app, g
+from flask import current_app, g, session
 from werkzeug.local import LocalProxy
 from flask_pymongo import PyMongo
 
@@ -93,6 +93,19 @@ def overwrite_existing_project(user_id, projectJSON):
         db.Users.update_one(
             {"_id": user_id, "projects.project_id": projectJSON['project_id']},
             { "$set": { "projects.$" : projectJSON } }
+        )
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e
+
+def delete_project(user_id, project_id):
+    try:
+        if(user_id == 1 and project_id == 0):
+            return None
+        db.Users.update_one(
+            {"_id": user_id},
+            {"$pull": {"projects": {"project_id": project_id}}}
         )
         user = db.Users.find_one({'_id': user_id})
         return user

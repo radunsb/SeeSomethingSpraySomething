@@ -3,7 +3,7 @@ import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
 import { createAccount } from "./utility/auth_requests";
-import { saveProject, listUserProjects} from "./utility/ProjectUtilities";
+import { saveProject, listUserProjects, deleteProject} from "./utility/ProjectUtilities";
 import { createProjectMap } from "./utility/ProjectUtilities";
 
 interface ModalProps{
@@ -15,7 +15,6 @@ interface SaveLoadProps{
   setIsOpen: (arg0: boolean) => void;
   projects: Models.ProjectBase[];
   parameterMap: Map<string, UtilityInterfaces.Parameter>;
-  owned: boolean;
   onLoad: (arg0: Map<string, UtilityInterfaces.Parameter>) => void;
 }
 
@@ -343,7 +342,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
   };
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, parameterMap, owned, onLoad}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, parameterMap, onLoad}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
     function save(){
       saveProject(1, parameterMap)
@@ -356,8 +355,8 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
       onLoad(parameterMap);
       setIsOpen(false);
     }
-    function deleteProject(){
-
+    function tryToDelete(){
+      deleteProject(1, selectedButton);
     }
     function clickedProjectButton(project_id: number){
       document.getElementById("open_project_button")?.removeAttribute("disabled");
@@ -379,6 +378,23 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
       <button id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)}>{project.project_name}</button>
     </li>)
     if (!isOpen){ return null}
+    let projectName = parameterMap.get("project_name")?.value;
+    if(typeof(projectName) != "string"){
+      projectName = "Default Name";
+    }
+
+    const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
+    if(renameProjectInput){
+      renameProjectInput.addEventListener("change", () => {
+        const nameParam: UtilityInterfaces.Parameter = {
+          name: "project_name",
+          type: UtilityInterfaces.types.STRING,
+          value: renameProjectInput.value
+        }
+        parameterMap.set("project_name", nameParam)
+      })
+    }
+    
     return (
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
@@ -390,13 +406,14 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
-            <div className= "modalContent">
+            <div id="save_modal_content" className= "modalContent">
+              <input id="rename_project" type="text" placeholder={projectName}></input>
             <button onClick={save}>Save Project</button>
               {projectList}
             </div>
             <div className= "modalActions">
               <div className= "actionsContainer">
-                <button id="delete_project_button" className= "deleteBtn" disabled onClick={() => setIsOpen(false)}>
+                <button id="delete_project_button" className= "deleteBtn" onClick={() => {setIsOpen(false); tryToDelete();}}>
                   Delete
                 </button>
                 <button id="open_project_button" className= "openBtn" onClick={() => loadProject()}>
@@ -414,4 +431,5 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
         </div>
       </>
     );
+    
   };

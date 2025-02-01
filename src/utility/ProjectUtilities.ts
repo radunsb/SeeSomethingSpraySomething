@@ -213,3 +213,8 @@ export async function listUserProjects(userID: number){
     }
     return projectList;
 }
+
+export async function deleteProject(user_id: number, project_id: number){
+    await axios.post(`http://localhost:5000/api/v1/users/${user_id}/${project_id}/delete`)
+        .catch(error => console.error(error));
+}

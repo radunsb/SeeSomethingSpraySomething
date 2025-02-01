@@ -168,7 +168,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
 
       <div id='sprayModel'>
-        <h3>{parameterMap.get("project_name").value}</h3>
+        <h3>{parameterMap.get("project_name") ? parameterMap.get("project_name").value : "Default Project Name"}</h3>
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
             
@@ -186,7 +186,7 @@ export default function App({parameters, owned, projects}: AppProps) {
         <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
       </div>
       <div>
       <div id='results'>
