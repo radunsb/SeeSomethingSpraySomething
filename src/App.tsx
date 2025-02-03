@@ -9,6 +9,8 @@ import { Models } from './utility/models';
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
 
+import { getOrException } from "./utility/ProjectUtilities.ts"
+
 interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
   owned: boolean;
@@ -168,7 +170,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
 
       <div id='sprayModel'>
-        <h3>{parameterMap.get("project_name").value}</h3>
+        <h3>{getOrException(parameterMap, "project_name").value}</h3>
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
             
