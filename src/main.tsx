@@ -7,7 +7,6 @@ import { BrowserRouter, Routes, Route } from 'react-router';
 import Results from './Results.tsx';
 import {createProjectMap, listUserProjects} from './utility/ProjectUtilities.ts';
 import {UtilityInterfaces} from './utility/models.ts'
-import { lessThan } from 'three/src/nodes/TSL.js';
 
 //Startup to load the default Project
 let defaultMap: Map<string, UtilityInterfaces.Parameter>;
@@ -29,8 +28,9 @@ async function loadDefaultProject(){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App parameters={defaultMap} owned={false} projects={projects}/>} />
-      <Route path="/results" element={<Results params={defaultMap} />} />
+    <Route path="/" element={<App parameters={defaultMap} owned={false} projects={projects}/>} />
+      <Route path="/:pid" element={<App parameters={defaultMap} owned={false} projects={projects}/>} />
+      <Route path="/results/:pid" element={<Results params={defaultMap} />} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
   </BrowserRouter>

@@ -5,7 +5,8 @@ import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword 
 import { NavLink, Link } from "react-router";
 import { useState, useEffect} from "react";
 import { Models } from './utility/models';
-
+import { useParams } from 'react-router';
+import { createProjectMap } from './utility/ProjectUtilities.ts';
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
 
@@ -32,6 +33,16 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const { pid } = useParams();
+  
+  useEffect(() => {
+    async function loadMap(){
+      const loadedMap = await createProjectMap(1, Number(pid));
+      setParameterMap(loadedMap);
+      changeParameterList();
+    }
+    loadMap();
+  })
 
   function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     setParameterMap(params);
@@ -188,11 +199,11 @@ export default function App({parameters, owned, projects}: AppProps) {
         <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} owned={owned} onLoad={loadProject}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
       </div>
       <div>
       <div id='results'>
-        <Link to="/results">
+        <Link to={"/results/"+getOrException(parameterMap, "project_id").value}>
           <button> See Results </button>
         </Link>
         <Link to="/parameters">
