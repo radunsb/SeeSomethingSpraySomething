@@ -1,0 +1,40 @@
+#results-container {
+    width: 90vw;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+}
+
+.spray-element{
+    padding: 2px;
+    border: 1px white;
+}
+
+.spray-gradient-0 {
+    background-color: rgb(220, 220, 255);
+}
+
+.spray-gradient-1{
+    background-color: rgb(125, 125, 255);
+}
+
+.spray-gradient-2{
+    background-color: rgb(100, 100, 255);
+    color: lightgrey;
+}
+
+.spray-gradient-3{
+    background-color: rgb(75, 75, 255);
+    color: lightgrey;
+}
+
+.spray-gradient-4{
+    background-color: rgb(25, 25, 255);
+    color: lightgrey;
+}
+
+.spray-gradient-5{
+    background-color: rgb(25, 25, 255);
+    color: lightgrey;
+}

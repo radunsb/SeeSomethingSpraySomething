@@ -65,7 +65,7 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
 
     const new_line_speed = parameterMap.get("line_speed");
     if(typeof new_line_speed !== "undefined"){
-        console.log(`old line speed: ${GlobalParams.LINE_SPEED}\nnew line speed:${new_line_speed.value}`);
+        //console.log(`old line speed: ${GlobalParams.LINE_SPEED}\nnew line speed:${new_line_speed.value}`);
         GlobalParams.LINE_SPEED = Number(new_line_speed.value);
     }
 
@@ -124,7 +124,7 @@ namespace LocalConstants{
     export const ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
 }
 
-class ProductElement{
+export class ProductElement{
     readonly yPos: number;
     readonly xOffset: number;
     private volumeApplied: number;
@@ -236,7 +236,7 @@ function InitializeProductArray() : ProductElement[][]{
 }
 
 export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
-    console.log("computing spray pattern");
+    //console.log("computing spray pattern");
     
     //update the local copies of global parameters
     updateGlobalParams(parameterMap);
