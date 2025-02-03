@@ -11,7 +11,9 @@ import { saveProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 interface AppProps{
-  parameterMapProp: Map<string, UtilityInterfaces.Parameter>;
+  parameters: Map<string, UtilityInterfaces.Parameter>;
+  owned: boolean;
+  projects: Models.ProjectBase[];
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
@@ -134,11 +136,8 @@ export default function App({parameters, owned, projects}: AppProps) {
         {parameterList[15]} <button>?</button>
       </LineDrawer>
 
-
-        <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-          <p>Drawer</p>
-        </NozzleDrawer>
-
+      <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
+      
       <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
         <p>Controller</p>
         {parameterList[17]} <button>?</button>
@@ -151,10 +150,10 @@ export default function App({parameters, owned, projects}: AppProps) {
       </ControllerDrawer>
 
           <main>
-            <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-              Sign In
+            <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
+              Documentation
             </button>
-            {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
+            {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
           </main>
 
           <main>

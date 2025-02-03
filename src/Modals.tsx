@@ -5,6 +5,7 @@ import { Models, UtilityInterfaces } from "./utility/models";
 import { createAccount } from "./utility/auth_requests";
 import { saveProject, listUserProjects} from "./utility/ProjectUtilities";
 import { createProjectMap } from "./utility/ProjectUtilities";
+import { createNozzleArray, createControllerArray } from "./utility/ProjectUtilities";
 
 interface ModalProps{
   isOpen: boolean;
@@ -47,7 +48,12 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
 };
 
 export const Dropdown: React.FC<DropdownProps> = ({ options, onChange}) => {
-  const [selectedValue, setSelectedValue] = React.useState<string>(options[0]?.value || "");
+  const [selectedValue, setSelectedValue] = useState<string>(options.length > 0 ? options[0].value : "");
+  useEffect(() => {
+    if (options.length > 0){
+      setSelectedValue(options[0].value);
+    }
+  }, [options])
 
 const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   const value = event.target.value;
@@ -219,6 +225,27 @@ if (!isOpen){ return null}
   );  
 };
 
+export const Info = ({isOpen, setIsOpen }: ModalProps) => {
+if (!isOpen){ return null}
+return (
+  <>
+    <div className= "darkBG" onClick={() => setIsOpen(false)} />
+    <div className= "centered">
+      <div className= "modal">
+          <h5>P</h5>
+        <button className= "closeBtn" onClick={() => setIsOpen(false)}>
+          <RiCloseLine style={{ marginBottom: "-3px" }} />
+        </button>
+        <div className= "modalActions">
+          <div className= "actionsContainer">
+            </div>
+           </div>
+         </div>
+       </div>
+   </>
+);  
+};
+
 export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
@@ -278,32 +305,55 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
 };
 
   export const Documentation = ({ isOpen, setIsOpen }: ModalProps) => {
-    const [selectedValue, setSelectedValue] = useState<string>("");
-    const [nozzleData, setNozzleData] = useState<any>(null);
-    const [controllerData, setConctrollerData] = useState<any>(null);
+    const [selectedNozzle, setSelectedNozzle] = useState<string>("");
+    const [selectedController, setSelectedController] = useState<string>("");
+    const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
+    const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
 
-    const handleNozzleClick = (type: "nozzle") => {
+    const handleNozzleClick = () => {
       const baseUrl = "https://portal.spray.com/en-us/products/"
-      let selectedValue = nozzleOptions;
-      if (selectedValue) {
-        window.open('${baseUrl}${selectedData.value}')
+      if (selectedNozzle) {
+        window.open(`${baseUrl}${selectedNozzle.replace("/", "-")}`, "_blank")
       }
     }
 
-    const handleControllerClick = (type: "controller") => {
-      const baseUrl = "https://www.spray.com/products/spray-control-options/"
-      let selectedValue = controllerOptions;
-      if (selectedValue) {
-        window.open('${baseUrl}${selectedData.value}')
+    const handleControllerClick = () => {
+      const baseUrl = "https://www.spray.com/products/spray-control-options/autojet-model-"
+      const endUrl = "-spray-controller"
+      if (selectedController) {
+        window.open(`${baseUrl}${selectedController.replace("E", "").replace("+", "")}${endUrl}`, "_blank")
       }
     }
 
-    const nozzleOptions: Option[] = [
-      { value: "nozzle-info", label: "Nozzle Information"},
-    ];
-    const controllerOptions: Option[] = [
-      { value: "controller-info", label: "Controller Information"},
-    ];
+    async function loadNozzleOptions() {
+      try {
+      const nozzleNames = await createNozzleArray();
+      nozzleNames.map(name => ({ value: name, label: name}))
+      if (nozzleNames.length > 0) {
+        setNozzleOptions(nozzleNames.map(name => ({ value: name, label: name})))
+      }
+    } catch (error) {
+      console.error("Error Loading Nozzles", error)
+    }
+  }
+
+    async function loadControllerOptions() {
+      try {
+      const controllerNames = await createControllerArray();
+      if (controllerNames.length > 0) {
+        setControllerOptions(controllerNames.map(name => ({ value: name, label: name})))
+      }
+    } catch (error) {
+      console.error("Error Loading Controllers", error)
+    }
+  }
+  useEffect(() => {
+    if (isOpen){
+      loadNozzleOptions()
+      loadControllerOptions()
+    }
+  }, [isOpen])
+
     if (!isOpen){ return null}
     return (
       <>
@@ -315,18 +365,14 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
               <div>
-              <Dropdown
-                options={nozzleOptions}
-                onChange={(value) => setSelectedValue(value)}/>
-                <button className= "CancelBtn" onClick={() => handleNozzleClick("nozzle")}>
+              <Dropdown options={nozzleOptions} onChange={(value) => setSelectedNozzle(value)}/>
+                <button className= "CancelBtn" onClick={handleNozzleClick}>
                 →
                 </button>
               </div>
               <div>
-              <Dropdown
-                options={nozzleOptions}
-                onChange={(value) => setSelectedValue(value)}/>
-                <button className= "CancelBtn" onClick={() => handleControllerClick("controller")}>
+              <Dropdown options={controllerOptions} onChange={(value) => setSelectedController(value)}/>
+                <button className= "CancelBtn" onClick={handleControllerClick}>
                 →
                 </button>
               </div>
