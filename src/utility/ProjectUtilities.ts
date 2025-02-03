@@ -128,7 +128,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
     }
 }
 
-function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
+export function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
     const possibleReturn = map.get(key);
     if(possibleReturn !== undefined){
         return possibleReturn;
