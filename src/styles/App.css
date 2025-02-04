@@ -41,3 +41,7 @@
   gap: 10px;
   z-index: 1;
 }
+
+#projectName {
+  margin-top: -5vh;
+}
