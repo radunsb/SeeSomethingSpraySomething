@@ -1,13 +1,22 @@
 #results-container {
     width: 90vw;
+    height: 90vh;
     display:flex;
     flex-direction: column;
     justify-content: center;
     text-align: center;
 }
 
+table, tbody {
+    height: 100%;
+    width: 100%;
+}
+
 .spray-element{
-    padding: 2px;
+    width: 5%;
+    height: 5%;
+    font-size: 0.8rem;
+
     border: 1px white;
 }
 
