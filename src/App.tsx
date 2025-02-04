@@ -23,13 +23,11 @@ interface AppProps{
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
 export default function App({parameters, owned, projects}: AppProps) {
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
   //Map of parameter names -> parameter values. Updates on event of input field changing
   const [parameterMap, setParameterMap] = useState(parameters);
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
