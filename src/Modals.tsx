@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
-import { createAccount } from "./utility/auth_requests";
+import { createAccount, login } from "./utility/auth_requests";
 import { saveProject, listUserProjects, deleteProject} from "./utility/ProjectUtilities";
 import { createProjectMap } from "./utility/ProjectUtilities";
 
