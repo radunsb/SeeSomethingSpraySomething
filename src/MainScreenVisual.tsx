@@ -78,7 +78,7 @@ const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
   const nozzles = Array.from({ length: num_nozzles }).map((_, index) => {
     const xPosition = index * nozzle_spacing - (nozzle_spacing * (num_nozzles - 1)) / 2;
     const location: [number, number, number] = [xPosition, nozzle_height, 0];
-    return <Nozzle key={index} location={location} spray_angle={spray_angle} />;
+    return <Nozzle key={`${index}_${location}_${spray_angle}`} location={location} spray_angle={spray_angle} />;
   });
 
   return <group position={position}>{nozzles}</group>;

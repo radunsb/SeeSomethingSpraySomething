@@ -5,10 +5,13 @@ import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword 
 import { NavLink, Link } from "react-router";
 import { useState } from "react";
 import { Models } from './utility/models';
-
+import { useParams } from 'react-router';
+import { createProjectMap } from './utility/ProjectUtilities.ts';
 import { UtilityInterfaces } from "./utility/models";
 import { saveProject } from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
+
+import { getOrException } from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
@@ -33,6 +36,16 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const { pid } = useParams();
+  
+  useEffect(() => {
+    async function loadMap(){
+      const loadedMap = await createProjectMap(1, Number(pid));
+      setParameterMap(loadedMap);
+      changeParameterList();
+    }
+    loadMap();
+  })
 
   function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     setParameterMap(params);
@@ -106,7 +119,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       <div id='drawers'>
 
       <MainScreenVisual parameterMap={parameterMap}/>
-
+      
       <button onClick={() => saveProject(1, parameterMap)}>Save Project</button>
 
       <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
@@ -192,6 +205,26 @@ export default function App({parameters, owned, projects}: AppProps) {
           <Link to="/parameters">
             <button> Parameters </button>
           </Link>
+
+      <div id='sprayModel'>
+        <h3>{getOrException(parameterMap, "project_name").value}</h3>
+        <MainScreenVisual parameterMap={parameterMap}/>
+      </div>
+            
+        <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
+          Save Load
+        </button>
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
+      </div>
+      <div>
+      <div id='results'>
+        <Link to={"/results/"+getOrException(parameterMap, "project_id").value}>
+          <button> See Results </button>
+        </Link>
+        <Link to="/parameters">
+          <button> Parameters </button>
+        </Link>
+
       </div>
 
     </div>

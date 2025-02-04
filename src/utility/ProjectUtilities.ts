@@ -109,7 +109,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
     }
 }
 
-function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
+export function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
     const possibleReturn = map.get(key);
     if(possibleReturn !== undefined){
         return possibleReturn;
@@ -193,4 +193,9 @@ export async function listUserProjects(userID: number){
         }
     }
     return projectList;
+}
+
+export async function deleteProject(user_id: number, project_id: number){
+    await axios.post(`http://localhost:5000/api/v1/users/${user_id}/${project_id}/delete`)
+        .catch(error => console.error(error));
 }
