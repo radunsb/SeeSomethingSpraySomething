@@ -6,6 +6,7 @@ For Development:
 so we know what to delete from here)
 
 - pip install cors, flask, pymongo, flask-pymongo
+- python -m pip install --upgrade pip bcrypt argon2-cffi passlib cryptography
 
 From the main folder, 
 - npm install cors axios
