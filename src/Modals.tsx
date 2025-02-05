@@ -175,7 +175,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
               &nbsp;
               <div>
                 <button className= "forgetBtn" onClick={() => setIsLIOpen(false)}>
-                  Forget Password
+                  Forgot Password
                 </button>
                 </div>
                 <div>

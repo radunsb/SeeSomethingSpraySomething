@@ -191,7 +191,10 @@ export default function App({parameters, owned, projects}: AppProps) {
           Sign In
         </button>
         {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-        
+        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} />}
+        {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
+        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen}/>}
+
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
           Documentation
