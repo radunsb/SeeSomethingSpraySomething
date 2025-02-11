@@ -15,12 +15,15 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
-  const line_width: number = (parameterMap.get('line_width')?.value ?? 0) as number;
-  const nozzle_height: number = (parameterMap.get('nozzle_height')?.value ?? 0) as number;
+  const line_width: number = ((parameterMap.get('line_width')?.value ?? 0) as number)/2;
+  const nozzle_height: number = ((parameterMap.get('nozzle_height')?.value ?? 0) as number)/2;
   const spray_angle: number = (parameterMap.get('angle')?.value ?? 0) as number;
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
-  const nozzle_spacing: number = (parameterMap.get('nozzle_spacing')?.value ?? 0) as number;
-  const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
+  const nozzle_spacing: number = ((parameterMap.get('nozzle_spacing')?.value ?? 0) as number)/2;
+  const sensor_distance: number = ((parameterMap.get('sensor_distance')?.value ?? 0) as number)/2;
+  const product_width: number = ((parameterMap.get('product_width')?.value ?? 0) as number)/2;
+  const product_length: number = ((parameterMap.get('product_length')?.value ?? 0) as number)/2;
+  const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/2;
 
   return (
     <Canvas>
@@ -40,16 +43,17 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
       <ambientLight intensity={.5}/>
       
       {/* Conveyor belt */}
-      {/* TODO: Refactor position z and length */}
-      <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
-      <Sensor distance={sensor_distance/2} />
+      <Conveyor position={[0,-1,(sensor_distance)+product_length+8]} width={line_width} length={(sensor_distance)+product_length+16+sensor_distance+product_length}/>
+      <Sensor distance={sensor_distance} />
+      {/* Product */}
+      <Box position={[0,-1+(product_height/2)+.125,(sensor_distance)+product_length/2+4]} size={[product_width, product_height, product_length]} color={"darkgray"}/>
 
       {/* Nozzle Apparatus */}
       <NozzleApparatus
         position={[0,-1,0]}
         num_nozzles={nozzle_count}
-        nozzle_spacing={nozzle_spacing/2}
-        nozzle_height={nozzle_height/2}
+        nozzle_spacing={nozzle_spacing}
+        nozzle_height={nozzle_height}
         spray_angle={spray_angle}
       />
     </Canvas>
