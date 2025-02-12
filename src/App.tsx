@@ -144,7 +144,9 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE DRAWERS */}
       <div id='drawers'>
         {/* NOZZLE DRAWER */}
-        <button onClick={() => setIsNozzleDrawerOpen(true)}>Nozzle</button>
+        <button onClick={() => setIsNozzleDrawerOpen(true)}
+        aria-expanded={isNozzleDrawerOpen}
+        aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
           <p>Nozzle</p>
           {parameterList[23]} <button>?</button>
@@ -159,7 +161,9 @@ export default function App({parameters, owned, projects}: AppProps) {
         </NozzleDrawer>
 
         {/* LINE DRAWER */}
-        <button onClick={() => setIsLineDrawerOpen(true)}>Line</button>
+        <button onClick={() => setIsLineDrawerOpen(true)}
+        aria-expanded={isLineDrawerOpen}
+        aria-controls="lineDrawer">Line</button>
         <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
           <p>Line</p>
           {parameterList[3]} <button>?</button>
@@ -171,7 +175,9 @@ export default function App({parameters, owned, projects}: AppProps) {
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => setIsControllerDrawerOpen(true)}>Controller</button>
+        <button onClick={() => setIsControllerDrawerOpen(true)}
+        aria-expanded={isControllerDrawerOpen}
+        aria-controls="controllerDrawer">Controller</button>
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
           <p>Controller</p>
           {parameterList[17]} <button>?</button>
@@ -187,7 +193,9 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
       <div id='navigation'>
         {/* SIGN IN / PROFILE */}
-        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}
+        aria-expanded={isSignInOpen}
+        aria-controls="SignIn/ProfileModal">
           Sign In
         </button>
         {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
@@ -196,13 +204,17 @@ export default function App({parameters, owned, projects}: AppProps) {
         {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen}/>}
 
         {/* DOCUMENTATION */}
-        <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
+        <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
+        aria-expanded={isDocumentationOpen}
+        aria-controls="DocumentationModal">
           Documentation
         </button>
         {isDocumentationOpen && <Documentation isOpen = {isDocumentationOpen} setIsOpen={setIsDocumentationOpen} />}
         
         {/* SAVE/LOAD */}
-        <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
+        <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}
+        aria-expanded={isSaveLoadOpen}
+        aria-controls="SaveLoadModal">
           Save Load
         </button>
         {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
@@ -211,7 +223,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE SIMULATION */}
       <div id='sprayModel'>
         {/* PROJECT NAME */}
-        <h3 id='projectName'>{getOrException(parameterMap, "project_name").value}</h3>
+        <h1 id='projectName'>{getOrException(parameterMap, "project_name").value}</h1>
         {/* 3D MODEL */}
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
