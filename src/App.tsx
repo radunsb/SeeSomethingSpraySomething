@@ -35,6 +35,12 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const { pid } = useParams();
+
+  const [userID, setUserID] = useState(-1);
+
+  async function awaitAndSetUserID(newUID : Promise<number>) {
+    setUserID(await newUID)
+  }
   
   useEffect(() => {
     async function loadMap(){
@@ -188,10 +194,10 @@ export default function App({parameters, owned, projects}: AppProps) {
       <div id='navigation'>
         {/* SIGN IN / PROFILE */}
         <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-          Sign In
+          Sign In: {userID}
         </button>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} />}
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUID={awaitAndSetUserID}/>}
+        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUID={awaitAndSetUserID}/>}
         {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
         {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen}/>}
 
