@@ -23,6 +23,7 @@ interface AccountModalProps{
   isOpen: boolean;
   setIsLIOpen: (arg0: boolean) => void;
   setIsCAOpen: (arg0: boolean) => void;
+  setUID: (arg: Promise<number>) => void;
 }
 
 interface TextFieldProps {
@@ -77,7 +78,7 @@ return (
 //    setMyBoolean(!myBoolean);
 //  };
 
-export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
+export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -125,7 +126,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
             <div>
               </div>
               <div>
-              <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsCAOpen(false)}}>
+              <button className= "loginBtn" onClick={() => {setUID(createAccount(username, password, email)); setIsCAOpen(false)}}>
                 Create
               </button>
               </div>
@@ -136,7 +137,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
   );
 };
 
-  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
+  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -179,7 +180,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
                 </button>
                 </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {login(username, password); setIsLIOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {setUID(login(username, password)); setIsLIOpen(false)}}>
                   Login
                 </button>
                 </div>

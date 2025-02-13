@@ -20,7 +20,8 @@ def create_account():
         return "User already exists", 409
     else:
         session["uid"] = new_uid
-        return "OK", 200
+        return f"{{\"uid\":{new_uid}}}", 200
+
 
 @auth_v1.route("/login/", methods=["POST"])
 def login():
@@ -39,7 +40,8 @@ def login():
         return f"Incorrect password for user: {username}"
     else:
         session["uid"] = uid
-        return "OK", 200
+        print(f"{{\"uid\":{uid}}}")
+        return f"{{\"uid\":{uid}}}", 200
 
 @auth_v1.route("/logout/", methods=["POST"])
 def logout():
