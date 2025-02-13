@@ -17,12 +17,13 @@ interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
   owned: boolean;
   projects: Models.ProjectBase[];
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projects}: AppProps) {
+export default function App({parameters, owned, projects, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const { pid } = useParams();
 
-  const [userID, setUserID] = useState(-1);
+  const [userID, setUserID] = userIDstate;
 
   async function awaitAndSetUserID(newUID : Promise<number>) {
     setUserID(await newUID)
@@ -194,7 +195,7 @@ export default function App({parameters, owned, projects}: AppProps) {
       <div id='navigation'>
         {/* SIGN IN / PROFILE */}
         <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-          Sign In: {userID}
+          Sign In
         </button>
         {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUID={awaitAndSetUserID}/>}
         {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUID={awaitAndSetUserID}/>}
