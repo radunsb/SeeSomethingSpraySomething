@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
-import { createAccount, login } from "./utility/auth_requests";
+import { createAccount, login, logout } from "./utility/auth_requests";
 import { saveProject, listUserProjects, deleteProject} from "./utility/ProjectUtilities";
 import { createProjectMap } from "./utility/ProjectUtilities";
 import { createNozzleArray, createControllerArray } from "./utility/ProjectUtilities";
@@ -11,6 +11,11 @@ interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
 }
+
+interface ProfileModalProps extends ModalProps{
+  setUID: (arg: Promise<number>) => void;
+}
+
 interface SaveLoadProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
@@ -244,7 +249,7 @@ return (
 );  
 };
 
-export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
+export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -273,7 +278,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
           </div>
           <div className= "modalActions">
             <div className= "actionsContainer">
-            <div>
+              <div>
                   <p>Change Username</p>
                   <TextField value={username} onChange={handleUnChange} ></TextField>
                   <button className = "forgetBtn" onClick={ () =>handleUnChange}>
@@ -294,8 +299,13 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
                     →
                   </button>
               </div>
-             </div>
-           </div>
+              <div>
+              <button onClick={() => {setUID(logout()); setIsOpen(false)}}>
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
          </div>
        </div>
      </>

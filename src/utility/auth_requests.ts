@@ -3,7 +3,7 @@ import axios from "axios";
 const URL_PREFIX = "http://localhost:5000"
 
 //if the account was successfully created, return the userId
-//otherwise, return -1
+//otherwise, return 1
 export async function createAccount(username:string, password:string, email:string) : Promise<number>{
     //console.log(`username: ${username}\npassword: ${password}\nemail: ${email}`);
 
@@ -19,11 +19,11 @@ export async function createAccount(username:string, password:string, email:stri
         }
     }
     
-    return -1;
+    return 1;
 }
 
 //if login was successful, return the userID
-//otherwise, return -1
+//otherwise, return 1
 export async function login(username:string, password:string) : Promise<number>{
     const axiosResponse = await axios.post(`${URL_PREFIX}/auth/v1/login/`,{
         "username":username,
@@ -36,11 +36,11 @@ export async function login(username:string, password:string) : Promise<number>{
         }
     }
     
-    return -1;
+    return 1;
 }
 
 export async function logout() : Promise<number>{
-    const axiosResponse = await axios.post(`${URL_PREFIX}/auth/v1/logout`);
+    await axios.post(`${URL_PREFIX}/auth/v1/logout`);
 
-    return axiosResponse.status;
+    return 1;
 }
