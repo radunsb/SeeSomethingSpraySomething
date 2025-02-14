@@ -406,15 +406,14 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
     async function save(){
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
       if(renameProjectInput){
-        renameProjectInput.addEventListener("change", () => {
-          const nameParam: UtilityInterfaces.Parameter = {
-            name: "project_name",
-            type: UtilityInterfaces.types.STRING,
-            value: renameProjectInput.value
-          }
-          parameterMap.set("project_name", nameParam)
-        })
+        const nameParam: UtilityInterfaces.Parameter = {
+          name: "project_name",
+          type: UtilityInterfaces.types.STRING,
+          value: renameProjectInput.value
+        }
+        parameterMap.set("project_name", nameParam)
       }
+      setIsOpen(false);
       await saveProject(1, parameterMap);
       if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
         const newProjectID = await getLatestProjectID(1);
@@ -424,10 +423,7 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
         navigate('/'+newProjectID);
       }
       setProjects(await listUserProjects(1));
-      console.log(projects);
-      setProjectList(constructProjectList());
-      console.log(projectList);
-      setIsOpen(false);
+      setProjectList(constructProjectList());    
     }
     async function loadProject(){
       console.log("Loading Project " + selectedButton);
