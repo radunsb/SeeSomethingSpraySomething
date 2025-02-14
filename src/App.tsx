@@ -2,16 +2,15 @@
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword } from './Modals.tsx';
-import { NavLink, Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Models } from './utility/models';
 import { useParams, useNavigate} from 'react-router';
 import { createProjectMap } from './utility/ProjectUtilities.ts';
 import { UtilityInterfaces } from "./utility/models";
-import { saveProject } from "./utility/ProjectUtilities";
+import { saveProject, getLatestProjectID} from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
-import { getOrException } from "./utility/ProjectUtilities.ts"
+import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
@@ -35,12 +34,13 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [projectList, setProjectList] = useState(projects);
   const { pid } = useParams();
 
   const [userID, setUserID] = userIDstate;
-
   async function awaitAndSetUserID(newUID : Promise<number>) {
     setUserID(await newUID)
+    setProjectList(await listUserProjects(userID))
   }
   
   useEffect(() => {
@@ -78,8 +78,22 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
     }
   }
   const navigate = useNavigate();
-  async function save(){
-    await saveProject(1, parameterMap)
+  async function saveBeforeResults(){
+    if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
+      const newProjectID = await getLatestProjectID(1);
+      if(!newProjectID){
+        return;
+      }
+      const projIDParam: UtilityInterfaces.Parameter = {
+        name: "project_id",
+        type: UtilityInterfaces.types.INT,
+        value: newProjectID+1
+      }
+      setParameterMap(parameterMap.set("project_id", projIDParam));
+    }
+    
+    await saveProject(1, parameterMap);
+    
     navigate('/results/'+getOrException(parameterMap, "project_id").value);
   }
   
@@ -210,7 +224,7 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
         <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
@@ -224,7 +238,7 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
       {/* THIS DIV IS FOR THE BUTTON TO SEE THE RESULTS */}
       <div id='results'>
         {/* RESULTS */}
-          <button onClick={save}> See Results </button>
+          <button onClick={saveBeforeResults}> See Results </button>
       </div>
     </div>
   );
