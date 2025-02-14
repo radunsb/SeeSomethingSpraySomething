@@ -17,12 +17,13 @@ interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
   owned: boolean;
   projects: Models.ProjectBase[];
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projects}: AppProps) {
+export default function App({parameters, owned, projects, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -36,7 +37,7 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const { pid } = useParams();
 
-  const [userID, setUserID] = useState(-1);
+  const [userID, setUserID] = userIDstate;
 
   async function awaitAndSetUserID(newUID : Promise<number>) {
     setUserID(await newUID)
@@ -193,13 +194,11 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
       <div id='navigation'>
         {/* SIGN IN / PROFILE */}
-        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
-          Sign In: {userID}
-        </button>
+        <ProfileButton userID={userID} setIsProfileOpen={setIsProfileOpen} setIsSignInOpen={setIsSignInOpen}/>
         {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUID={awaitAndSetUserID}/>}
         {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUID={awaitAndSetUserID}/>}
         {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
-        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen}/>}
+        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUID={awaitAndSetUserID}/>}
 
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}>
@@ -229,4 +228,26 @@ export default function App({parameters, owned, projects}: AppProps) {
       </div>
     </div>
   );
+}
+
+interface pbProps{
+  userID: number;
+  setIsSignInOpen : React.Dispatch<React.SetStateAction<boolean>>
+  setIsProfileOpen : React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function ProfileButton({userID, setIsSignInOpen, setIsProfileOpen} : pbProps){
+  
+  if(userID === 1){
+  return (
+    <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+      Sign In
+    </button>)
+  }
+  else{
+    return (
+      <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
+        Profile
+      </button>)
+  }
 }

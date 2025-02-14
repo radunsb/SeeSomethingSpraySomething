@@ -47,10 +47,10 @@ def login():
 def logout():
     uid = session.get("uid")
 
-    if uid == None:
-        return "Error: you cannot log out without first loggin in", 401
-    else:
-        session["uid"] = None
-        return "OK", 200
+    #if uid == None:
+    #    return "Error: you cannot log out without first loggin in", 401
+    #else:
+    session["uid"] = None
+    return "OK", 200
     
 
