@@ -71,6 +71,8 @@ def find_user_max_project_id(user_id):
     try:
         user = db.Users.find_one({'_id': user_id})
         projects = get_projects_by_user(user)
+        if(not projects or len(projects) == 0):
+            return 0
         return projects[len(projects)-1]['project_id']
     except Exception as e:
         return e
@@ -101,7 +103,7 @@ def overwrite_existing_project(user_id, projectJSON):
 
 def delete_project(user_id, project_id):
     try:
-        if(user_id == 1 and project_id == 0):
+        if(user_id == 1 or project_id == 0):
             return None
         db.Users.update_one(
             {"_id": user_id},

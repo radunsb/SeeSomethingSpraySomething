@@ -3,6 +3,7 @@ from db import get_controllers, does_project_exist, get_users, get_user_by_id, g
 from db import save_new_project, overwrite_existing_project, delete_project
 from flask_cors import CORS
 from datetime import datetime
+from base64 import b64encode
 
 api_v1 = Blueprint(
     'api_v1', 'api_v1', url_prefix='/api/v1')
@@ -49,6 +50,7 @@ def api_get_users():
 @api_v1.route('/users/<int:user_id>/')
 def api_get_user_projects(user_id):
     user = get_user_by_id(user_id)
+    del user['pass_hash']
     return jsonify({
         "retrieved": datetime.utcnow().isoformat(),
 		"user": user
@@ -57,12 +59,13 @@ def api_get_user_projects(user_id):
 @api_v1.route('/users/<int:user_id>/new', methods=['GET', 'POST'])
 def api_post_new_project(user_id):
     project = request.get_json()
-    if(user_id == 1 and project['data']['project_id'] == 0):
+    if(project['data']['project_id'] == 0):
         user = save_new_project(user_id, project['data'])
     elif(does_project_exist(user_id, project['data']['project_id'])):
         user = overwrite_existing_project(user_id, project['data'])
     else:
         user = save_new_project(user_id, project['data'])
+    del user['pass_hash']
     return jsonify({
         "retrieved": datetime.utcnow().isoformat(),
 		"user": user

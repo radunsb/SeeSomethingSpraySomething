@@ -15,14 +15,14 @@ import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
   owned: boolean;
-  projects: Models.ProjectBase[];
+  projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projects, userIDstate}: AppProps) {
+export default function App({parameters, owned, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -34,19 +34,20 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
-  const [projectList, setProjectList] = useState(projects);
+  const [projectList, setProjectList] = projectState;
   const { pid } = useParams();
 
   const [userID, setUserID] = userIDstate;
   async function awaitAndSetUserID(newUID : Promise<number>) {
-    setUserID(await newUID)
-    setProjectList(await listUserProjects(userID))
+    const IDToSet = await newUID;
+    setUserID(IDToSet);
+    setProjectList(await listUserProjects(IDToSet));
   }
   
   useEffect(() => {
     async function loadMap(){
       if(pid){
-        const loadedMap = await createProjectMap(1, Number(pid));
+        const loadedMap = await createProjectMap(userID, Number(pid));
       await setParameterMap(loadedMap);
       changeParameterList(loadedMap);
       for(const [key, value] of loadedMap){
@@ -80,7 +81,7 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
   const navigate = useNavigate();
   async function saveBeforeResults(){
     if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
-      const newProjectID = await getLatestProjectID(1);
+      const newProjectID = await getLatestProjectID(userID);
       if(!newProjectID){
         return;
       }
@@ -92,7 +93,7 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
       setParameterMap(parameterMap.set("project_id", projIDParam));
     }
     
-    await saveProject(1, parameterMap);
+    await saveProject(userID, parameterMap);
     
     navigate('/results/'+getOrException(parameterMap, "project_id").value);
   }
@@ -224,13 +225,14 @@ export default function App({parameters, owned, projects, userIDstate}: AppProps
         <button className= "primaryBtn" onClick={() => setIsSaveLoadOpen(true)}>
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
       <div id='sprayModel'>
         {/* PROJECT NAME */}
         <h3 id='projectName'>{getOrException(parameterMap, "project_name").value}</h3>
+        <h3>{userID}</h3>
         {/* 3D MODEL */}
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>

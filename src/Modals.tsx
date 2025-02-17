@@ -22,6 +22,7 @@ interface SaveLoadProps{
   projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
   parameterMap: Map<string, UtilityInterfaces.Parameter>;
   onLoad: (arg0: Map<string, UtilityInterfaces.Parameter>) => void;
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
 }
 
 interface AccountModalProps{
@@ -397,10 +398,11 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
   };
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
     const [projects, setProjects] = projectState;
     const [projectList, setProjectList] = useState(constructProjectList());
+    const [userID] = userIDstate;
     console.log("Projects: " + projects);
     const navigate = useNavigate();
     async function save(){
@@ -414,27 +416,27 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
         parameterMap.set("project_name", nameParam)
       }
       setIsOpen(false);
-      await saveProject(1, parameterMap);
+      await saveProject(userID, parameterMap);
       if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
-        const newProjectID = await getLatestProjectID(1);
+        const newProjectID = await getLatestProjectID(userID);
         if(!newProjectID){
           return;
         }
         navigate('/'+newProjectID);
       }
-      setProjects(await listUserProjects(1));
+      setProjects(await listUserProjects(userID));
       setProjectList(constructProjectList());    
     }
     async function loadProject(){
       console.log("Loading Project " + selectedButton);
-      parameterMap = await createProjectMap(1, selectedButton);
+      parameterMap = await createProjectMap(userID, selectedButton);
       console.log(parameterMap);
       onLoad(parameterMap);
       setIsOpen(false);
     }
     async function tryToDelete(){
-      await deleteProject(1, selectedButton);
-      setProjects(await listUserProjects(1));
+      await deleteProject(userID, selectedButton);
+      setProjects(await listUserProjects(userID));
       setIsOpen(false);
     }
     function clickedProjectButton(project_id: number){
