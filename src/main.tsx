@@ -23,13 +23,14 @@ async function loadDefaultProject(){
   )
 }
 
+
 interface CARprops{
   defaultMap : Map<string, UtilityInterfaces.Parameter>;
   projects : Models.ProjectBase[];
 }
 function CustomAppRouting({defaultMap, projects} : CARprops){
   const uidState = useState(1);
-
+  const projectState = useState(projects);
   return (
     // <StrictMode>
     //   <App />
@@ -37,8 +38,8 @@ function CustomAppRouting({defaultMap, projects} : CARprops){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-    <Route path="/" element={<App parameters={defaultMap} owned={false} projects={projects} userIDstate={uidState}/>} />
-      <Route path="/:pid" element={<App parameters={defaultMap} owned={false} projects={projects} userIDstate={uidState}/>} />
+    <Route path="/" element={<App parameters={defaultMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
+      <Route path="/:pid" element={<App parameters={defaultMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
       <Route path="/results/:pid" element={<Results params={defaultMap} />} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
