@@ -31,7 +31,11 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
       {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
       {/* Camera Controls: Moveable, Zoomable, Focus Point */}
-      <OrbitControls />
+      <OrbitControls 
+        maxPolarAngle={Math.PI / 2}
+        minAzimuthAngle={-Math.PI / 2}
+        maxAzimuthAngle={Math.PI / 2}
+      />
 
       {/* Model Lighting:
       - Directional light coming in from the right (of the original camera angle)
@@ -109,7 +113,7 @@ const Nozzle: React.FC<NozzleProps> = ({location, spray_angle}) => {
         <cylinderGeometry args={[.1, .1, .05]}/>
         <meshStandardMaterial color={'yellow'}/>
       </mesh>
-      <Triangle top_vertex={location} angle={spray_angle} height={location[1]}/>
+      <Spray top_vertex={location} angle={spray_angle} height={location[1]}/>
     </group>
   );
 };
@@ -183,9 +187,9 @@ const Box: React.FC<BoxProps> = ({position, size, color}) => {
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
-// Typing for Triangle Component
+// Typing for Spray Component
 
-type TriangleProps = {
+type SprayProps = {
   top_vertex: [number, number, number];
   angle: number; // Assume this is in degrees
   height: number;
@@ -193,40 +197,39 @@ type TriangleProps = {
   transparency?: number;
 };
 
-const Triangle: React.FC<TriangleProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
+const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
   const [x, y, z] = top_vertex;
-  const angleInRadians = angle * (Math.PI / 180); // Convert to radians
-  const r = height * Math.tan(angleInRadians / 2); // Half the base width
+  const angleInRadians = angle * (Math.PI / 180);
+  const r = height * Math.tan(angleInRadians / 2);
 
-  const vertices = [
-    top_vertex,
-    [x - r, y - height, z],
-    [x + r, y - height, z],
-  ];
+  const vertices = new Float32Array([
+    x, y, z,    // Top vertex
+    x - r, y - height, z + .1,
+    x + r, y - height, z + .1,
+    x + r, y - height, z - .1,
+    x - r, y - height, z - .1,
+  ]);
 
-  const flattenedVertices = new Float32Array(vertices.flat());
+  const indices = new Uint16Array([
+    0, 1, 2,
+    0, 2, 3,
+    0, 3, 4,
+    0, 4, 1,
+    1, 2, 3,
+    1, 3, 4
+  ]);
 
   return (
-    <group>
-      <mesh>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            array={flattenedVertices}
-            count={3}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <meshBasicMaterial
-          color={color}
-          side={THREE.DoubleSide}
-          transparent={true}
-          opacity={transparency}
-        />
-      </mesh>
-    </group>
+    <mesh>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={vertices} count={5} itemSize={3} />
+        <bufferAttribute attach="index" array={indices} count={indices.length} itemSize={1} />
+      </bufferGeometry>
+      <meshBasicMaterial color={color} side={THREE.DoubleSide} transparent opacity={transparency} />
+    </mesh>
   );
 };
+
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
