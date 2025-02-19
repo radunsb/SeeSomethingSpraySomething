@@ -27,14 +27,10 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
   return (
     <Canvas>
-      {/* Origin Marker */}
-      {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
       {/* Camera Controls: Moveable, Zoomable, Focus Point */}
       <OrbitControls 
         maxPolarAngle={Math.PI / 2}
-        minAzimuthAngle={-Math.PI / 2}
-        maxAzimuthAngle={Math.PI / 2}
       />
 
       {/* Model Lighting:
@@ -50,7 +46,8 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
       <Conveyor position={[0,-1,(sensor_distance)+product_length+8]} width={line_width} length={(sensor_distance)+product_length+16+sensor_distance+product_length}/>
       <Sensor distance={sensor_distance} />
       {/* Product */}
-      <Box position={[0,-1+(product_height/2)+.125,(sensor_distance)+product_length/2+4]} size={[product_width, product_height, product_length]} color={"darkgray"}/>
+      <Box position={[0,-1+(product_height/2)+.125, (-1*product_length/2)-1]} size={[product_width, product_height, product_length]} color={"darkgray"}/>
+      {/* (sensor_distance)+product_length/2+4 */}
 
       {/* Nozzle Apparatus */}
       <NozzleApparatus
@@ -197,7 +194,7 @@ type SprayProps = {
   transparency?: number;
 };
 
-const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
+const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue", transparency = .15 }) => {
   const [x, y, z] = top_vertex;
   const angleInRadians = angle * (Math.PI / 180);
   const r = height * Math.tan(angleInRadians / 2);
