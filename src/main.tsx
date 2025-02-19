@@ -28,9 +28,10 @@ interface CARprops{
   defaultMap : Map<string, UtilityInterfaces.Parameter>;
   projects : Models.ProjectBase[];
 }
-function CustomAppRouting({defaultMap, projects} : CARprops){
+export function CustomAppRouting({defaultMap, projects} : CARprops){
   const uidState = useState(1);
   const projectState = useState(projects);
+  const projectMap = useState(defaultMap);
   return (
     // <StrictMode>
     //   <App />
@@ -38,9 +39,9 @@ function CustomAppRouting({defaultMap, projects} : CARprops){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-    <Route path="/" element={<App parameters={defaultMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/:pid" element={<App parameters={defaultMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/results/:pid" element={<Results params={defaultMap} />} />
+    <Route path="/" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
+      <Route path="/:pid" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
+      <Route path="/results/:pid" element={<Results params={projectMap} />} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
   </BrowserRouter>

@@ -1,25 +1,14 @@
 import { Link } from "react-router";
 import { computeSprayPattern } from "./utility/SpraySimulation";
 import {UtilityInterfaces} from "./utility/models.ts"
-import { useParams } from "react-router";
-import { useState, useEffect } from "react";
-import { createProjectMap } from "./utility/ProjectUtilities.ts";
 import "./styles/Results.css"
 
 interface ResultsProps{
-    params: Map<string, UtilityInterfaces.Parameter>;
+    params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
 }
 
 const Results = ({params}:ResultsProps) => {
-    const [parameterMap, setParameterMap] = useState(params);
-    const { pid } = useParams();
-    useEffect(() => {
-    async function loadMap(){
-      const loadedMap = await createProjectMap(1, Number(pid));
-      setParameterMap(loadedMap);
-    }
-    loadMap();
-  }, [pid])
+    const [parameterMap] = params;
 
     const productAspray = computeSprayPattern(parameterMap);
 
@@ -52,7 +41,7 @@ const Results = ({params}:ResultsProps) => {
                 </tbody>
             </table>
             <div>
-                <Link to={"/"+pid}>
+                <Link to={"/"}>
                     <button> Back </button>
                 </Link>
             </div>
