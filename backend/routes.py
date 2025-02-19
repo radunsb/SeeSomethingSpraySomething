@@ -3,7 +3,6 @@ from db import get_controllers, does_project_exist, get_users, get_user_by_id, g
 from db import save_new_project, overwrite_existing_project, delete_project
 from flask_cors import CORS
 from datetime import datetime
-from base64 import b64encode
 
 api_v1 = Blueprint(
     'api_v1', 'api_v1', url_prefix='/api/v1')

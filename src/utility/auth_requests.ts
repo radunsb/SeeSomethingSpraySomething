@@ -1,13 +1,11 @@
 import axios from "axios";
 
-const URL_PREFIX = "http://localhost:5000"
-
 //if the account was successfully created, return the userId
 //otherwise, return 1
 export async function createAccount(username:string, password:string, email:string) : Promise<number>{
     //console.log(`username: ${username}\npassword: ${password}\nemail: ${email}`);
 
-    const axiosResponse = await axios.post(`${URL_PREFIX}/auth/v1/create/`,{
+    const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/create/`,{
         "username":username,
         "password":password,
         "email":email
@@ -25,7 +23,7 @@ export async function createAccount(username:string, password:string, email:stri
 //if login was successful, return the userID
 //otherwise, return 1
 export async function login(username:string, password:string) : Promise<number>{
-    const axiosResponse = await axios.post(`${URL_PREFIX}/auth/v1/login/`,{
+    const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/login/`,{
         "username":username,
         "password":password
     });
@@ -40,7 +38,7 @@ export async function login(username:string, password:string) : Promise<number>{
 }
 
 export async function logout() : Promise<number>{
-    await axios.post(`${URL_PREFIX}/auth/v1/logout`);
+    await axios.post(`${__BACKEND_URL__}/auth/v1/logout`);
 
     return 1;
 }
