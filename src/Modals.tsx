@@ -5,7 +5,7 @@ import { Models, UtilityInterfaces } from "./utility/models";
 import { select } from "three/tsl";
 import { createAccount, login, logout } from "./utility/auth_requests";
 import { saveProject, deleteProject} from "./utility/ProjectUtilities";
-import { createProjectMap, getLatestProjectID} from "./utility/ProjectUtilities";
+import { createProjectMap} from "./utility/ProjectUtilities";
 import { createNozzleArray, createControllerArray, listUserProjects} from "./utility/ProjectUtilities";
 import { useNavigate } from "react-router";
 import "./App.tsx";
@@ -462,7 +462,6 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
     const [projectList, setProjectList] = useState(constructProjectList());
     const [userID] = userIDstate;
     console.log("Projects: " + projects);
-    const navigate = useNavigate();
     async function save(){
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
       if(renameProjectInput){
@@ -475,13 +474,6 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
       }
       setIsOpen(false);
       await saveProject(userID, parameterMap);
-      if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
-        const newProjectID = await getLatestProjectID(userID);
-        if(!newProjectID){
-          return;
-        }
-        navigate('/'+newProjectID);
-      }
       setProjects(await listUserProjects(userID));
       setProjectList(constructProjectList());    
     }

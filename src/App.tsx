@@ -5,16 +5,14 @@ import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword,
 import { NavLink, Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Models } from './utility/models';
-import { useParams, useNavigate} from 'react-router';
-import { createProjectMap } from './utility/ProjectUtilities.ts';
+import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
-import { saveProject, getLatestProjectID} from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
-  parameters: Map<string, UtilityInterfaces.Parameter>;
+  parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   owned: boolean;
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
@@ -28,7 +26,6 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
   //Map of parameter names -> parameter values. Updates on event of input field changing
-  const [parameterMap, setParameterMap] = useState(parameters);
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
@@ -37,7 +34,6 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [projectList, setProjectList] = projectState;
-  const { pid } = useParams();
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   //Method for transfering info abour selectedId to the Modal
@@ -45,8 +41,8 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     setSelectedId(id);
     setIsInfoOpen(true);
   }
-
   const [userID, setUserID] = userIDstate;
+  const [parameterMap, setParameterMap] = parameters;
   async function awaitAndSetUserID(newUID : Promise<number>) {
     const IDToSet = await newUID;
     setUserID(IDToSet);
@@ -55,28 +51,15 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   
   useEffect(() => {
     async function loadMap(){
-      if(pid){
-        const loadedMap = await createProjectMap(userID, Number(pid));
-      await setParameterMap(loadedMap);
-      changeParameterList(loadedMap);
-      for(const [key, value] of loadedMap){
+      for(const [key, value] of parameterMap){
         const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
         if(inputElement){
           inputElement.defaultValue = String(value.value);
         }   
       }
-      }
-      else{
-        for(const [key, value] of parameterMap){
-          const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
-          if(inputElement){
-            inputElement.defaultValue = String(value.value);
-          }   
-        }
-      }
     }
     loadMap();
-  }, [pid])
+  })
 
   function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     setParameterMap(params);
@@ -88,22 +71,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     }
   }
   const navigate = useNavigate();
-  async function saveBeforeResults(){
-    if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
-      const newProjectID = await getLatestProjectID(userID);
-      if(!newProjectID){
-        return;
-      }
-      const projIDParam: UtilityInterfaces.Parameter = {
-        name: "project_id",
-        type: UtilityInterfaces.types.INT,
-        value: newProjectID+1
-      }
-      setParameterMap(parameterMap.set("project_id", projIDParam));
-    }
-    
-    await saveProject(userID, parameterMap);
-    
+  function navigateResults(){   
     navigate('/results/'+getOrException(parameterMap, "project_id").value);
   }
   
@@ -324,7 +292,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       {/* THIS DIV IS FOR THE BUTTON TO SEE THE RESULTS */}
       <div id='results'>
         {/* RESULTS */}
-          <button onClick={saveBeforeResults}> See Results </button>
+          <button onClick={navigateResults}> See Results </button>
       </div>
     </div>
   );
