@@ -45,7 +45,7 @@ export async function createProjectMap(userID: number, projectID: number){
     }
 
     //Make sure the project actually exists
-    if(user.projects){
+    if(user.projects && user.projects?.length > 0){
         const project = user.projects.filter((project) => project.project_id === projectID)[0];
         
         //Currently unpack all of the other interfaces(nozzle, gun, etc.) and store
@@ -61,6 +61,9 @@ export async function createProjectMap(userID: number, projectID: number){
         parameterMap.delete('controller');
         parameterMap.delete('nozzle');
         parameterMap.delete('gun');
+    }
+    else{
+        return await createProjectMap(1, 0);
     }
     return parameterMap;
 }
@@ -198,4 +201,16 @@ export async function listUserProjects(userID: number){
 export async function deleteProject(user_id: number, project_id: number){
     await axios.post(`http://localhost:5000/api/v1/users/${user_id}/${project_id}/delete`)
         .catch(error => console.error(error));
+}
+
+export async function getLatestProjectID(userID : number){
+    let user: Partial<Models.User> = {};
+    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+        .then(response => {
+            user = <Models.User> response.data.user;
+        })
+        .catch(error => console.error(error));
+    if(user.projects){
+        return user.projects[user.projects.length-1].project_id;
+    }
 }

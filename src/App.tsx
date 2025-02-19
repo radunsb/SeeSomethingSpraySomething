@@ -8,21 +8,22 @@ import { Models } from './utility/models';
 import { useParams, useNavigate} from 'react-router';
 import { createProjectMap } from './utility/ProjectUtilities.ts';
 import { UtilityInterfaces } from "./utility/models";
-import { saveProject } from "./utility/ProjectUtilities";
+import { saveProject, getLatestProjectID} from "./utility/ProjectUtilities";
 import MainScreenVisual from './MainScreenVisual';
 
-import { getOrException } from "./utility/ProjectUtilities.ts"
+import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
   parameters: Map<string, UtilityInterfaces.Parameter>;
   owned: boolean;
-  projects: Models.ProjectBase[];
+  projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projects}: AppProps) {
+export default function App({parameters, owned, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function App({parameters, owned, projects}: AppProps) {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [projectList, setProjectList] = projectState;
   const { pid } = useParams();
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
@@ -43,11 +45,18 @@ export default function App({parameters, owned, projects}: AppProps) {
     setSelectedId(id);
     setIsInfoOpen(true);
   }
+
+  const [userID, setUserID] = userIDstate;
+  async function awaitAndSetUserID(newUID : Promise<number>) {
+    const IDToSet = await newUID;
+    setUserID(IDToSet);
+    setProjectList(await listUserProjects(IDToSet));
+  }
   
   useEffect(() => {
     async function loadMap(){
       if(pid){
-        const loadedMap = await createProjectMap(1, Number(pid));
+        const loadedMap = await createProjectMap(userID, Number(pid));
       await setParameterMap(loadedMap);
       changeParameterList(loadedMap);
       for(const [key, value] of loadedMap){
@@ -79,8 +88,22 @@ export default function App({parameters, owned, projects}: AppProps) {
     }
   }
   const navigate = useNavigate();
-  async function save(){
-    await saveProject(1, parameterMap)
+  async function saveBeforeResults(){
+    if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
+      const newProjectID = await getLatestProjectID(userID);
+      if(!newProjectID){
+        return;
+      }
+      const projIDParam: UtilityInterfaces.Parameter = {
+        name: "project_id",
+        type: UtilityInterfaces.types.INT,
+        value: newProjectID+1
+      }
+      setParameterMap(parameterMap.set("project_id", projIDParam));
+    }
+    
+    await saveProject(userID, parameterMap);
+    
     navigate('/results/'+getOrException(parameterMap, "project_id").value);
   }
   
@@ -265,15 +288,12 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
       <div id='navigation'>
         {/* SIGN IN / PROFILE */}
-        <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}
-        aria-expanded={isSignInOpen}
-        aria-controls="SignIn/ProfileModal">
-          Sign In
-        </button>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} />}
-        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} />}
+
+        <ProfileButton userID={userID} setIsProfileOpen={setIsProfileOpen} setIsSignInOpen={setIsSignInOpen}/>
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUID={awaitAndSetUserID}/>}
+        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUID={awaitAndSetUserID}/>}
         {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
-        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen}/>}
+        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUID={awaitAndSetUserID}/>}
 
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
@@ -289,13 +309,14 @@ export default function App({parameters, owned, projects}: AppProps) {
         aria-controls="SaveLoadModal">
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projects={projects} parameterMap={parameterMap} onLoad={loadProject}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
       <div id='sprayModel'>
         {/* PROJECT NAME */}
-        <h1 id='projectName'>{getOrException(parameterMap, "project_name").value}</h1>
+        <h3 id='projectName'>{getOrException(parameterMap, "project_name").value}</h3>
+        <h3>{userID}</h3>
         {/* 3D MODEL */}
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
@@ -303,8 +324,30 @@ export default function App({parameters, owned, projects}: AppProps) {
       {/* THIS DIV IS FOR THE BUTTON TO SEE THE RESULTS */}
       <div id='results'>
         {/* RESULTS */}
-          <button onClick={save}> See Results </button>
+          <button onClick={saveBeforeResults}> See Results </button>
       </div>
     </div>
   );
+}
+
+interface pbProps{
+  userID: number;
+  setIsSignInOpen : React.Dispatch<React.SetStateAction<boolean>>
+  setIsProfileOpen : React.Dispatch<React.SetStateAction<boolean>>
+}
+
+function ProfileButton({userID, setIsSignInOpen, setIsProfileOpen} : pbProps){
+  
+  if(userID === 1){
+  return (
+    <button className= "primaryBtn" onClick={() => setIsSignInOpen(true)}>
+      Sign In
+    </button>)
+  }
+  else{
+    return (
+      <button className= "primaryBtn" onClick={() => setIsProfileOpen(true)}>
+        Profile
+      </button>)
+  }
 }

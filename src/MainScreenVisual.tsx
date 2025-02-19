@@ -15,12 +15,15 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
-  const line_width: number = (parameterMap.get('line_width')?.value ?? 0) as number;
-  const nozzle_height: number = (parameterMap.get('nozzle_height')?.value ?? 0) as number;
+  const line_width: number = ((parameterMap.get('line_width')?.value ?? 0) as number)/2;
+  const nozzle_height: number = ((parameterMap.get('nozzle_height')?.value ?? 0) as number)/2;
   const spray_angle: number = (parameterMap.get('angle')?.value ?? 0) as number;
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
-  const nozzle_spacing: number = (parameterMap.get('nozzle_spacing')?.value ?? 0) as number;
-  const sensor_distance: number = (parameterMap.get('sensor_distance')?.value ?? 0) as number;
+  const nozzle_spacing: number = ((parameterMap.get('nozzle_spacing')?.value ?? 0) as number)/2;
+  const sensor_distance: number = ((parameterMap.get('sensor_distance')?.value ?? 0) as number)/2;
+  const product_width: number = ((parameterMap.get('product_width')?.value ?? 0) as number)/2;
+  const product_length: number = ((parameterMap.get('product_length')?.value ?? 0) as number)/2;
+  const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/2;
 
   return (
     <Canvas>
@@ -28,7 +31,11 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
       {/* <Box position={[0,0,0]} size={[.1,.1,.1]} color={'black'}/> */}
 
       {/* Camera Controls: Moveable, Zoomable, Focus Point */}
-      <OrbitControls />
+      <OrbitControls 
+        maxPolarAngle={Math.PI / 2}
+        minAzimuthAngle={-Math.PI / 2}
+        maxAzimuthAngle={Math.PI / 2}
+      />
 
       {/* Model Lighting:
       - Directional light coming in from the right (of the original camera angle)
@@ -40,16 +47,17 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
       <ambientLight intensity={.5}/>
       
       {/* Conveyor belt */}
-      {/* TODO: Refactor position z and length */}
-      <Conveyor position={[0,-1,(sensor_distance/2)+5]} width={line_width/2} length={40}/>
-      <Sensor distance={sensor_distance/2} />
+      <Conveyor position={[0,-1,(sensor_distance)+product_length+8]} width={line_width} length={(sensor_distance)+product_length+16+sensor_distance+product_length}/>
+      <Sensor distance={sensor_distance} />
+      {/* Product */}
+      <Box position={[0,-1+(product_height/2)+.125,(sensor_distance)+product_length/2+4]} size={[product_width, product_height, product_length]} color={"darkgray"}/>
 
       {/* Nozzle Apparatus */}
       <NozzleApparatus
         position={[0,-1,0]}
         num_nozzles={nozzle_count}
-        nozzle_spacing={nozzle_spacing/2}
-        nozzle_height={nozzle_height/2}
+        nozzle_spacing={nozzle_spacing}
+        nozzle_height={nozzle_height}
         spray_angle={spray_angle}
       />
     </Canvas>
@@ -105,7 +113,7 @@ const Nozzle: React.FC<NozzleProps> = ({location, spray_angle}) => {
         <cylinderGeometry args={[.1, .1, .05]}/>
         <meshStandardMaterial color={'yellow'}/>
       </mesh>
-      <Triangle top_vertex={location} angle={spray_angle} height={location[1]}/>
+      <Spray top_vertex={location} angle={spray_angle} height={location[1]}/>
     </group>
   );
 };
@@ -179,9 +187,9 @@ const Box: React.FC<BoxProps> = ({position, size, color}) => {
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------
-// Typing for Triangle Component
+// Typing for Spray Component
 
-type TriangleProps = {
+type SprayProps = {
   top_vertex: [number, number, number];
   angle: number; // Assume this is in degrees
   height: number;
@@ -189,40 +197,39 @@ type TriangleProps = {
   transparency?: number;
 };
 
-const Triangle: React.FC<TriangleProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
+const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue", transparency = .3 }) => {
   const [x, y, z] = top_vertex;
-  const angleInRadians = angle * (Math.PI / 180); // Convert to radians
-  const r = height * Math.tan(angleInRadians / 2); // Half the base width
+  const angleInRadians = angle * (Math.PI / 180);
+  const r = height * Math.tan(angleInRadians / 2);
 
-  const vertices = [
-    top_vertex,
-    [x - r, y - height, z],
-    [x + r, y - height, z],
-  ];
+  const vertices = new Float32Array([
+    x, y, z,    // Top vertex
+    x - r, y - height, z + .1,
+    x + r, y - height, z + .1,
+    x + r, y - height, z - .1,
+    x - r, y - height, z - .1,
+  ]);
 
-  const flattenedVertices = new Float32Array(vertices.flat());
+  const indices = new Uint16Array([
+    0, 1, 2,
+    0, 2, 3,
+    0, 3, 4,
+    0, 4, 1,
+    1, 2, 3,
+    1, 3, 4
+  ]);
 
   return (
-    <group>
-      <mesh>
-        <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            array={flattenedVertices}
-            count={3}
-            itemSize={3}
-          />
-        </bufferGeometry>
-        <meshBasicMaterial
-          color={color}
-          side={THREE.DoubleSide}
-          transparent={true}
-          opacity={transparency}
-        />
-      </mesh>
-    </group>
+    <mesh>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" array={vertices} count={5} itemSize={3} />
+        <bufferAttribute attach="index" array={indices} count={indices.length} itemSize={1} />
+      </bufferGeometry>
+      <meshBasicMaterial color={color} side={THREE.DoubleSide} transparent opacity={transparency} />
+    </mesh>
   );
 };
+
 //------------------------------------------------------------------------------------------------------
 
 //------------------------------------------------------------------------------------------------------

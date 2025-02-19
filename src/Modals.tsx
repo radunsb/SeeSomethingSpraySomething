@@ -2,11 +2,12 @@ import React, { useState, useEffect } from "react";
 import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
-import { createAccount, login } from "./utility/auth_requests";
-import { saveProject, listUserProjects, deleteProject} from "./utility/ProjectUtilities";
-import { createProjectMap } from "./utility/ProjectUtilities";
-import { createNozzleArray, createControllerArray } from "./utility/ProjectUtilities";
 import { select } from "three/tsl";
+import { createAccount, login, logout } from "./utility/auth_requests";
+import { saveProject, deleteProject} from "./utility/ProjectUtilities";
+import { createProjectMap, getLatestProjectID} from "./utility/ProjectUtilities";
+import { createNozzleArray, createControllerArray, listUserProjects} from "./utility/ProjectUtilities";
+import { useNavigate } from "react-router";
 import "./App.tsx";
 
 type StringDictionary<T> = {
@@ -57,24 +58,29 @@ const paramDesc: string[] = [
   "Text identifier of the spray gun",
   "In number of cycles per second, the amount of open and close sequences a nozzle makes"
 ]
-
 interface ModalProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
 }
 
+
+interface ProfileModalProps extends ModalProps{
+  setUID: (arg: Promise<number>) => void;
+}
 interface SaveLoadProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
-  projects: Models.ProjectBase[];
+  projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
   parameterMap: Map<string, UtilityInterfaces.Parameter>;
   onLoad: (arg0: Map<string, UtilityInterfaces.Parameter>) => void;
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
 }
 
 interface AccountModalProps{
   isOpen: boolean;
   setIsLIOpen: (arg0: boolean) => void;
   setIsCAOpen: (arg0: boolean) => void;
+  setUID: (arg: Promise<number>) => void;
 }
 
 interface InfoModalProps{
@@ -135,7 +141,7 @@ return (
 //    setMyBoolean(!myBoolean);
 //  };
 
-export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
+export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -183,7 +189,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
             <div>
               </div>
               <div>
-              <button className= "loginBtn" onClick={() => {createAccount(username, password, email); setIsCAOpen(false)}}>
+              <button className= "loginBtn" onClick={() => {setUID(createAccount(username, password, email)); setIsCAOpen(false)}}>
                 Create
               </button>
               </div>
@@ -194,7 +200,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
   );
 };
 
-  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModalProps) => {
+  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -237,7 +243,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen }: AccountModal
                 </button>
                 </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {login(username, password); setIsLIOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {setUID(login(username, password)); setIsLIOpen(false)}}>
                   Login
                 </button>
                 </div>
@@ -302,7 +308,7 @@ return (
 );  
 };
 
-export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
+export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -331,7 +337,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
           </div>
           <div className= "modalActions">
             <div className= "actionsContainer">
-            <div>
+              <div>
                   <p>Change Username</p>
                   <TextField value={username} onChange={handleUnChange} ></TextField>
                   <button className = "forgetBtn" onClick={ () =>handleUnChange}>
@@ -352,8 +358,13 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
                     →
                   </button>
               </div>
-             </div>
-           </div>
+              <div>
+              <button onClick={() => {setUID(logout()); setIsOpen(false)}}>
+                  Log Out
+                </button>
+              </div>
+            </div>
+          </div>
          </div>
        </div>
      </>
@@ -445,57 +456,66 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
   };
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, parameterMap, onLoad}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
-    function save(){
-      saveProject(1, parameterMap)
-      setIsOpen(false);
-    }
-    async function loadProject(){
-      console.log("Loading Project " + selectedButton);
-      parameterMap = await createProjectMap(1, selectedButton);
-      console.log(parameterMap);
-      onLoad(parameterMap);
-      setIsOpen(false);
-    }
-    function tryToDelete(){
-      deleteProject(1, selectedButton);
-    }
-    function clickedProjectButton(project_id: number){
-      document.getElementById("open_project_button")?.removeAttribute("disabled");
-      document.getElementById("delete_project_button")?.removeAttribute("disabled");
-      setSelectedButton(project_id);
-    }
-    const [projects, setProjects] = useState(Array<Models.ProjectBase>())
-    useEffect(() => {
-      async function renderProjectList(){
-        setProjects(await listUserProjects(1));
-      }
-      renderProjectList();
-    }, [])
-    console.log(projects);
-    projects.sort((a:Models.ProjectBase, b:Models.ProjectBase) => 
-      new Date(b.last_modified_date).getTime() - new Date(a.last_modified_date).getTime());
-    const projectList = projects.map(project => <li
-      key = {project.project_id}>
-      <button id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)}>{project.project_name}</button>
-    </li>)
-    if (!isOpen){ return null}
-    let projectName = parameterMap.get("project_name")?.value;
-    if(typeof(projectName) != "string"){
-      projectName = "Default Name";
-    }
-
-    const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
-    if(renameProjectInput){
-      renameProjectInput.addEventListener("change", () => {
+    const [projects, setProjects] = projectState;
+    const [projectList, setProjectList] = useState(constructProjectList());
+    const [userID] = userIDstate;
+    console.log("Projects: " + projects);
+    const navigate = useNavigate();
+    async function save(){
+      const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
+      if(renameProjectInput){
         const nameParam: UtilityInterfaces.Parameter = {
           name: "project_name",
           type: UtilityInterfaces.types.STRING,
           value: renameProjectInput.value
         }
         parameterMap.set("project_name", nameParam)
-      })
+      }
+      setIsOpen(false);
+      await saveProject(userID, parameterMap);
+      if(parameterMap.get("project_id")!.value == 0 && parameterMap.get("owner_id")!.value == 1){
+        const newProjectID = await getLatestProjectID(userID);
+        if(!newProjectID){
+          return;
+        }
+        navigate('/'+newProjectID);
+      }
+      setProjects(await listUserProjects(userID));
+      setProjectList(constructProjectList());    
+    }
+    async function loadProject(){
+      console.log("Loading Project " + selectedButton);
+      parameterMap = await createProjectMap(userID, selectedButton);
+      console.log(parameterMap);
+      onLoad(parameterMap);
+      setIsOpen(false);
+    }
+    async function tryToDelete(){
+      await deleteProject(userID, selectedButton);
+      setProjects(await listUserProjects(userID));
+      setIsOpen(false);
+    }
+    function clickedProjectButton(project_id: number){
+      document.getElementById("open_project_button")?.removeAttribute("disabled");
+      document.getElementById("delete_project_button")?.removeAttribute("disabled");
+      setSelectedButton(project_id);
+    }
+    function constructProjectList(){
+      projects.sort((a:Models.ProjectBase, b:Models.ProjectBase) => 
+        new Date(b.last_modified_date).getTime() - new Date(a.last_modified_date).getTime());
+      const projectList = projects.map(project => <li
+        key = {project.project_id}>
+        <button id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)}>{project.project_name}</button>
+      </li>)
+      return projectList;
+    }
+    
+    if (!isOpen){ return null}
+    let projectName = parameterMap.get("project_name")?.value;
+    if(typeof(projectName) != "string"){
+      projectName = "Default Name";
     }
     
     return (
@@ -516,7 +536,7 @@ export const Profile = ({isOpen, setIsOpen }: ModalProps) => {
             </div>
             <div className= "modalActions">
               <div className= "actionsContainer">
-                <button id="delete_project_button" className= "deleteBtn" onClick={() => {setIsOpen(false); tryToDelete();}}>
+                <button id="delete_project_button" className= "deleteBtn" onClick={() => {tryToDelete()}}>
                   Delete
                 </button>
                 <button id="open_project_button" className= "openBtn" onClick={() => loadProject()}>
