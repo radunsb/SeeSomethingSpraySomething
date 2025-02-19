@@ -13,7 +13,7 @@ export async function createProjectMap(userID: number, projectID: number){
     let user: Partial<Models.User> = {};
 
     //Obtain user data specified in parameters
-    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
@@ -70,7 +70,7 @@ export async function createProjectMap(userID: number, projectID: number){
 
 export async function createNozzleArray(): Promise<string[]> {
     try {
-    const response = await axios.get(`http://localhost:5000/api/v1/nozzles/`)
+    const response = await axios.get(`${__BACKEND_URL__}/api/v1/nozzles/`)
     return response.data.nozzles.map((U:Models.Nozzle) => U.nozzle_name)
     } catch (error) {
         console.error(error);
@@ -80,7 +80,7 @@ export async function createNozzleArray(): Promise<string[]> {
 
 export async function createControllerArray(): Promise<string[]> {
     try {
-    const response = await axios.get(`http://localhost:5000/api/v1/controllers/`)
+    const response = await axios.get(`${__BACKEND_URL__}/api/v1/controllers/`)
     return response.data.controllers.map((U:Models.Controller) => U.controller_name)
     } catch (error) {
         console.error(error);
@@ -98,7 +98,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
     if(newProject !== undefined){
         newProject.last_modified_date = new Date();
         console.log(JSON.stringify(newProject));
-        await axios.post(`http://localhost:5000/api/v1/users/${userID}/new`,{
+        await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/new`,{
             data:newProject,
             headers: {
                 'Content-Type': 'application/json'
@@ -177,7 +177,7 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
 
 export async function listUserProjects(userID: number){
     let user: Partial<Models.User> = {};
-    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
@@ -199,13 +199,13 @@ export async function listUserProjects(userID: number){
 }
 
 export async function deleteProject(user_id: number, project_id: number){
-    await axios.post(`http://localhost:5000/api/v1/users/${user_id}/${project_id}/delete`)
+    await axios.post(`${__BACKEND_URL__}/api/v1/users/${user_id}/${project_id}/delete`)
         .catch(error => console.error(error));
 }
 
 export async function getLatestProjectID(userID : number){
     let user: Partial<Models.User> = {};
-    await axios.get(`http://localhost:5000/api/v1/users/${userID}/`)
+    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
@@ -214,3 +214,4 @@ export async function getLatestProjectID(userID : number){
         return user.projects[user.projects.length-1].project_id;
     }
 }
+
