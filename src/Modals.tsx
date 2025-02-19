@@ -180,11 +180,11 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: Acco
                   <TextField value={password} onChange={ handlePwChange} ></TextField>
               </div>
               &nbsp;
-              <div>
+              <div hidden={true}>
                 <button className= "forgetBtn" onClick={() => setIsLIOpen(false)}>
                   Forgot Password
                 </button>
-                </div>
+              </div>
                 <div>
                 <button className= "loginBtn" onClick={() => {setUID(login(username, password)); setIsLIOpen(false)}}>
                   Login
