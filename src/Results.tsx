@@ -13,37 +13,39 @@ const Results = ({params}:ResultsProps) => {
     const productAspray = computeSprayPattern(parameterMap);
 
     let maxSpray = 0;
-    let maxRow = -1;
-    let maxCol = -1;
+    let minSpray = Number.MAX_VALUE;
 
     let curRow = 0;
     for (let row of productAspray){
         let curCol = 0;
         curRow += 1;
         for(let element of row){
-            if (element.getVolumeApplied() > maxSpray){
-                maxSpray = element.getVolumeApplied();
-                maxRow = curRow;
-                maxCol = curCol;
+            const thisDensity = element.getElementSprayDensity();
+            if (thisDensity > maxSpray){
+                maxSpray = thisDensity;
+            }
+            if(thisDensity < minSpray){
+                minSpray = thisDensity;
             }
             curCol += 1;
         }
     }
 
-    const numGradientShades = 5;
-    const gradInterval = maxSpray / numGradientShades;
-
     return (
-        <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-            <table>
-                <tbody>
-                {productAspray.map((row, rowIndex) => <tr key={rowIndex}>{row.map((element, eIndex) => <td className={`spray-element spray-gradient-${Math.floor(element.getVolumeApplied() / gradInterval)}`} key={eIndex}>{/*element.getVolumeApplied().toFixed(4)*/}</td>)}</tr>)}
-                </tbody>
-            </table>
-            <div>
-                <Link to={"/"}>
-                    <button> Back </button>
-                </Link>
+        <div id="results-root">
+            <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
+                <table>
+                    <tbody>
+                    {productAspray.map((row, rowIndex) => <tr key={rowIndex}>{row.map((element, eIndex) => <td className={`spray-element`} style={{backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}} key={eIndex}>{/*element.getVolumeApplied().toFixed(4)*/}</td>)}</tr>)}
+                    </tbody>
+                </table>
+                <div>
+                    <Link to={"/"}>
+                        <button> Back </button>
+                    </Link>
+                </div>
+                <p>Max Application Rate: {maxSpray.toFixed(5)} gallons / square inch</p>
+                <p>Min Application Rate: {minSpray.toFixed(5)} gallons / square inch</p>
             </div>
         </div>
     );
