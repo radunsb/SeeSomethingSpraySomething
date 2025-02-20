@@ -46,6 +46,10 @@ namespace GlobalParams{
     export let DUTY_CYCLE = 1; // this 1 represents 100%
     export let FREQUENCY = 0; // 0 Hz means the nozzle is on for 100% of the spray duration
 
+    export let ON_TIME = 1;
+    export let OFF_TIME = 0;
+    export let PERIOD = ON_TIME + OFF_TIME;
+
     export class Nozzle{
         readonly sprayAngle: number; //should be on the order of 60 degrees
         readonly thicknessAngle: number; //should be on the order of 3 degrees
@@ -97,6 +101,9 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
         GlobalParams.PRODUCT_HEIGHT = Number(new_product_height.value);
     }
 
+    //update product element dimensions based on new product dimensions
+    LocalConstants.updateElementDimensions();
+
     const new_nozzle_height = parameterMap.get("nozzle_height");
     if(typeof new_nozzle_height !== "undefined"){
         GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height.value);
@@ -142,8 +149,6 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
         GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
     }
 
-    //console.log(`line speed: ${GlobalParams.LINE_SPEED}\nsensor distance: ${GlobalParams.SENSOR_DISTANCE}\nproduct length: ${GlobalParams.PRODUCT_LENGTH}`)
-
     //if there was an error receiving or setting timing modes, default to automatic timing
     if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
         console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
@@ -152,18 +157,62 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION + 0.02;
         console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
     }
+
+    //duty cycle and frequency
+    const new_duty_cycle = parameterMap.get("duty_cycle");
+    const new_max_frequency = parameterMap.get("max_frequency");
+
+    if(typeof new_duty_cycle !== "undefined" ){
+        GlobalParams.DUTY_CYCLE = Number(new_duty_cycle.value);
+    }
+    if(typeof new_max_frequency !== "undefined"){
+        GlobalParams.MAX_FREQUENCY = Number(new_max_frequency);
+    }
+
+    //set on time and off time based on duty cycle and max frequency
+    //this WILL cause problems if Duty Cycle isn't normalized from 0 to 1
+    if(GlobalParams.DUTY_CYCLE >= 1){
+        GlobalParams.ON_TIME = 1;
+        GlobalParams.OFF_TIME = 0;
+    }
+    else if(GlobalParams.DUTY_CYCLE <= 0){
+        GlobalParams.ON_TIME = 0;
+        GlobalParams.OFF_TIME = 1;
+    }
+    else{
+         if(GlobalParams.DUTY_CYCLE <= 0.5){
+        GlobalParams.FREQUENCY = GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+        }
+        else{
+        GlobalParams.FREQUENCY = 2 * GlobalParams.MAX_FREQUENCY - GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+        }  
+        const cycle_period = 1 / GlobalParams.FREQUENCY;
+
+        GlobalParams.ON_TIME = GlobalParams.DUTY_CYCLE * cycle_period;
+        GlobalParams.OFF_TIME = (1 - GlobalParams.DUTY_CYCLE) * cycle_period;
+    }
+    GlobalParams.PERIOD = GlobalParams.OFF_TIME + GlobalParams.ON_TIME;
+
+    //console.log(`On time: ${GlobalParams.ON_TIME}`);
+    //console.log(`off time: ${GlobalParams.OFF_TIME}`);
 }
 
 namespace LocalConstants{
-    export const TIME_STEP = 0.0001; //second
+    export const TIME_STEP = .0001; //second
 
     export const NUM_WIDTH_ELEMENTS = 100;
-    export const ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
+    export let ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
 
     export const NUM_LENGTH_ELEMENTS = 100;
-    export const ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
+    export let ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
 
-    export const ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+    export let ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+
+    export function updateElementDimensions(){
+        ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
+        ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
+        ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+    }
 }
 
 export class ProductElement{
@@ -299,12 +348,32 @@ function getMinSprayedX(nozzleFunctions : NozzleFunction[]) : number {
     return minSprayedX;
 }
 
-function nozzles_active() : Boolean {
-    return true;
+function nextActiveTime(t: number) : number {
+    const period = GlobalParams.PERIOD;
+
+    let next_t = t + LocalConstants.TIME_STEP;
+
+    while(next_t < GlobalParams.SPRAY_END_TIME){
+        if(isActive(next_t)){
+            return next_t;
+        }
+        else{
+            const cycleNum = Math.floor(next_t / period);
+            next_t = period * (cycleNum + 1) + (0.1* GlobalParams.ON_TIME);//add the factor of on_time to prevent it from getting stuck in a floating point error
+        }
+    }
+    return next_t;
+}
+
+function isActive(t: number) : boolean {
+    const cycleNum = Math.floor(t / GlobalParams.PERIOD);
+    const cycleStart = cycleNum * GlobalParams.PERIOD;
+    const shutoffTime = cycleStart + GlobalParams.ON_TIME;
+    
+    return (cycleStart <= t && t <= shutoffTime);
 }
 
 export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
-    //console.log("computing spray pattern");
     
     //update the local copies of global parameters
     updateGlobalParams(parameterMap);
@@ -329,25 +398,22 @@ export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.P
     while(t < GlobalParams.SPRAY_END_TIME){
         let productFrontX = t * GlobalParams.LINE_SPEED - GlobalParams.SENSOR_DISTANCE;
 
-
-        //only try to apply spray to the product if the nozzles are active
-        if(nozzles_active()){
-            //iterate through the rows of product elements
-            //checking every product element at every timestep is extremely slow! Find optimizations.
-            for(let col of productASPRAY){
-                const colX = productFrontX + col[0].xOffset;
-                if(colX > minSprayedX && colX < maxSprayedX){
-                    for(let elem of col){
-                        //apply spray from every nozzle to every element
-                        for(let noz of nozzleFunctions){
-                            const densityToAdd = noz.density(colX, elem.yPos);
-                            elem.addSpray(densityToAdd);
-                        }
+        //iterate through the rows of product elements
+        //checking every product element at every timestep is extremely slow! Find optimizations.
+        for(let col of productASPRAY){
+            const colX = productFrontX + col[0].xOffset;
+            if(colX > minSprayedX && colX < maxSprayedX){
+                for(let elem of col){
+                    //apply spray from every nozzle
+                    for(let noz of nozzleFunctions){
+                        const densityToAdd = noz.density(colX, elem.yPos);
+                        elem.addSpray(densityToAdd);
                     }
                 }
             }
         }
-        t += LocalConstants.TIME_STEP;
+    
+        t = nextActiveTime(t);
     }
     return productASPRAY;
 }
