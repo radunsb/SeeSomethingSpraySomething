@@ -157,10 +157,10 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
 namespace LocalConstants{
     export const TIME_STEP = 0.0001; //second
 
-    export const NUM_WIDTH_ELEMENTS = 50;
+    export const NUM_WIDTH_ELEMENTS = 100;
     export const ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
 
-    export const NUM_LENGTH_ELEMENTS = 50;
+    export const NUM_LENGTH_ELEMENTS = 100;
     export const ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
 
     export const ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
@@ -256,25 +256,51 @@ class NozzleFunction{
 
 function InitializeProductArray() : ProductElement[][]{
     let product : ProductElement[][] = [];
-    let widthIndex : number = 0;
 
     //Based on the way we defined our coordinates, we're going to have to resort to some shenanigans to make our array look how we want.
     //x=0,y=0 is at the bottom right, so lengthIndex=0 in the array will map to the MAXIMUM x-index when instantiating the ProductElement.
     //so x-index is #lengthElements-1-lengthIndex
-    while (widthIndex < LocalConstants.NUM_WIDTH_ELEMENTS){
-        let lengthIndex : number = 0;
-        let yIndex = LocalConstants.NUM_WIDTH_ELEMENTS - 1 - widthIndex;
-        product.push([]);
-        while(lengthIndex < LocalConstants.NUM_LENGTH_ELEMENTS){
-            let xIndex = LocalConstants.NUM_LENGTH_ELEMENTS - 1 - lengthIndex;
+
+    //to make matters worse, we can get serious efficiency gains by treating our inner arrays as columns rather than rows
+    // so our coordinate pairs go product[y][x]
+
+    let lengthIndex : number = 0;
+
+    while (lengthIndex < LocalConstants.NUM_LENGTH_ELEMENTS){
+        let widthIndex = 0;
+        let xIndex = LocalConstants.NUM_LENGTH_ELEMENTS - 1 - lengthIndex;
+        product.push([])
+
+        while(widthIndex < LocalConstants.NUM_WIDTH_ELEMENTS){
+            let yIndex = LocalConstants.NUM_WIDTH_ELEMENTS - 1 - widthIndex;
+
             const thisElement = new ProductElement(xIndex, yIndex);
-            product[widthIndex].push(thisElement);
-            lengthIndex++;
+            product[lengthIndex].push(thisElement);
+
+            widthIndex++
         }
-        widthIndex++;
+
+        lengthIndex++;
     }
 
     return product
+}
+
+function getMinSprayedX(nozzleFunctions : NozzleFunction[]) : number {
+    let minSprayedX = 0;
+    for(let nozzleFunc of nozzleFunctions){
+        const originToOutside = 0.5*nozzleFunc.sprayWidth * Math.cos(toRadians(nozzleFunc.parentNozzle.twistAngle));
+        const thisNozzleMin = nozzleFunc.patternOriginX - originToOutside; //origin.x <= 0
+
+        if( thisNozzleMin < minSprayedX){
+            minSprayedX = thisNozzleMin;
+        }
+    }
+    return minSprayedX;
+}
+
+function nozzles_active() : Boolean {
+    return true;
 }
 
 export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
@@ -292,75 +318,36 @@ export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.P
         nozzleFunctions.push(new NozzleFunction(nozzle));
     }
 
-    let nozzles_active : boolean = true; //once timing modes are implemented, this will not always be true;
-
     //find the leftmost point covered by any spray nozzle
-    let minSprayedX = 0;
-    for(let nozzleFunc of nozzleFunctions){
-        const originToOutside = 0.5*nozzleFunc.sprayWidth * Math.cos(toRadians(nozzleFunc.parentNozzle.twistAngle));
-        const thisNozzleMin = nozzleFunc.patternOriginX - originToOutside; //origin.x <= 0
-
-        if( thisNozzleMin < minSprayedX){
-            minSprayedX = thisNozzleMin;
-        }
-    }
-
+    const minSprayedX = getMinSprayedX(nozzleFunctions);
     //symmetry is handy for finding the max X value sprayed
     const maxSprayedX = -1*minSprayedX;
 
     //begin the simulation loop!
     let t = GlobalParams.SPRAY_START_TIME;
-    let anyProductInSprayZone = false;
 
     while(t < GlobalParams.SPRAY_END_TIME){
         let productFrontX = t * GlobalParams.LINE_SPEED - GlobalParams.SENSOR_DISTANCE;
 
 
-        if(productFrontX > minSprayedX){
-            anyProductInSprayZone = true;
-        }
-        if(productFrontX - GlobalParams.PRODUCT_LENGTH > maxSprayedX){
-            anyProductInSprayZone = false;
-        }
-
-        //only apply spray to the product if the nozzles are active
-        if(nozzles_active && anyProductInSprayZone){
+        //only try to apply spray to the product if the nozzles are active
+        if(nozzles_active()){
             //iterate through the rows of product elements
             //checking every product element at every timestep is extremely slow! Find optimizations.
-            for(let row of productASPRAY){
-                for(let elem of row){
-                    //apply spray from every nozzle to every element
-                    for(let noz of nozzleFunctions){
-                        const elemXpos = productFrontX + elem.xOffset;
-                        const densityToAdd = noz.density(elemXpos, elem.yPos);
-                        //console.log(`element x position: ${elemXpos}\nelement y position: ${elem.yPos}\nAdding density: ${densityToAdd}`);
-                        elem.addSpray(densityToAdd);
+            for(let col of productASPRAY){
+                const colX = productFrontX + col[0].xOffset;
+                if(colX > minSprayedX && colX < maxSprayedX){
+                    for(let elem of col){
+                        //apply spray from every nozzle to every element
+                        for(let noz of nozzleFunctions){
+                            const densityToAdd = noz.density(colX, elem.yPos);
+                            elem.addSpray(densityToAdd);
+                        }
                     }
                 }
             }
         }
         t += LocalConstants.TIME_STEP;
     }
-    //console.log(productASPRAY);
     return productASPRAY;
 }
-
-/*
-function displaySprayPattern(){
-    const productASPRAY = computeSprayPattern();
-
-    const table = document.createElement("table");
-
-    for(let row of productASPRAY){
-        const thisRow = document.createElement("tr");
-        for(let elem of row){
-            const thisData = document.createElement("td");
-            thisData.innerText = elem.getVolumeApplied().toFixed(4);
-            thisRow.appendChild(thisData);
-        }
-        table.appendChild(thisRow);
-    }
-}
-
-document.addEventListener("DOMContentLoaded",displaySprayPattern);
-*/

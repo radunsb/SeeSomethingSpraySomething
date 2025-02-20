@@ -34,11 +34,19 @@ const Results = ({params}:ResultsProps) => {
     return (
         <div id="results-root">
             <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-                <table>
-                    <tbody>
-                    {productAspray.map((row, rowIndex) => <tr key={rowIndex}>{row.map((element, eIndex) => <td className={`spray-element`} style={{backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}} key={eIndex}>{/*element.getVolumeApplied().toFixed(4)*/}</td>)}</tr>)}
-                    </tbody>
-                </table>
+                <div id="product-image">
+                    {productAspray.map((col, colIndex) => 
+                        <div className="spray-column" key={colIndex}>
+                            {col.map((element, eIndex) => 
+                                <div className={`spray-element`} style={
+                                    {backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}
+                                }
+                                key={eIndex}>
+                                    {/*element.getVolumeApplied().toFixed(4)*/}
+                                </div>)}
+                        </div>)
+                    }
+                </div>
                 <div>
                     <Link to={"/"}>
                         <button> Back </button>
