@@ -1,49 +1,33 @@
+#results-root {
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    flex-direction: row;
+}
+
 #results-container {
-    width: 90vw;
-    height: 90vh;
+    height: 90%;
+    width: 70%;
+
+
     display:flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-evenly;
     text-align: center;
 }
 
-table, tbody {
+table{
     height: 100%;
     width: 100%;
+
+    border-collapse: collapse;
+
+    border: 2px solid darkgray;
 }
 
 .spray-element{
-    width: 5%;
-    height: 5%;
+    width: 2%;
+    height: 2%;
     font-size: 0.8rem;
-
-
-}
-
-.spray-gradient-0 {
-    background-color: rgb(220, 220, 255);
-}
-
-.spray-gradient-1{
-    background-color: rgb(125, 125, 255);
-}
-
-.spray-gradient-2{
-    background-color: rgb(100, 100, 255);
-    color: lightgrey;
-}
-
-.spray-gradient-3{
-    background-color: rgb(75, 75, 255);
-    color: lightgrey;
-}
-
-.spray-gradient-4{
-    background-color: rgb(25, 25, 255);
-    color: lightgrey;
-}
-
-.spray-gradient-5{
-    background-color: rgb(25, 25, 255);
-    color: lightgrey;
 }

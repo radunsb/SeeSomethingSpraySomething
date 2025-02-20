@@ -38,6 +38,14 @@ namespace GlobalParams{
 
     export let NOZZLE_HEIGHT = 6;
 
+    export let SPRAY_START_TIME = 1.8; //s
+    export let SPRAY_END_TIME = 5.4;
+    export let SPRAY_DURATION = 3.6;
+
+    export let MAX_FREQUENCY = 3000; //Hz
+    export let DUTY_CYCLE = 1; // this 1 represents 100%
+    export let FREQUENCY = 0; // 0 Hz means the nozzle is on for 100% of the spray duration
+
     export class Nozzle{
         readonly sprayAngle: number; //should be on the order of 60 degrees
         readonly thicknessAngle: number; //should be on the order of 3 degrees
@@ -49,7 +57,7 @@ namespace GlobalParams{
             this.sprayAngle = spray_angle;
             this.thicknessAngle = thickness_angle;
             this.twistAngle = twist_angle;
-            this.flowRate = flowrate_galpermin*231/60; //comes in as gallons/minute -> gal/min * 1min/60sec * 231cin/1gal
+            this.flowRate = flowrate_galpermin/60; //comes in as gallons/minute -> gal/min * 1min/60sec
             this.yPos = yPos;
         }
     }
@@ -65,8 +73,8 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
 
     const new_line_speed = parameterMap.get("line_speed");
     if(typeof new_line_speed !== "undefined"){
-        //console.log(`old line speed: ${GlobalParams.LINE_SPEED}\nnew line speed:${new_line_speed.value}`);
-        GlobalParams.LINE_SPEED = Number(new_line_speed.value);
+        //divide by 5 to convert from ft/min to in/s (1 ft/min * 12in/ft * 1min/60s = 1in/5s)
+        GlobalParams.LINE_SPEED = Number(new_line_speed.value) / 5;
     }
 
     const new_line_width = parameterMap.get("line_width");
@@ -110,15 +118,49 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
     }
+
+    //timing mode params
+    //if start_delay is undefined, then that's a problem. One of the other two is allowed to be undefined
+    let new_start_delay = parameterMap.get("start_delay");
+    let new_stop_delay = parameterMap.get("stop_delay");
+    let new_spray_duration = parameterMap.get("spray_duration");
+
+    if(typeof new_start_delay !== "undefined"){
+        //this is simple, because t=0 is when the sensor is triggered
+        GlobalParams.SPRAY_START_TIME = Number(new_start_delay.value);
+    }
+
+    //we're in fixed time/distance
+    if((true || typeof new_stop_delay === "undefined") && typeof new_spray_duration !== "undefined"){
+        GlobalParams.SPRAY_DURATION = Number(new_spray_duration.value);
+        GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION;
+    }
+    //we're in variable time/distance
+    else if(typeof new_stop_delay !== "undefined" && typeof new_spray_duration === "undefined"){
+        const falling_edge_trigger_time = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
+        GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
+        GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
+    }
+
+    //console.log(`line speed: ${GlobalParams.LINE_SPEED}\nsensor distance: ${GlobalParams.SENSOR_DISTANCE}\nproduct length: ${GlobalParams.PRODUCT_LENGTH}`)
+
+    //if there was an error receiving or setting timing modes, default to automatic timing
+    if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
+        console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
+        GlobalParams.SPRAY_START_TIME = GlobalParams.SENSOR_DISTANCE / GlobalParams.LINE_SPEED - 0.01; //start just before the product arrives
+        GlobalParams.SPRAY_DURATION = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
+        GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION + 0.02;
+        console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
+    }
 }
 
 namespace LocalConstants{
     export const TIME_STEP = 0.0001; //second
 
-    export const NUM_WIDTH_ELEMENTS = 20;
+    export const NUM_WIDTH_ELEMENTS = 50;
     export const ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
 
-    export const NUM_LENGTH_ELEMENTS = 20;
+    export const NUM_LENGTH_ELEMENTS = 50;
     export const ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
 
     export const ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
@@ -137,15 +179,15 @@ export class ProductElement{
         this.volumeApplied = 0;
     }
 
-    //send in the spray density that this element is receiving in units of (cubic inches of spray)/((square inch of product)(second))
+    //send in the spray density that this element is receiving in units of (gallons of spray)/((square inch of product)*(second))
     //add that amount of spray to this productElement for one timestep
     addSpray(sprayDensity:number){
-        this.volumeApplied += sprayDensity*LocalConstants.TIME_STEP*LocalConstants.ELEMENT_AREA;
+        this.volumeApplied += sprayDensity*LocalConstants.TIME_STEP;
     }
 
-    //return how many cubic inches of spray have been applied to this product element
-    getVolumeApplied() : number{
-        return this.volumeApplied;
+    //return the spray density on this product element
+    getElementSprayDensity() : number{
+        return this.volumeApplied / LocalConstants.ELEMENT_AREA;
     }
 
     toString():string{
@@ -266,17 +308,14 @@ export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.P
     //symmetry is handy for finding the max X value sprayed
     const maxSprayedX = -1*minSprayedX;
 
-    //calculate the distance the product will have to cover, and therefore the time range we care about simulating
-    const xRange = GlobalParams.PRODUCT_LENGTH + GlobalParams.SENSOR_DISTANCE + maxSprayedX;
-    const tRange = xRange / GlobalParams.LINE_SPEED;
-
     //begin the simulation loop!
-    let t = 0;
+    let t = GlobalParams.SPRAY_START_TIME;
     let anyProductInSprayZone = false;
-    while(t < tRange){
+
+    while(t < GlobalParams.SPRAY_END_TIME){
         let productFrontX = t * GlobalParams.LINE_SPEED - GlobalParams.SENSOR_DISTANCE;
 
-        //debugging statement:
+
         if(productFrontX > minSprayedX){
             anyProductInSprayZone = true;
         }
