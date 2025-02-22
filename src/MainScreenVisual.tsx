@@ -4,7 +4,6 @@ import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
 import { useRef } from "react";
 
-
 //------------------------------------------------------------------------------------------------------
 // Component for the simulation model
 type MainScreenVisualProps = {
