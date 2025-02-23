@@ -72,7 +72,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   }
   const navigate = useNavigate();
   function navigateResults(){   
-    navigate('/results/'+getOrException(parameterMap, "project_id").value);
+    navigate('/results/');
   }
   
   //Construct a list of the parameters and the values given
@@ -80,7 +80,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   //parameterList is the list of HTML elements that are rendered in the drawers for
   //each parameter. it may be desirable to make a separate list for each drawer.
   let parameterList: any[] = []; 
-  changeParameterList(parameterMap);  
+  changeParameterList();  
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
   for(const parameterInput of parameterInputs){
     parameterInput.addEventListener("change", () => {
@@ -103,9 +103,9 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     });
   }
   
-  function changeParameterList(tempMap: Map<string, UtilityInterfaces.Parameter>){
+  function changeParameterList(){
     parameterList = [];
-    for(const [key, value] of tempMap){
+    for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
       if(value.type==UtilityInterfaces.types.STRING){
         parameterList.push(
@@ -117,12 +117,22 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       }
       //Make a number input field for integer or float parameters
       else{
-        parameterList.push(
-          <li id={key + "_list"} key={key}>
-            <p>{key}</p>
-            <input className="parameter_input" id={key + "_input"} type="number"></input>
-          </li>
-        );
+        if(value.min!=null && value.max!=null){
+          parameterList.push(
+            <li id={key + "_list"} key={key}>
+              <p>{key}</p>
+              <input className="parameter_input" id={key + "_input"} type="number" min={value.min} max={value.max}></input>
+            </li>
+          );
+        }
+        else{
+          parameterList.push(
+            <li id={key + "_list"} key={key}>
+              <p>{key}</p>
+              <input className="parameter_input" id={key + "_input"} type="number"></input>
+            </li>
+          );
+        }
       }
     }
   }

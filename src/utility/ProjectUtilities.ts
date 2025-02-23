@@ -1,7 +1,7 @@
 import axios from "axios";
 import {Models} from './models.ts'
 import {UtilityInterfaces} from './models.ts'
-
+import {ParameterConstraints} from './ParameterConstraints.ts'
 //Async function that constructs a map with project data
 //TODO: This currently just takes the user's first project.
 //Should make version with a projectID as well
@@ -20,11 +20,13 @@ export async function createProjectMap(userID: number, projectID: number){
         .catch(error => console.error(error));
 
     const parameterMap = new Map();
-    
+    const parameterConstraints = ParameterConstraints.Instance.constraintMap;
     function constructMapEntry(entry:[string, string|number]){
         const key = entry[0];
         const value = entry[1];
         let type: UtilityInterfaces.types;
+        let min = null;
+        let max = null;
         if(typeof value === "number"){
             if(Number.isInteger(value)){
                 type = UtilityInterfaces.types.INT;
@@ -32,16 +34,33 @@ export async function createProjectMap(userID: number, projectID: number){
             else{
                 type = UtilityInterfaces.types.FLOAT;
             }
+            const constraintKey = parameterConstraints.get(key);
+            if(constraintKey){
+                min = constraintKey[0];
+                max = constraintKey[1];
+            }          
         }
         else{
             type = UtilityInterfaces.types.STRING;
         }
-        const parameter: UtilityInterfaces.Parameter = {
-            name:key,
-            type: type,
-            value: value,
+        if(min!==null && max!==null){
+            const parameter: UtilityInterfaces.Parameter = {
+                name:key,
+                type: type,
+                value: value,
+                min: min,
+                max: max
+            }
+            parameterMap.set(key, parameter);
         }
-        parameterMap.set(key, parameter);
+        else{
+            const parameter: UtilityInterfaces.Parameter = {
+                name:key,
+                type: type,
+                value: value
+            }
+            parameterMap.set(key, parameter);
+        }               
     }
 
     //Make sure the project actually exists
