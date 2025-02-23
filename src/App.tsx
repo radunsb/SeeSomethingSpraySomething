@@ -110,7 +110,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       if(value.type==UtilityInterfaces.types.STRING){
         parameterList.push(
           <li id={key + "_list"} key={key}>
-            <p>{key}</p>
+            <p className='input_label'>{key}</p>
             <input className="parameter_input" id={key + "_input"} type="text"></input>
           </li>
         );
@@ -119,7 +119,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
-            <p>{key}</p>
+            <p className='input_label'>{key}</p>
             <input className="parameter_input" id={key + "_input"} type="number"></input>
           </li>
         );
@@ -148,41 +148,41 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[23]} <button onClick={() => {handleOpenInfo(23)}}
+          {parameterList[23]} <button className='info-btn' onClick={() => {handleOpenInfo(23)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Name">Info</button></div>
+                    aria-controls="Nozzle Name"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[20]} <button onClick={() => {handleOpenInfo(20)}}
+          {parameterList[20]} <button className='info-btn' onClick={() => {handleOpenInfo(20)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Flow Rate">Info</button></div>
+                    aria-controls="Flow Rate"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[19]} <button onClick={() => {handleOpenInfo(19)}}
+          {parameterList[19]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Angle">Info</button></div>
+                    aria-controls="Nozzle Angle"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[6]} <button onClick={() => {handleOpenInfo(6)}}
+          {parameterList[6]} <button className='info-btn' onClick={() => {handleOpenInfo(6)}}
                       aria-expanded={isInfoOpen}
-                      aria-controls="Nozzle Height">Info</button></div>
+                      aria-controls="Nozzle Height"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[5]} <button onClick={() => {handleOpenInfo(5)}}
+          {parameterList[5]} <button className='info-btn' onClick={() => {handleOpenInfo(5)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Spacing">Info</button></div>
+                    aria-controls="Nozzle Spacing"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[7]} <button onClick={() => {handleOpenInfo(7)}}                    
+          {parameterList[7]} <button className='info-btn' onClick={() => {handleOpenInfo(7)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Count">Info</button></div>
+                    aria-controls="Nozzle Count"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[1]} <button onClick={() => {handleOpenInfo(1)}}
+          {parameterList[1]} <button className='info-btn' onClick={() => {handleOpenInfo(1)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Fluid Pressure">Info</button></div>
+                    aria-controls="Fluid Pressure"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[25]} <button onClick={() => {handleOpenInfo(25)}}
+          {parameterList[25]} <button className='info-btn' onClick={() => {handleOpenInfo(25)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Twist Angle">Info</button></div>
+                    aria-controls="Twist Angle"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[24]} <button onClick={() => {handleOpenInfo(24)}}
+          {parameterList[24]} <button className='info-btn' onClick={() => {handleOpenInfo(24)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Spray Shape">Info</button></div>
+                    aria-controls="Spray Shape"></button></div>
         </NozzleDrawer>
 
         {/* LINE DRAWER */}
@@ -191,29 +191,29 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="lineDrawer">Line</button>
         <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
         <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[3]} <button onClick={() => {handleOpenInfo(3)}}
+          {parameterList[3]} <button className='info-btn' onClick={() => {handleOpenInfo(3)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Line Speed">Info</button></div>
+                    aria-controls="Line Speed"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[4]} <button onClick={() => {handleOpenInfo(4)}}
+          {parameterList[4]} <button className='info-btn' onClick={() => {handleOpenInfo(4)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Line Width">Info</button></div>
+                    aria-controls="Line Width"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[9]} <button onClick={() => {handleOpenInfo(9)}}                   
+          {parameterList[9]} <button className='info-btn' onClick={() => {handleOpenInfo(9)}}                   
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Height">Info</button></div>
+                    aria-controls="Product Height"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[10]} <button onClick={() => {handleOpenInfo(10)}}                 
+          {parameterList[10]} <button className='info-btn' onClick={() => {handleOpenInfo(10)}}                 
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Length">Info</button></div>
+                    aria-controls="Product Length"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[11]} <button onClick={() => {handleOpenInfo(11)}}                    
+          {parameterList[11]} <button className='info-btn' onClick={() => {handleOpenInfo(11)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Width">Info</button></div>
+                    aria-controls="Product Width"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[15]} <button onClick={() => {handleOpenInfo(15)}}                 
+          {parameterList[15]} <button className='info-btn' onClick={() => {handleOpenInfo(15)}}                 
                     aria-expanded={isInfoOpen}
-                    aria-controls="Sensor Distance">Info</button></div>
+                    aria-controls="Sensor Distance"></button></div>
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
@@ -222,33 +222,33 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="controllerDrawer">Controller</button>
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[17]} <button onClick={() => {handleOpenInfo(17)}}                    
+          {parameterList[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Start Delay">Info</button></div>
+                    aria-controls="Start Delay"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[18]} <button onClick={() => {handleOpenInfo(18)}}                    
+          {parameterList[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Stop Delay">Info</button></div>
+                    aria-controls="Stop Delay"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[16]} <button onClick={() => {handleOpenInfo(16)}}                    
+          {parameterList[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Spray Duration">Info</button></div>
+                    aria-controls="Spray Duration"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[27]} <button onClick={() => {handleOpenInfo(27)}}                    
+          {parameterList[27]} <button className='info-btn' onClick={() => {handleOpenInfo(27)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Controller Id">Info</button></div>
+                    aria-controls="Controller Id"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[28]} <button onClick={() => {handleOpenInfo(28)}}                    
+          {parameterList[28]} <button className='info-btn' onClick={() => {handleOpenInfo(28)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Controller Name">Info</button></div>
+                    aria-controls="Controller Name"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[31]} <button onClick={() => {handleOpenInfo(31)}}                    
+          {parameterList[31]} <button className='info-btn' onClick={() => {handleOpenInfo(31)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Max Frequency">Info</button></div>
+                    aria-controls="Max Frequency"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[0]} <button onClick={() => {handleOpenInfo(0)}}                    
+          {parameterList[0]} <button className='info-btn' onClick={() => {handleOpenInfo(0)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Duty Cycle">Info</button></div>
+                    aria-controls="Duty Cycle"></button></div>
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>
