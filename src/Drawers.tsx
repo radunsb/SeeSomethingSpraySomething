@@ -27,7 +27,7 @@ interface CheckboxProps {
 
 export const Checkbox: React.FC<CheckboxProps> = ({checked, onChange, label = "Auto Calculate Timing?"}) => {
   return (
-    <label style={{display: "flex", alignItems: "center", cursor: "pointer" }}>
+    <label style={{display: "flex", alignItems: "center", cursor: "pointer" }} id="autoTiming">
       <input
         type = "checkbox"
         checked = {checked}
@@ -135,7 +135,7 @@ export const ControllerDrawer = ({
       <div className='Close' onClick={onClose} aria-label="Close Line Drawer">
         X
       </div>
-        <div style ={{padding: "20px"}}>
+        <div style ={{padding: "0px"}}>
         </div>
         <div className = 'scrollable-container'>
           <div className ='Content'>
