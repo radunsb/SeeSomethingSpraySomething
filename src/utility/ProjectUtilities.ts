@@ -2,89 +2,101 @@ import axios from "axios";
 import {Models} from './models.ts'
 import {UtilityInterfaces} from './models.ts'
 import {ParameterConstraints} from './ParameterConstraints.ts'
+
 //Async function that constructs a map with project data
-//TODO: This currently just takes the user's first project.
-//Should make version with a projectID as well
 export async function createProjectMap(userID: number, projectID: number){
     //Partial lets us use an interface without explicitly setting the values
     //Shouldn't be used if you need to use a lot of those values, but since we
     //only have to check if user.projects is occupied (which we would do anyways)
     //this is fine.
-    let user: Partial<Models.User> = {};
-
-    //Obtain user data specified in parameters
-    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
-        .then(response => {
-            user = <Models.User> response.data.user;
-        })
-        .catch(error => console.error(error));
-
+    const user: Partial<Models.User> = await getUser(userID);
     const parameterMap = new Map();
-    const parameterConstraints = ParameterConstraints.Instance.constraintMap;
-    function constructMapEntry(entry:[string, string|number]){
-        const key = entry[0];
-        const value = entry[1];
-        let type: UtilityInterfaces.types;
-        let min = null;
-        let max = null;
-        if(typeof value === "number"){
-            if(Number.isInteger(value)){
-                type = UtilityInterfaces.types.INT;
-            }
-            else{
-                type = UtilityInterfaces.types.FLOAT;
-            }
-            const constraintKey = parameterConstraints.get(key);
-            if(constraintKey){
-                min = constraintKey[0];
-                max = constraintKey[1];
-            }          
-        }
-        else{
-            type = UtilityInterfaces.types.STRING;
-        }
-        if(min!==null && max!==null){
-            const parameter: UtilityInterfaces.Parameter = {
-                name:key,
-                type: type,
-                value: value,
-                min: min,
-                max: max
-            }
-            parameterMap.set(key, parameter);
-        }
-        else{
-            const parameter: UtilityInterfaces.Parameter = {
-                name:key,
-                type: type,
-                value: value
-            }
-            parameterMap.set(key, parameter);
-        }               
-    }
 
     //Make sure the project actually exists
-    if(user.projects && user.projects?.length > 0){
-        const project = user.projects.filter((project) => project.project_id === projectID)[0];
-        
-        //Currently unpack all of the other interfaces(nozzle, gun, etc.) and store
+    if(user.projects && user.projects?.length > 0 && user.projects.filter((project) => project.project_id === projectID).length > 0){
+        const project = user.projects.filter((project) => project.project_id === projectID)[0];       
+        //unpack all of the other interfaces(nozzle, gun, etc.) and store
         //their parameters as simple values
-        Object.entries(project).map(entry => constructMapEntry(entry))
+        Object.entries(project).map(entry => constructMapEntry(entry, parameterMap))
         const nozzle = project.nozzle;
-        Object.entries(nozzle).map(entry => constructMapEntry(entry))
+        Object.entries(nozzle).map(entry => constructMapEntry(entry, parameterMap))
         const controller = project.controller;
-        Object.entries(controller).map(entry => constructMapEntry(entry))
+        Object.entries(controller).map(entry => constructMapEntry(entry, parameterMap))
         const gun = project.gun;
-        Object.entries(gun).map(entry => constructMapEntry(entry))
+        Object.entries(gun).map(entry => constructMapEntry(entry, parameterMap))
         //Remove the interface parameters since we unpacked their contents
         parameterMap.delete('controller');
         parameterMap.delete('nozzle');
         parameterMap.delete('gun');
     }
     else{
+        //If the user is trying to open a project that doesn't exist, just
+        //open the default one instead
         return await createProjectMap(1, 0);
     }
     return parameterMap;
+}
+
+async function getUser(userID: number){
+    let user: Partial<Models.User> = {}
+    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
+        .then(response => {
+            user = <Models.User> response.data.user;
+        })
+        .catch(error => console.error(error)); 
+    return user;  
+}
+
+//Construct a Parameter object with the entry from the database, 
+//and append to the parameterMap
+function constructMapEntry(entry:[string, string|number], parameterMap: Map<string, UtilityInterfaces.Parameter>){
+    const parameterConstraints = ParameterConstraints.Instance.constraintMap;
+    const key = entry[0];
+    const value = entry[1];
+    let type: UtilityInterfaces.types;
+    let min = null;
+    let max = null;
+    if(typeof value === "number"){
+        //Determine whether the number is an integer or decimal.
+        //Currently not used for anything but we should add step values for
+        //float input fields.
+        if(Number.isInteger(value)){
+            type = UtilityInterfaces.types.INT;
+        }
+        else{
+            type = UtilityInterfaces.types.FLOAT;
+        }
+        //Set the min and the max if this parameter has them
+        const constraintKey = parameterConstraints.get(key);
+        if(constraintKey){
+            min = constraintKey[0];
+            max = constraintKey[1];
+        }          
+    }
+    else{
+        type = UtilityInterfaces.types.STRING;
+    }
+    //Construct parameter differently depending on if there's a min and max.
+    //Probably a better way to do this lol.
+    if(min!==null && max!==null){
+        const parameter: UtilityInterfaces.Parameter = {
+            name:key,
+            type: type,
+            value: value,
+            min: min,
+            max: max
+        }
+        parameterMap.set(key, parameter);
+    }
+    else{
+        const parameter: UtilityInterfaces.Parameter = {
+            name:key,
+            type: type,
+            value: value
+        }
+        parameterMap.set(key, parameter);
+    }
+    return parameterMap;               
 }
 
 export async function createNozzleArray(): Promise<string[]> {
@@ -114,9 +126,11 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
         return;
     }
     const newProject = createProjectFromMap(project);
+    //Only going to be undefined if an exception was thrown
     if(newProject !== undefined){
         newProject.last_modified_date = new Date();
-        console.log(JSON.stringify(newProject));
+        //Backend handles determining whether we're overwriting something
+        //or saving something new. Everything gets posted to the same url though.
         await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/new`,{
             data:newProject,
             headers: {
@@ -131,6 +145,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
     }
 }
 
+//For easier logging if a key of the parameterMap doesn't exist for some reason
 export function getOrException(map: Map<string, UtilityInterfaces.Parameter>, key: string): UtilityInterfaces.Parameter{
     const possibleReturn = map.get(key);
     if(possibleReturn !== undefined){
@@ -141,6 +156,9 @@ export function getOrException(map: Map<string, UtilityInterfaces.Parameter>, ke
     }
 }
 
+//Literally disguisting function that creates objects containing every parameter in
+//the project. Cannot iterate over Object.keys because I am dumb and made the Models
+//interfaces. Should really be refactored at some point.
 function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>): Models.Project|undefined{
     try{
     const lmd: Date = new Date(getOrException(project, 'last_modified_date').value)
@@ -194,16 +212,12 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
     }
 }
 
+//Get a list of basic info of projects for the Save/Load Modal
 export async function listUserProjects(userID: number){
-    let user: Partial<Models.User> = {};
-    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
-        .then(response => {
-            user = <Models.User> response.data.user;
-        })
-        .catch(error => console.error(error));
+    const user: Partial<Models.User> = await getUser(userID);
+    //projectList contains an array of only the project info we need for the S/L Modal
     const projectList = Array<Models.ProjectBase>();
     if(user.projects){
-        console.log("Hi");
         for(const project of user.projects){
             const partProject: Models.ProjectBase = {
                 project_id: project['project_id'],
@@ -222,6 +236,9 @@ export async function deleteProject(user_id: number, project_id: number){
         .catch(error => console.error(error));
 }
 
+//Because of how the database is set up, projects will necessarily be in order of
+//ascending projectID, even if some projects have been deleted.
+//So we can just look at the last project in the list and get its ID
 export async function getLatestProjectID(userID : number){
     let user: Partial<Models.User> = {};
     await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)

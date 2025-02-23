@@ -1,3 +1,5 @@
+//Singleton class containing the constraints for the parameter input fields
+//Get access with ParameterConstraints.Instance.constraintMap
 export class ParameterConstraints{
     private static _instance: ParameterConstraints;
     constraintMap: Map<string, Array<number>>;
@@ -23,7 +25,6 @@ export class ParameterConstraints{
     }
     public static get Instance()
     {
-        // Do you need arguments? Make it a regular static method instead.
         return this._instance || (this._instance = new this());
     }
 }
