@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import './styles/index.css'
 import App from './App.tsx'
-import Project from './Project.tsx'
+import Print from './Print.tsx'
 import { BrowserRouter, Routes, Route } from 'react-router';
 import Results from './Results.tsx';
 import {createProjectMap, listUserProjects} from './utility/ProjectUtilities.ts';
@@ -40,9 +40,8 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
     <BrowserRouter>
     <Routes>
     <Route path="/" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/:pid" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/results/:pid" element={<Results params={projectMap} />} />
-      <Route path="/parameters" element={<Project userID={1} />} />
+    <Route path="/results" element={<Results params={projectMap} />} />
+    <Route path="/print" element={<Print parameters={projectMap} />} />
     </Routes>
   </BrowserRouter>
   )

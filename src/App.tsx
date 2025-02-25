@@ -72,7 +72,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   }
   const navigate = useNavigate();
   function navigateResults(){   
-    navigate('/results/'+getOrException(parameterMap, "project_id").value);
+    navigate('/results/');
   }
   
   //Construct a list of the parameters and the values given
@@ -293,7 +293,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       <div id='results'>
         {/* RESULTS */}
           <button onClick={navigateResults}> See Results </button>
-      </div>
+      </div>      
     </div>
   );
 }
