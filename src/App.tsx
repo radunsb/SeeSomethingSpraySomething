@@ -2,18 +2,15 @@
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info } from './Modals.tsx';
-import { NavLink, Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
-
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
-  owned: boolean;
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
@@ -21,11 +18,10 @@ interface AppProps{
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
-  //Map of parameter names -> parameter values. Updates on event of input field changing
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
@@ -33,7 +29,6 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
-  const [projectList, setProjectList] = projectState;
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   //Method for transfering info abour selectedId to the Modal
@@ -41,14 +36,20 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     setSelectedId(id);
     setIsInfoOpen(true);
   }
+  //These are states that were passed down from main
   const [userID, setUserID] = userIDstate;
+  const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
+
+  //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserID(newUID : Promise<number>) {
     const IDToSet = await newUID;
     setUserID(IDToSet);
     setProjectList(await listUserProjects(IDToSet));
   }
   
+  //Funky stuff happens with defaultValue on inputs and React. I don't know why
+  //this works. I wouldn't suggest touching it.
   useEffect(() => {
     async function loadMap(){
       for(const [key, value] of parameterMap){
@@ -61,6 +62,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     loadMap();
   })
 
+  //On loading project, set the parameter map and change all of the parameter input elements
   function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     setParameterMap(params);
     for(const [key, value] of params){
@@ -70,18 +72,22 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       }   
     }
   }
+
+  //Called when the results button is clicked. Not sure why this needs its own function.
   const navigate = useNavigate();
   function navigateResults(){   
-    navigate('/results/'+getOrException(parameterMap, "project_id").value);
+    navigate('/results/');
   }
   
   //Construct a list of the parameters and the values given
   //to App.tsx as props
   //parameterList is the list of HTML elements that are rendered in the drawers for
-  //each parameter. it may be desirable to make a separate list for each drawer.
+  //each parameter
   let parameterList: any[] = []; 
-  changeParameterList(parameterMap);  
+  constructParameterInputList();  
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
+  //For every parameter input, add an event listener that updates the parameter map
+  //when the value is changed
   for(const parameterInput of parameterInputs){
     parameterInput.addEventListener("change", () => {
       const key = parameterInput.id.replace("_input", "");
@@ -103,24 +109,24 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     });
   }
   
-  function changeParameterList(tempMap: Map<string, UtilityInterfaces.Parameter>){
+  //Create all of the HTML elements for the input fields in the left side drawers
+  function constructParameterInputList(){
     parameterList = [];
-    for(const [key, value] of tempMap){
+    for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
-      if(value.type==UtilityInterfaces.types.STRING){
+      if(value.min!=null && value.max!=null){
         parameterList.push(
           <li id={key + "_list"} key={key}>
-            <p className='input_label'>{key}</p>
-            <input className="parameter_input" id={key + "_input"} type="text"></input>
+            <p>{key}</p>
+            <input className="parameter_input" id={key + "_input"} type="number" min={value.min} max={value.max}></input>
           </li>
         );
       }
-      //Make a number input field for integer or float parameters
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
-            <p className='input_label'>{key}</p>
-            <input className="parameter_input" id={key + "_input"} type="number"></input>
+            <p>{key}</p>
+            <input className="parameter_input" id={key + "_input"} type={value.type==UtilityInterfaces.types.STRING ? "text" : "number"}></input>
           </li>
         );
       }
