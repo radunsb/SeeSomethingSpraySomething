@@ -1,5 +1,5 @@
 import { UtilityInterfaces } from "./utility/models";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useThree, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
 import { useRef } from "react";
@@ -56,11 +56,48 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
         nozzle_height={nozzle_height}
         spray_angle={spray_angle}
       />
+
+      <ViewCube />
     </Canvas>
   );
 };
 export default MainScreenVisual;
 //------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
+// View Cube
+
+type Position = [number, number, number];
+
+const views: Record<string, Position> = {
+  front: [0, 0, 5],
+  back: [0, 0, -5],
+  left: [-5, 0, 0],
+  right: [5, 0, 0],
+  top: [0, 5, 0],
+  bottom: [0, -5, 0],
+};
+
+function ViewCube() {
+  const { camera } = useThree();
+  const handleCubeClick = (position: Position) => {
+    camera.position.set(...position);
+    camera.lookAt(0, 0, 0);
+  };
+
+  return (
+    <mesh position={[2, 2, 0]} scale={0.5}>
+      {Object.entries(views).map(([name, position], index) => (
+        <mesh key={index} onClick={() => handleCubeClick(position)}>
+          <boxGeometry args={[1, 1, 1]} />
+          <meshBasicMaterial attach="material" color={"lightblue"} wireframe />
+        </mesh>
+      ))}
+    </mesh>
+  );
+}
+//------------------------------------------------------------------------------------------------------
+
 
 //------------------------------------------------------------------------------------------------------
 // Nozzle Apparatus
