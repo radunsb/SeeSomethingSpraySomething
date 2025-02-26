@@ -1,50 +1,120 @@
 .Drawer {
-    position: fixed;
-    z-index: 2;
-    top: 0;
-    width: 40%;
-    height: 100%;
-    background: #eee;
-    transition: transform 0.5s ease-out;
-  }
-  
-  .Drawer.Left {
-    left: 0;
-    transform: translateX(-100%);
-    box-shadow: -0.5rem 0 1.5rem #000;
-  }
-  
-  .Drawer.Left .Close {
-    position: absolute;
-    top: 1rem;
-    right: 1rem;
-    display: flex;
-    cursor: pointer;
-  }
-  
-  .Drawer.Right {
-    right: 0;
-    transform: translateX(100%);
-    box-shadow: 0.5rem 0 1.5rem #000;
-  }
-  
-  .Drawer.Right .Close {
-    position: absolute;
-    top: 1rem;
-    left: 1rem;
-    display: flex;
-    cursor: pointer;
-  }
-  
-  .Drawer .Content {
-    margin: 4rem 1rem 1rem;
-  }
-  
-  .Drawer.Open {
-    transform: translateX(0%);
-  }
+  position: fixed;
+  z-index: 2;
+  top: 0;
+  width: 30%;
+  height: 100%;
+  background: #eee;
+  transition: transform 0.5s ease-out;
+}
 
-  .scrollable-container {
-    height: 100%;
-    overflow-y: auto;
+.Drawer.Left {
+  left: 0;
+  transform: translateX(-100%);
+  box-shadow: -0.5rem 0 1.5rem #000;
+}
+
+.Drawer.Left .Close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  display: flex;
+  cursor: pointer;
+}
+
+.Drawer.Right {
+  right: 0;
+  transform: translateX(100%);
+  box-shadow: 0.5rem 0 1.5rem #000;
+}
+
+.Drawer.Right .Close {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  display: flex;
+  cursor: pointer;
+}
+
+.Drawer .Content {
+  margin: 4rem 1rem 1rem;
+}
+
+.Drawer.Open {
+  transform: translateX(0%);
+}
+
+.scrollable-container {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* ------------------------------------------ */
+/* ADDED BY ALEX */
+/* Removes the bullets and adjusts spacing */
+.Drawer .Content {
+  list-style-type: none;
+  margin: 0px;
+  padding-left: 8px;
+}
+
+/* fixes the large gap between the autotiming box and the parameters */
+.Drawer #autoTiming {
+  margin: 0px;
+  padding: 0px;
+  font-size: medium;
+}
+
+/* Adjusts the spacing between the headings and the inputs */
+.Drawer h2 {
+  padding-top: 1vh;
+  padding-bottom: 0px;
+  text-align: center;
+  margin: 0px;
+}
+
+/* makes the info buttons icons */
+.info-btn {
+  /* https://icons8.com/icons/set/info */
+  background-image: url('../assets/icons8-info-50.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  text-decoration: none;
+  overflow: hidden;
+  white-space: nowrap;
+  width: 10px;
+  height: 10px;
+  background-color: transparent;
+  border: transparent;
+  border-radius: 10px;
+  border-width: 10px;
+}
+
+/* Hopefully allows for proper wrapping of label and input on small screens */
+li {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px; 
+}
+
+.input_label {
+  flex: 1;
+  min-width: 100px;
+  padding-right: 8px;
+}
+
+.parameter_input {
+  flex: 2; 
+  min-width: 150px;
+}
+
+/* Hopefully stacks the label and input on smaller screens */
+@media (max-width: 600px) {
+  li {
+    flex-direction: column; 
+    align-items: flex-start;
   }
+}
+/* ------------------------------------------ */

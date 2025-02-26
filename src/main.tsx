@@ -39,9 +39,8 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-    <Route path="/" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/:pid" element={<App parameters={projectMap} owned={false} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/results/:pid" element={<Results params={projectMap} />} />
+      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState}/>} />
+      <Route path="/results/" element={<Results params={projectMap} />} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
   </BrowserRouter>

@@ -2,18 +2,15 @@
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info } from './Modals.tsx';
-import { NavLink, Link } from "react-router";
 import { useState, useEffect } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
-
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
-  owned: boolean;
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
 }
@@ -21,11 +18,10 @@ interface AppProps{
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, owned, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
-  //Map of parameter names -> parameter values. Updates on event of input field changing
   const [isInfoOpen, setIsInfoOpen] = useState(false);
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
@@ -33,7 +29,6 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
-  const [projectList, setProjectList] = projectState;
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   //Method for transfering info abour selectedId to the Modal
@@ -41,14 +36,20 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     setSelectedId(id);
     setIsInfoOpen(true);
   }
+  //These are states that were passed down from main
   const [userID, setUserID] = userIDstate;
+  const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
+
+  //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserID(newUID : Promise<number>) {
     const IDToSet = await newUID;
     setUserID(IDToSet);
     setProjectList(await listUserProjects(IDToSet));
   }
   
+  //Funky stuff happens with defaultValue on inputs and React. I don't know why
+  //this works. I wouldn't suggest touching it.
   useEffect(() => {
     async function loadMap(){
       for(const [key, value] of parameterMap){
@@ -61,6 +62,7 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     loadMap();
   })
 
+  //On loading project, set the parameter map and change all of the parameter input elements
   function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     setParameterMap(params);
     for(const [key, value] of params){
@@ -70,18 +72,22 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
       }   
     }
   }
+
+  //Called when the results button is clicked. Not sure why this needs its own function.
   const navigate = useNavigate();
   function navigateResults(){   
-    navigate('/results/'+getOrException(parameterMap, "project_id").value);
+    navigate('/results/');
   }
   
   //Construct a list of the parameters and the values given
   //to App.tsx as props
   //parameterList is the list of HTML elements that are rendered in the drawers for
-  //each parameter. it may be desirable to make a separate list for each drawer.
+  //each parameter
   let parameterList: any[] = []; 
-  changeParameterList(parameterMap);  
+  constructParameterInputList();  
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
+  //For every parameter input, add an event listener that updates the parameter map
+  //when the value is changed
   for(const parameterInput of parameterInputs){
     parameterInput.addEventListener("change", () => {
       const key = parameterInput.id.replace("_input", "");
@@ -103,24 +109,24 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
     });
   }
   
-  function changeParameterList(tempMap: Map<string, UtilityInterfaces.Parameter>){
+  //Create all of the HTML elements for the input fields in the left side drawers
+  function constructParameterInputList(){
     parameterList = [];
-    for(const [key, value] of tempMap){
+    for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
-      if(value.type==UtilityInterfaces.types.STRING){
+      if(value.min!=null && value.max!=null){
         parameterList.push(
           <li id={key + "_list"} key={key}>
             <p>{key}</p>
-            <input className="parameter_input" id={key + "_input"} type="text"></input>
+            <input className="parameter_input" id={key + "_input"} type="number" min={value.min} max={value.max}></input>
           </li>
         );
       }
-      //Make a number input field for integer or float parameters
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
             <p>{key}</p>
-            <input className="parameter_input" id={key + "_input"} type="number"></input>
+            <input className="parameter_input" id={key + "_input"} type={value.type==UtilityInterfaces.types.STRING ? "text" : "number"}></input>
           </li>
         );
       }
@@ -148,41 +154,41 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[23]} <button onClick={() => {handleOpenInfo(23)}}
+          {parameterList[23]} <button className='info-btn' onClick={() => {handleOpenInfo(23)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Name">Info</button></div>
+                    aria-controls="Nozzle Name"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[20]} <button onClick={() => {handleOpenInfo(20)}}
+          {parameterList[20]} <button className='info-btn' onClick={() => {handleOpenInfo(20)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Flow Rate">Info</button></div>
+                    aria-controls="Flow Rate"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[19]} <button onClick={() => {handleOpenInfo(19)}}
+          {parameterList[19]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Angle">Info</button></div>
+                    aria-controls="Nozzle Angle"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[6]} <button onClick={() => {handleOpenInfo(6)}}
+          {parameterList[6]} <button className='info-btn' onClick={() => {handleOpenInfo(6)}}
                       aria-expanded={isInfoOpen}
-                      aria-controls="Nozzle Height">Info</button></div>
+                      aria-controls="Nozzle Height"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[5]} <button onClick={() => {handleOpenInfo(5)}}
+          {parameterList[5]} <button className='info-btn' onClick={() => {handleOpenInfo(5)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Spacing">Info</button></div>
+                    aria-controls="Nozzle Spacing"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[7]} <button onClick={() => {handleOpenInfo(7)}}                    
+          {parameterList[7]} <button className='info-btn' onClick={() => {handleOpenInfo(7)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Count">Info</button></div>
+                    aria-controls="Nozzle Count"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[1]} <button onClick={() => {handleOpenInfo(1)}}
+          {parameterList[1]} <button className='info-btn' onClick={() => {handleOpenInfo(1)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Fluid Pressure">Info</button></div>
+                    aria-controls="Fluid Pressure"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[25]} <button onClick={() => {handleOpenInfo(25)}}
+          {parameterList[25]} <button className='info-btn' onClick={() => {handleOpenInfo(25)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Twist Angle">Info</button></div>
+                    aria-controls="Twist Angle"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[24]} <button onClick={() => {handleOpenInfo(24)}}
+          {parameterList[24]} <button className='info-btn' onClick={() => {handleOpenInfo(24)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Spray Shape">Info</button></div>
+                    aria-controls="Spray Shape"></button></div>
         </NozzleDrawer>
 
         {/* LINE DRAWER */}
@@ -191,29 +197,29 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="lineDrawer">Line</button>
         <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
         <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[3]} <button onClick={() => {handleOpenInfo(3)}}
+          {parameterList[3]} <button className='info-btn' onClick={() => {handleOpenInfo(3)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Line Speed">Info</button></div>
+                    aria-controls="Line Speed"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[4]} <button onClick={() => {handleOpenInfo(4)}}
+          {parameterList[4]} <button className='info-btn' onClick={() => {handleOpenInfo(4)}}
                     aria-expanded={isInfoOpen}
-                    aria-controls="Line Width">Info</button></div>
+                    aria-controls="Line Width"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[9]} <button onClick={() => {handleOpenInfo(9)}}                   
+          {parameterList[9]} <button className='info-btn' onClick={() => {handleOpenInfo(9)}}                   
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Height">Info</button></div>
+                    aria-controls="Product Height"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[10]} <button onClick={() => {handleOpenInfo(10)}}                 
+          {parameterList[10]} <button className='info-btn' onClick={() => {handleOpenInfo(10)}}                 
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Length">Info</button></div>
+                    aria-controls="Product Length"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[11]} <button onClick={() => {handleOpenInfo(11)}}                    
+          {parameterList[11]} <button className='info-btn' onClick={() => {handleOpenInfo(11)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Product Width">Info</button></div>
+                    aria-controls="Product Width"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[15]} <button onClick={() => {handleOpenInfo(15)}}                 
+          {parameterList[15]} <button className='info-btn' onClick={() => {handleOpenInfo(15)}}                 
                     aria-expanded={isInfoOpen}
-                    aria-controls="Sensor Distance">Info</button></div>
+                    aria-controls="Sensor Distance"></button></div>
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
@@ -222,33 +228,33 @@ export default function App({parameters, owned, projectState, userIDstate}: AppP
         aria-controls="controllerDrawer">Controller</button>
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[17]} <button onClick={() => {handleOpenInfo(17)}}                    
+          {parameterList[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Start Delay">Info</button></div>
+                    aria-controls="Start Delay"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[18]} <button onClick={() => {handleOpenInfo(18)}}                    
+          {parameterList[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Stop Delay">Info</button></div>
+                    aria-controls="Stop Delay"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[16]} <button onClick={() => {handleOpenInfo(16)}}                    
+          {parameterList[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Spray Duration">Info</button></div>
+                    aria-controls="Spray Duration"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[27]} <button onClick={() => {handleOpenInfo(27)}}                    
+          {parameterList[27]} <button className='info-btn' onClick={() => {handleOpenInfo(27)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Controller Id">Info</button></div>
+                    aria-controls="Controller Id"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[28]} <button onClick={() => {handleOpenInfo(28)}}                    
+          {parameterList[28]} <button className='info-btn' onClick={() => {handleOpenInfo(28)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Controller Name">Info</button></div>
+                    aria-controls="Controller Name"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[31]} <button onClick={() => {handleOpenInfo(31)}}                    
+          {parameterList[31]} <button className='info-btn' onClick={() => {handleOpenInfo(31)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Max Frequency">Info</button></div>
+                    aria-controls="Max Frequency"></button></div>
           <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[0]} <button onClick={() => {handleOpenInfo(0)}}                    
+          {parameterList[0]} <button className='info-btn' onClick={() => {handleOpenInfo(0)}}                    
                     aria-expanded={isInfoOpen}
-                    aria-controls="Duty Cycle">Info</button></div>
+                    aria-controls="Duty Cycle"></button></div>
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>
