@@ -46,6 +46,10 @@ namespace GlobalParams{
     export let DUTY_CYCLE = 1; // this 1 represents 100%
     export let FREQUENCY = 0; // 0 Hz means the nozzle is on for 100% of the spray duration
 
+    export let ON_TIME = 1;
+    export let OFF_TIME = 0;
+    export let PERIOD = ON_TIME + OFF_TIME;
+
     export class Nozzle{
         readonly sprayAngle: number; //should be on the order of 60 degrees
         readonly thicknessAngle: number; //should be on the order of 3 degrees
@@ -65,7 +69,7 @@ namespace GlobalParams{
                                             new Nozzle(100, 3, 5, 2, 11)];
 }
 
-export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>){
+export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string){
     const new_sensor_distance = parameterMap.get("sensor_distance");
     if(typeof new_sensor_distance !== "undefined"){
         GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance.value);
@@ -96,6 +100,9 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     if(typeof new_product_height !== "undefined"){
         GlobalParams.PRODUCT_HEIGHT = Number(new_product_height.value);
     }
+
+    //update product element dimensions based on new product dimensions
+    LocalConstants.updateElementDimensions();
 
     const new_nozzle_height = parameterMap.get("nozzle_height");
     if(typeof new_nozzle_height !== "undefined"){
@@ -131,18 +138,16 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     }
 
     //we're in fixed time/distance
-    if((true || typeof new_stop_delay === "undefined") && typeof new_spray_duration !== "undefined"){
+    if(timingMode === "ft" && typeof new_stop_delay !== "undefined" && typeof new_spray_duration !== "undefined"){
         GlobalParams.SPRAY_DURATION = Number(new_spray_duration.value);
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION;
     }
     //we're in variable time/distance
-    else if(typeof new_stop_delay !== "undefined" && typeof new_spray_duration === "undefined"){
-        const falling_edge_trigger_time = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
-        GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
-        GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
+    else if(timingMode === "vt" && typeof new_stop_delay !== "undefined" && typeof new_spray_duration !== "undefined"){
+            const falling_edge_trigger_time = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
+            GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
+            GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
     }
-
-    //console.log(`line speed: ${GlobalParams.LINE_SPEED}\nsensor distance: ${GlobalParams.SENSOR_DISTANCE}\nproduct length: ${GlobalParams.PRODUCT_LENGTH}`)
 
     //if there was an error receiving or setting timing modes, default to automatic timing
     if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
@@ -152,18 +157,72 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION + 0.02;
         console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
     }
+
+    //duty cycle and frequency
+    const new_duty_cycle = parameterMap.get("duty_cycle");
+    const new_max_frequency = parameterMap.get("max_frequency");
+
+    if(typeof new_duty_cycle !== "undefined" ){
+        let ndc = Number(new_duty_cycle.value)
+
+        if(ndc > 1){ //convert from percentage to fraction if necessary
+            ndc = ndc / 100;
+        }
+
+        GlobalParams.DUTY_CYCLE = ndc;
+    }
+    if(typeof new_max_frequency !== "undefined"){
+        let nmf = Number(new_max_frequency.value);
+
+        nmf = nmf / 60; //convert from cycles/min to Hz 
+
+        GlobalParams.MAX_FREQUENCY = nmf;
+    }
+
+    //set on time and off time based on duty cycle and max frequency
+    //this WILL cause problems if Duty Cycle isn't normalized from 0 to 1
+    if(GlobalParams.DUTY_CYCLE >= 1){
+        GlobalParams.ON_TIME = 1;
+        GlobalParams.OFF_TIME = 0;
+    }
+    else if(GlobalParams.DUTY_CYCLE <= 0){
+        GlobalParams.ON_TIME = 0;
+        GlobalParams.OFF_TIME = 1;
+    }
+    else{
+         if(GlobalParams.DUTY_CYCLE <= 0.5){
+            GlobalParams.FREQUENCY = GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+        }
+        else{
+            GlobalParams.FREQUENCY = 2 * GlobalParams.MAX_FREQUENCY - GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+        }  
+        const cycle_period = 1 / GlobalParams.FREQUENCY;
+
+        GlobalParams.ON_TIME = GlobalParams.DUTY_CYCLE * cycle_period;
+        GlobalParams.OFF_TIME = (1 - GlobalParams.DUTY_CYCLE) * cycle_period;
+    }
+    GlobalParams.PERIOD = GlobalParams.OFF_TIME + GlobalParams.ON_TIME;
+
+    // console.log(`On time: ${GlobalParams.ON_TIME}`);
+    // console.log(`off time: ${GlobalParams.OFF_TIME}`);
 }
 
 namespace LocalConstants{
-    export const TIME_STEP = 0.0001; //second
+    export const TIME_STEP = .0001; //second
 
-    export const NUM_WIDTH_ELEMENTS = 50;
-    export const ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
+    export const NUM_WIDTH_ELEMENTS = 100;
+    export let ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
 
-    export const NUM_LENGTH_ELEMENTS = 50;
-    export const ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
+    export const NUM_LENGTH_ELEMENTS = 100;
+    export let ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
 
-    export const ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+    export let ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+
+    export function updateElementDimensions(){
+        ELEMENT_WIDTH = GlobalParams.PRODUCT_WIDTH/NUM_WIDTH_ELEMENTS;
+        ELEMENT_LENGTH = GlobalParams.PRODUCT_LENGTH/NUM_LENGTH_ELEMENTS;
+        ELEMENT_AREA = ELEMENT_LENGTH*ELEMENT_WIDTH;
+    }
 }
 
 export class ProductElement{
@@ -256,32 +315,78 @@ class NozzleFunction{
 
 function InitializeProductArray() : ProductElement[][]{
     let product : ProductElement[][] = [];
-    let widthIndex : number = 0;
 
     //Based on the way we defined our coordinates, we're going to have to resort to some shenanigans to make our array look how we want.
     //x=0,y=0 is at the bottom right, so lengthIndex=0 in the array will map to the MAXIMUM x-index when instantiating the ProductElement.
     //so x-index is #lengthElements-1-lengthIndex
-    while (widthIndex < LocalConstants.NUM_WIDTH_ELEMENTS){
-        let lengthIndex : number = 0;
-        let yIndex = LocalConstants.NUM_WIDTH_ELEMENTS - 1 - widthIndex;
-        product.push([]);
-        while(lengthIndex < LocalConstants.NUM_LENGTH_ELEMENTS){
-            let xIndex = LocalConstants.NUM_LENGTH_ELEMENTS - 1 - lengthIndex;
+
+    //to make matters worse, we can get serious efficiency gains by treating our inner arrays as columns rather than rows
+    // so our coordinate pairs go product[y][x]
+
+    let lengthIndex : number = 0;
+
+    while (lengthIndex < LocalConstants.NUM_LENGTH_ELEMENTS){
+        let widthIndex = 0;
+        let xIndex = LocalConstants.NUM_LENGTH_ELEMENTS - 1 - lengthIndex;
+        product.push([])
+
+        while(widthIndex < LocalConstants.NUM_WIDTH_ELEMENTS){
+            let yIndex = LocalConstants.NUM_WIDTH_ELEMENTS - 1 - widthIndex;
+
             const thisElement = new ProductElement(xIndex, yIndex);
-            product[widthIndex].push(thisElement);
-            lengthIndex++;
+            product[lengthIndex].push(thisElement);
+
+            widthIndex++
         }
-        widthIndex++;
+
+        lengthIndex++;
     }
 
     return product
 }
 
-export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
-    //console.log("computing spray pattern");
+function getMinSprayedX(nozzleFunctions : NozzleFunction[]) : number {
+    let minSprayedX = 0;
+    for(let nozzleFunc of nozzleFunctions){
+        const originToOutside = 0.5*nozzleFunc.sprayWidth * Math.cos(toRadians(nozzleFunc.parentNozzle.twistAngle));
+        const thisNozzleMin = nozzleFunc.patternOriginX - originToOutside; //origin.x <= 0
+
+        if( thisNozzleMin < minSprayedX){
+            minSprayedX = thisNozzleMin;
+        }
+    }
+    return minSprayedX;
+}
+
+function nextActiveTime(t: number) : number {
+    const period = GlobalParams.PERIOD;
+
+    let next_t = t + LocalConstants.TIME_STEP;
+
+    while(next_t < GlobalParams.SPRAY_END_TIME){
+        if(isActive(next_t)){
+            return next_t;
+        }
+        else{
+            const cycleNum = Math.floor(next_t / period);
+            next_t = period * (cycleNum + 1) + (0.1* GlobalParams.ON_TIME);//add the factor of on_time to prevent it from getting stuck in a floating point error
+        }
+    }
+    return next_t;
+}
+
+function isActive(t: number) : boolean {
+    const cycleNum = Math.floor(t / GlobalParams.PERIOD);
+    const cycleStart = cycleNum * GlobalParams.PERIOD;
+    const shutoffTime = cycleStart + GlobalParams.ON_TIME;
+    
+    return (cycleStart <= t && t <= shutoffTime);
+}
+
+export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string) : ProductElement[][]{
     
     //update the local copies of global parameters
-    updateGlobalParams(parameterMap);
+    updateGlobalParams(parameterMap, timingMode);
 
     //create product array
     let productASPRAY = InitializeProductArray();
@@ -292,75 +397,33 @@ export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.P
         nozzleFunctions.push(new NozzleFunction(nozzle));
     }
 
-    let nozzles_active : boolean = true; //once timing modes are implemented, this will not always be true;
-
     //find the leftmost point covered by any spray nozzle
-    let minSprayedX = 0;
-    for(let nozzleFunc of nozzleFunctions){
-        const originToOutside = 0.5*nozzleFunc.sprayWidth * Math.cos(toRadians(nozzleFunc.parentNozzle.twistAngle));
-        const thisNozzleMin = nozzleFunc.patternOriginX - originToOutside; //origin.x <= 0
-
-        if( thisNozzleMin < minSprayedX){
-            minSprayedX = thisNozzleMin;
-        }
-    }
-
+    const minSprayedX = getMinSprayedX(nozzleFunctions);
     //symmetry is handy for finding the max X value sprayed
     const maxSprayedX = -1*minSprayedX;
 
     //begin the simulation loop!
     let t = GlobalParams.SPRAY_START_TIME;
-    let anyProductInSprayZone = false;
 
     while(t < GlobalParams.SPRAY_END_TIME){
         let productFrontX = t * GlobalParams.LINE_SPEED - GlobalParams.SENSOR_DISTANCE;
 
-
-        if(productFrontX > minSprayedX){
-            anyProductInSprayZone = true;
-        }
-        if(productFrontX - GlobalParams.PRODUCT_LENGTH > maxSprayedX){
-            anyProductInSprayZone = false;
-        }
-
-        //only apply spray to the product if the nozzles are active
-        if(nozzles_active && anyProductInSprayZone){
-            //iterate through the rows of product elements
-            //checking every product element at every timestep is extremely slow! Find optimizations.
-            for(let row of productASPRAY){
-                for(let elem of row){
-                    //apply spray from every nozzle to every element
+        //iterate through the rows of product elements
+        //checking every product element at every timestep is extremely slow! Find optimizations.
+        for(let col of productASPRAY){
+            const colX = productFrontX + col[0].xOffset;
+            if(colX > minSprayedX && colX < maxSprayedX){
+                for(let elem of col){
+                    //apply spray from every nozzle
                     for(let noz of nozzleFunctions){
-                        const elemXpos = productFrontX + elem.xOffset;
-                        const densityToAdd = noz.density(elemXpos, elem.yPos);
-                        //console.log(`element x position: ${elemXpos}\nelement y position: ${elem.yPos}\nAdding density: ${densityToAdd}`);
+                        const densityToAdd = noz.density(colX, elem.yPos);
                         elem.addSpray(densityToAdd);
                     }
                 }
             }
         }
-        t += LocalConstants.TIME_STEP;
+    
+        t = nextActiveTime(t);
     }
-    //console.log(productASPRAY);
     return productASPRAY;
 }
-
-/*
-function displaySprayPattern(){
-    const productASPRAY = computeSprayPattern();
-
-    const table = document.createElement("table");
-
-    for(let row of productASPRAY){
-        const thisRow = document.createElement("tr");
-        for(let elem of row){
-            const thisData = document.createElement("td");
-            thisData.innerText = elem.getVolumeApplied().toFixed(4);
-            thisRow.appendChild(thisData);
-        }
-        table.appendChild(thisRow);
-    }
-}
-
-document.addEventListener("DOMContentLoaded",displaySprayPattern);
-*/

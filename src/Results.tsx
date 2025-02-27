@@ -5,12 +5,13 @@ import "./styles/Results.css"
 
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
+    timingMode: string
 }
 
-const Results = ({params}:ResultsProps) => {
+const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
 
-    const productAspray = computeSprayPattern(parameterMap);
+    const productAspray = computeSprayPattern(parameterMap, timingMode);
 
     let maxSpray = 0;
     let minSpray = Number.MAX_VALUE;
@@ -34,11 +35,19 @@ const Results = ({params}:ResultsProps) => {
     return (
         <div id="results-root">
             <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-                <table>
-                    <tbody>
-                    {productAspray.map((row, rowIndex) => <tr key={rowIndex}>{row.map((element, eIndex) => <td className={`spray-element`} style={{backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}} key={eIndex}>{/*element.getVolumeApplied().toFixed(4)*/}</td>)}</tr>)}
-                    </tbody>
-                </table>
+                <div id="product-image">
+                    {productAspray.map((col, colIndex) => 
+                        <div className="spray-column" key={colIndex}>
+                            {col.map((element, eIndex) => 
+                                <div className={`spray-element`} style={
+                                    {backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}
+                                }
+                                key={eIndex}>
+                                    {/*element.getVolumeApplied().toFixed(4)*/}
+                                </div>)}
+                        </div>)
+                    }
+                </div>
                 <div>
                     <Link to={"/"}>
                         <button> Back </button>

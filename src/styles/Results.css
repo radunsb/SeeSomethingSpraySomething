@@ -17,17 +17,28 @@
     text-align: center;
 }
 
-table{
+#product-image{
     height: 100%;
     width: 100%;
 
     border-collapse: collapse;
 
     border: 2px solid darkgray;
+
+    display: flex;
+    flex-direction: row;
+}
+
+.spray-column{
+    height: 100%;
+    width: 1%;
+
+    display:flex;
+    flex-direction:column;
 }
 
 .spray-element{
-    width: 2%;
-    height: 2%;
+    width: 100%;
+    height: 1%;
     font-size: 0.8rem;
 }

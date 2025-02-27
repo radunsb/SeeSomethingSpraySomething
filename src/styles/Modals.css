@@ -16,7 +16,38 @@
     transform: translate(-50%, -50%);
     z-index: 4;
   }
+
+  .infocentered {
+    position: fixed;
+    top: 50%;
+    right: 42%;
+    transform: translate(-50%, -50%);
+    z-index: 4;
+  }
+
+  .infodarkBG {
+    background-color: rgba(0, 0, 0, 0.2);
+    width: 100vw;
+    height: 103vh;
+    z-index: 3;
+    top: 0%;
+    left: 379%;
+    transform: translate(-94%, -5%);
+    position: absolute;
+  }
   
+  .infomodal {
+    padding: 20px;
+    width: 450px;
+    height: 300px;
+    background: white;
+    color: black;
+    z-index: 10;
+    border-radius: 8px;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+    z-index: 4;
+  }
+
   .modal {
     padding: 20px;
     width: 800px;
@@ -160,8 +191,4 @@
 
   .TextField {
     padding: 25px 25px;
-  }
-
-  .button-container{
-
   }
