@@ -13,6 +13,8 @@ interface ModalProps{
 
 interface ProfileModalProps extends ModalProps{
   setUID: (arg: Promise<number>) => void;
+  username: string
+  email: string
 }
 
 interface SaveLoadProps{
@@ -263,52 +265,52 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
       setEmail(newEm);}
   if (!isOpen){ return null}
   return (
-    <>
-      <div className= "darkBG" onClick={() => setIsOpen(false)} />
+  <>
+    <div className= "darkBG" onClick={() => setIsOpen(false)} />
       <div className= "centered">
         <div className= "modal">
-            <h5>Profile</h5>
+          <h1>Profile</h1>
           <button className= "closeBtn" onClick={() => setIsOpen(false)}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
             <div className= "modalContent">
-            <button className = "forgetBtn" onClick={ () => setIsOpen(false)}>
-                  Delete Account
-            </button>
-          </div>
+              <button className = "forgetBtn" onClick={ () => setIsOpen(false)}>
+                    Delete Account
+              </button>
+            </div>
           <div className= "modalActions">
-            <div className= "actionsContainer">
+            <p>Username: {parameter}</p>
+              {/*<div className= "actionsContainer">
+                <div>
+                    <p>Change Username</p>
+                    <TextField value={username} onChange={handleUnChange} ></TextField>
+                    <button className = "forgetBtn" onClick={ () =>handleUnChange}>
+                      →
+                    </button>
+                </div>
+                <div>
+                    <p>Change Email</p>
+                    <TextField value={email} onChange={handleEmChange} ></TextField>
+                    <button className = "forgetBtn" onClick={ () =>handleEmChange}>
+                      →
+                    </button>
+                </div>
+                <div>
+                    <p>Change Password</p>
+                    <TextField value={password} onChange={ handlePwChange} ></TextField>
+                    <button className = "forgetBtn" onClick={ () =>handlePwChange}>
+                      →
+                    </button>
+                </div>
               <div>
-                  <p>Change Username</p>
-                  <TextField value={username} onChange={handleUnChange} ></TextField>
-                  <button className = "forgetBtn" onClick={ () =>handleUnChange}>
-                    →
-                  </button>
-              </div>
-              <div>
-                  <p>Change Email</p>
-                  <TextField value={email} onChange={handleEmChange} ></TextField>
-                  <button className = "forgetBtn" onClick={ () =>handleEmChange}>
-                    →
-                  </button>
-              </div>
-              <div>
-                  <p>Change Password</p>
-                  <TextField value={password} onChange={ handlePwChange} ></TextField>
-                  <button className = "forgetBtn" onClick={ () =>handlePwChange}>
-                    →
-                  </button>
-              </div>
-              <div>
+              */}
               <button onClick={() => {setUID(logout()); setIsOpen(false)}}>
                   Log Out
                 </button>
-              </div>
-            </div>
-          </div>
-         </div>
-       </div>
-     </>
+        </div>
+      </div>
+    </div>
+  </>
   );  
 };
 
