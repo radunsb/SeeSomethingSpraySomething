@@ -36,7 +36,6 @@ export async function login(username:string, password:string) : Promise<UserInfo
 
     if( axiosResponse.status == 200){
         if (typeof(axiosResponse.data.uid) != "undefined"){
-            console.log(`received login response: \n${axiosResponse.data.uid} \n${axiosResponse.data.username}\n${axiosResponse.data.email}`)
             return axiosResponse.data
         }
     }
