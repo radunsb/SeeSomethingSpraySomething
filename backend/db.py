@@ -96,6 +96,7 @@ def overwrite_existing_project(user_id, projectJSON):
             {"_id": user_id, "projects.project_id": projectJSON['project_id']},
             { "$set": { "projects.$" : projectJSON } }
         )
+        push_recent_projects(user_id, projectJSON['project_id'], projectJSON)
         user = db.Users.find_one({'_id': user_id})
         return user
     except Exception as e:
@@ -113,3 +114,22 @@ def delete_project(user_id, project_id):
         return user
     except Exception as e:
         return e   
+
+def push_recent_projects(user_id, project_id, projectJSON):
+    try:
+        if(project_id == 0):
+            return None
+        user = db.Users.find_one({"_id": user_id})
+        if(len(user['recent_runs']) >= 5):
+            db.Users.update_one(
+                {"_id": user_id},
+                {"$pop": {"recent_runs": -1}}
+            )
+        db.Users.update_one(
+            {"_id": user_id},
+            {"$push": {"recent_runs": projectJSON}}
+        )
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e  
