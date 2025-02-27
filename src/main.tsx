@@ -32,6 +32,12 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
   const uidState = useState(1);
   const projectState = useState(projects);
   const projectMap = useState(defaultMap);
+
+  //I know adding more and more parameters here is bad.
+  //this needs to get folded into project state or project map,
+  //but there isn't time before the deadline to get that done and tested
+  const [timingMode, setTimingMode] = useState("ft");
+
   return (
     // <StrictMode>
     //   <App />
@@ -39,8 +45,8 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
     // </StrictMode>,
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState}/>} />
-      <Route path="/results/" element={<Results params={projectMap} />} />
+      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState} timingModeState={[timingMode, setTimingMode]}/>} />
+      <Route path="/results/" element={<Results params={projectMap} timingMode={timingMode}/>} />
       <Route path="/parameters" element={<Project userID={1} />} />
     </Routes>
   </BrowserRouter>

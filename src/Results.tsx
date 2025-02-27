@@ -5,12 +5,13 @@ import "./styles/Results.css"
 
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
+    timingMode: string
 }
 
-const Results = ({params}:ResultsProps) => {
+const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
 
-    const productAspray = computeSprayPattern(parameterMap);
+    const productAspray = computeSprayPattern(parameterMap, timingMode);
 
     let maxSpray = 0;
     let minSpray = Number.MAX_VALUE;
