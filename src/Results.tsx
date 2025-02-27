@@ -43,7 +43,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
     function navigatePrint(dataURL: string){
         const img = new Image();
         img.src = dataURL;
-        navigate('/print/', {state:{img:img}});
+        navigate('/print/', {state:{img:dataURL}});
     }
 
 

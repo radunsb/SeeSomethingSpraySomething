@@ -26,7 +26,7 @@ export default function Print({parameters}: printProps){
             {parameterList}
         </div>
         <div>
-            {img}
+            <img src={String(img)}></img>
         </div>      
         <div>
         <Link to={"/results/"}>
