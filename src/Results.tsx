@@ -1,8 +1,9 @@
-import { Link } from "react-router";
+import { Link, useNavigate} from "react-router";
 import { computeSprayPattern } from "./utility/SpraySimulation";
 import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
-
+import * as htmlToImage from "html-to-image";
+import { useRef } from "react";
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
     timingMode: string
@@ -32,10 +33,24 @@ const Results = ({params, timingMode}:ResultsProps) => {
         }
     }
 
+    const screenshotArea = useRef(null);
+    async function takeScreenshot(){
+        if(!screenshotArea.current) return;
+        await htmlToImage.toPng(screenshotArea.current, {quality:0.01, pixelRatio:0.5}).then(navigatePrint);
+    }
+
+    const navigate = useNavigate();
+    function navigatePrint(dataURL: string){
+        const img = new Image();
+        img.src = dataURL;
+        navigate('/print/', {state:{img:dataURL}});
+    }
+
+
     return (
         <div id="results-root">
             <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-                <div id="product-image">
+                <div id="product-image" ref={screenshotArea}>
                     {productAspray.map((col, colIndex) => 
                         <div className="spray-column" key={colIndex}>
                             {col.map((element, eIndex) => 
@@ -52,6 +67,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
                     <Link to={"/"}>
                         <button> Back </button>
                     </Link>
+                    <button onClick={takeScreenshot}> Export as PDF/Print </button>
                 </div>
                 <p>Max Application Rate: {maxSpray.toFixed(5)} gallons / square inch</p>
                 <p>Min Application Rate: {minSpray.toFixed(5)} gallons / square inch</p>
