@@ -122,6 +122,7 @@ const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   const value = event.target.value;
   setSelectedValue(value);
   onChange(value);
+  console.log(`changing dropdown value to: ${value}`);
 };
 
 return (
