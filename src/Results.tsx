@@ -36,7 +36,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const screenshotArea = useRef(null);
     async function takeScreenshot(){
         if(!screenshotArea.current) return;
-        await htmlToImage.toJpeg(screenshotArea.current).then(navigatePrint);
+        await htmlToImage.toPng(screenshotArea.current, {quality:0.01, pixelRatio:0.5}).then(navigatePrint);
     }
 
     const navigate = useNavigate();

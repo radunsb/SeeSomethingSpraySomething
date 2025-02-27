@@ -23,16 +23,14 @@ export default function Print({parameters}: printProps){
     return(
         <div>
         <div>
+            <h2>Parameters</h2>
             {parameterList}
-        </div>
-        <div>
+            <h2>Results</h2>
             <img src={String(img)}></img>
         </div>      
-        <div>
         <Link to={"/results/"}>
             <button> Back </button>
         </Link>
-        </div>
         </div>
     );
 }
