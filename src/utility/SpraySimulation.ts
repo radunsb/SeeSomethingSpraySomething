@@ -163,10 +163,20 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     const new_max_frequency = parameterMap.get("max_frequency");
 
     if(typeof new_duty_cycle !== "undefined" ){
-        GlobalParams.DUTY_CYCLE = Number(new_duty_cycle.value);
+        let ndc = Number(new_duty_cycle.value)
+
+        if(ndc > 1){ //convert from percentage to fraction if necessary
+            ndc = ndc / 100;
+        }
+
+        GlobalParams.DUTY_CYCLE = ndc;
     }
     if(typeof new_max_frequency !== "undefined"){
-        GlobalParams.MAX_FREQUENCY = Number(new_max_frequency);
+        let nmf = Number(new_max_frequency.value);
+
+        nmf = nmf / 60; //convert from cycles/min to Hz 
+
+        GlobalParams.MAX_FREQUENCY = nmf;
     }
 
     //set on time and off time based on duty cycle and max frequency
@@ -181,10 +191,10 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     }
     else{
          if(GlobalParams.DUTY_CYCLE <= 0.5){
-        GlobalParams.FREQUENCY = GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+            GlobalParams.FREQUENCY = GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
         }
         else{
-        GlobalParams.FREQUENCY = 2 * GlobalParams.MAX_FREQUENCY - GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
+            GlobalParams.FREQUENCY = 2 * GlobalParams.MAX_FREQUENCY - GlobalParams.MAX_FREQUENCY * GlobalParams.DUTY_CYCLE / 0.5;
         }  
         const cycle_period = 1 / GlobalParams.FREQUENCY;
 
@@ -193,8 +203,8 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     }
     GlobalParams.PERIOD = GlobalParams.OFF_TIME + GlobalParams.ON_TIME;
 
-    //console.log(`On time: ${GlobalParams.ON_TIME}`);
-    //console.log(`off time: ${GlobalParams.OFF_TIME}`);
+    // console.log(`On time: ${GlobalParams.ON_TIME}`);
+    // console.log(`off time: ${GlobalParams.OFF_TIME}`);
 }
 
 namespace LocalConstants{
