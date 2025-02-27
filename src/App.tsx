@@ -395,7 +395,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       <div id='results'>
         {/* RESULTS */}
           <button onClick={navigateResults}> See Results </button>
-      </div>
+      </div>      
     </div>
   );
 }
