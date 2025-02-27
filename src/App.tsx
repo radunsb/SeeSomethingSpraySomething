@@ -1,14 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
-import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info, Dropdown } from './Modals.tsx';
+import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword,  ResetPasswordConfirm, Info} from './Modals.tsx';
 import { UserInfoResponse } from './utility/auth_requests.ts';
-import { useState, useEffect, ChangeEvent, useLayoutEffect } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
 import MainScreenVisual from './MainScreenVisual';
+import './utility/auth_requests.ts';
+
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
+import { Console } from 'console';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -28,6 +31,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isCreateAccountOpen, setIsCreateAccountOpen] = useState(false);
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
+  const [isForgetSuccessOpen, setIsForgetSuccessOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
@@ -52,6 +56,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
     let IDToSet = responseData.uid;
     setUserID(IDToSet);
+    console.log(IDToSet);
     setProjectList(await listUserProjects(IDToSet));
 
     let usernameToSet = responseData.username;
@@ -134,7 +139,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       if(value.min!=null && value.max!=null){
         parameterList.push(
           <li id={key + "_list"} key={key}>
-            <p>{key}</p>
+            <p>{key.replace("_", " ").replace("_", " ").toUpperCase()}</p>
             <input className="parameter_input" id={key + "_input"} type="number" min={value.min} max={value.max}></input>
           </li>
         );
@@ -360,9 +365,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         {/* SIGN IN / PROFILE */}
 
         <ProfileButton userID={userID} setIsProfileOpen={setIsProfileOpen} setIsSignInOpen={setIsSignInOpen}/>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUserInfo={awaitAndSetUserInfo}/>}
-        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUserInfo={awaitAndSetUserInfo}/>}
-        {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo}/>}
+        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo}/>}
+        {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>}
+        {isForgetSuccessOpen && <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>}
         {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>}
 
         {/* DOCUMENTATION */}

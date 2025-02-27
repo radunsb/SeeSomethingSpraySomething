@@ -236,9 +236,11 @@ export async function deleteProject(user_id: number, project_id: number){
         .catch(error => console.error(error));
 }
 
-//Because of how the database is set up, projects will necessarily be in order of
-//ascending projectID, even if some projects have been deleted.
-//So we can just look at the last project in the list and get its ID
+export async function resetPassword(user_id: string){
+    await axios.post(`${__BACKEND_URL__}/api/v1/users/${user_id}/reset`)
+        .catch(error => console.error(error));
+}
+
 export async function getLatestProjectID(userID : number){
     let user: Partial<Models.User> = {};
     await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
@@ -249,5 +251,18 @@ export async function getLatestProjectID(userID : number){
     if(user.projects){
         return user.projects[user.projects.length-1].project_id;
     }
+}
+
+export async function encodeHTML(str: string){
+    return str.replace(/[&<>"']/g, (match) => {
+        switch (match) {
+            case '&': return '&amp;';
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '"': return '&quot;';
+            case "'": return '&#39;';
+            default: return match;
+        }
+    });
 }
 

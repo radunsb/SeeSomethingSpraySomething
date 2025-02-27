@@ -1,6 +1,7 @@
 from flask import Blueprint, request, jsonify
-from db import get_controllers, does_project_exist, get_users, get_user_by_id, get_nozzles, get_guns
+from db import get_controllers, does_project_exist, get_users, get_user_by_id, get_nozzles, get_guns, get_email
 from db import save_new_project, overwrite_existing_project, delete_project
+#from reset import get_reset_token, send_email, verify_reset_token
 from flask_cors import CORS
 from datetime import datetime
 
@@ -77,3 +78,11 @@ def api_delete_project(user_id, project_id):
         "retrieved": datetime.utcnow().isoformat(),
 		"user": user
     })
+
+#@api_v1.route('/users/<int:user_id>/reset', methods=['GET', 'POST'])
+#def api_reset_password(user_id):
+#    email = get_email(user_id)
+#     send_email(email)
+#     return jsonify({
+#        "message": "Password reset email sent successfully"
+#    })
