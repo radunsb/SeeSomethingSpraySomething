@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
-import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info } from './Modals.tsx';
-import { useState, useEffect } from "react";
+import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info, Dropdown } from './Modals.tsx';
+import { useState, useEffect, ChangeEvent, useLayoutEffect } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
@@ -13,12 +13,13 @@ interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
+  timingModeState : [string, React.Dispatch<React.SetStateAction<string>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userIDstate, timingModeState}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -30,6 +31,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
+  const [timingMode, setTimingMode] = timingModeState;
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -133,6 +135,77 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
     }
   }
 
+  //this function has to be inside the app component because it needs access to the parametermap
+  //possible timing modes are
+  //vt = variable time, ft = fixed time
+  //vd = variable distance, fd = fixed distance
+  function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
+    updateTimingModeHelper(e.target.value);
+  }
+
+  function updateTimingModeHelper(newTimeMode:string) : void{
+    //start_delay should always be visible, so we don't need to do anything to it
+    const stopDelayDiv = document.getElementById("stop-delay-div");
+    const sprayDurDiv = document.getElementById("spray-duration-div");
+
+    const stopDelayParam = parameterMap.get("stop_delay");
+    const sprayDurationParam = parameterMap.get("spray_duration");
+
+    const lineSpeed = Number(getOrException(parameterMap, "line_speed").value) / 5; //divide by 5 to convert ft/min to in/s
+    
+    if(stopDelayDiv !== null && sprayDurDiv !== null){
+      if(typeof sprayDurationParam !== "undefined" && typeof stopDelayParam !== "undefined"){
+        if(newTimeMode === "ft"){
+          stopDelayDiv.classList.add("grayed-timing-mode");
+          sprayDurDiv.classList.remove("grayed-timing-mode");
+     
+          if(newTimeMode !== timingMode){
+            stopDelayParam.value = 0;
+            setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
+
+            sprayDurationParam.value = Number(getOrException(parameterMap, "product_length").value) / lineSpeed;
+            setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
+          }
+        }
+        else if(newTimeMode === "vt"){
+          stopDelayDiv.classList.remove("grayed-timing-mode");
+          sprayDurDiv.classList.add("grayed-timing-mode");
+
+          if(newTimeMode !== timingMode){
+            stopDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / lineSpeed;
+            setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
+            
+            sprayDurationParam.value = 0;
+            setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
+          }
+        }
+
+        const StopDelayInputBox =  document.getElementById("stop_delay_input") as HTMLInputElement;
+        if (StopDelayInputBox !== null) StopDelayInputBox.value = String(stopDelayParam.value);
+
+        const SprayDurationInputBox =  document.getElementById("spray_duration_input") as HTMLInputElement;
+        if (SprayDurationInputBox !== null) SprayDurationInputBox.value = String(sprayDurationParam.value);
+
+        setTimingMode(newTimeMode);
+        //console.log(`time mode state is now: ${newTimeMode}`);
+      }else{
+        console.error("ERROR: stop delay or spray duration parameter not found");
+      }
+    }
+    else{
+      console.error("ERROR: timing mode div not found");
+    }
+  }
+  //call when App is loaded to preserve across screens
+  let stopDelayGrayed = "";
+  let sprayDurationGrayed = "";
+  if(timingMode === "vt"){
+    sprayDurationGrayed = "grayed-timing-mode";
+  }
+  else if(timingMode === "ft"){
+    stopDelayGrayed = "grayed-timing-mode";
+  }
+
 // ParameterList Indexes
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
 // 6 = Nozzle Height, 7 = Nozzle Spacing, 8 = Owner ID, 9 = Product Height, 10 = Product Length,
@@ -227,15 +300,23 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-          <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
+          
+          <div>
+            <select value={timingMode} onChange={updateTimingMode}>
+              <option key="ft" value="ft">Fixed Time</option>
+              <option key="vt" value="vt">Variable Time</option>
+            </select>
+          </div>
+          
+          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center", gap: "8px"}}>
           {parameterList[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
+          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center", gap: "8px"}}>
           {parameterList[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Stop Delay"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
+          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center", gap: "8px"}}>
           {parameterList[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
@@ -325,3 +406,4 @@ function ProfileButton({userID, setIsSignInOpen, setIsProfileOpen} : pbProps){
       </button>)
   }
 }
+

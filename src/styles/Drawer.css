@@ -118,3 +118,16 @@ li {
   }
 }
 /* ------------------------------------------ */
+
+/* Added by Nathan - grays out the necessary fields of timing modes*/
+
+.visible-timing-mode{
+  border: 2px solid gray;
+  border-collapse: collapse;
+}
+
+.grayed-timing-mode{
+  filter:brightness(0.25);
+  background-color: gray;
+  pointer-events: none;
+}

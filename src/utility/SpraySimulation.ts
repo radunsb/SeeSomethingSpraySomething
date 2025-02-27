@@ -69,7 +69,7 @@ namespace GlobalParams{
                                             new Nozzle(100, 3, 5, 2, 11)];
 }
 
-export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>){
+export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string){
     const new_sensor_distance = parameterMap.get("sensor_distance");
     if(typeof new_sensor_distance !== "undefined"){
         GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance.value);
@@ -138,15 +138,15 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     }
 
     //we're in fixed time/distance
-    if((true || typeof new_stop_delay === "undefined") && typeof new_spray_duration !== "undefined"){
+    if(timingMode === "ft" && typeof new_stop_delay !== "undefined" && typeof new_spray_duration !== "undefined"){
         GlobalParams.SPRAY_DURATION = Number(new_spray_duration.value);
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION;
     }
     //we're in variable time/distance
-    else if(typeof new_stop_delay !== "undefined" && typeof new_spray_duration === "undefined"){
-        const falling_edge_trigger_time = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
-        GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
-        GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
+    else if(timingMode === "vt" && typeof new_stop_delay !== "undefined" && typeof new_spray_duration !== "undefined"){
+            const falling_edge_trigger_time = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
+            GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
+            GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
     }
 
     //if there was an error receiving or setting timing modes, default to automatic timing
@@ -383,10 +383,10 @@ function isActive(t: number) : boolean {
     return (cycleStart <= t && t <= shutoffTime);
 }
 
-export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>) : ProductElement[][]{
+export function computeSprayPattern(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string) : ProductElement[][]{
     
     //update the local copies of global parameters
-    updateGlobalParams(parameterMap);
+    updateGlobalParams(parameterMap, timingMode);
 
     //create product array
     let productASPRAY = InitializeProductArray();
