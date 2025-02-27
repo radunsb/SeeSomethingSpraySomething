@@ -3,7 +3,7 @@ import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { Models, UtilityInterfaces } from "./utility/models";
 import { select } from "three/tsl";
-import { createAccount, login, logout } from "./utility/auth_requests";
+import { createAccount, login, logout, UserInfoResponse } from "./utility/auth_requests";
 import { saveProject, deleteProject} from "./utility/ProjectUtilities";
 import { createProjectMap} from "./utility/ProjectUtilities";
 import { createNozzleArray, createControllerArray, listUserProjects} from "./utility/ProjectUtilities";
@@ -63,11 +63,10 @@ interface ModalProps{
   setIsOpen: (arg0: boolean) => void;
 }
 
-
 interface ProfileModalProps extends ModalProps{
-  setUID: (arg: Promise<number>) => void;
-  username: string
-  email: string
+  setUserInfo: (arg: Promise<UserInfoResponse>) => void;
+  username: string;
+  email: string;
 }
 interface SaveLoadProps{
   isOpen: boolean;
@@ -82,7 +81,7 @@ interface AccountModalProps{
   isOpen: boolean;
   setIsLIOpen: (arg0: boolean) => void;
   setIsCAOpen: (arg0: boolean) => void;
-  setUID: (arg: Promise<number>) => void;
+  setUserInfo: (arg: Promise<UserInfoResponse>) => void;
 }
 
 interface InfoModalProps{
@@ -144,7 +143,7 @@ return (
 //    setMyBoolean(!myBoolean);
 //  };
 
-export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
+export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }: AccountModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -192,7 +191,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: Acco
             <div>
               </div>
               <div>
-              <button className= "loginBtn" onClick={() => {setUID(createAccount(username, password, email)); setIsCAOpen(false)}}>
+              <button className= "loginBtn" onClick={() => {setUserInfo(createAccount(username, password, email)); setIsCAOpen(false)}}>
                 Create
               </button>
               </div>
@@ -203,7 +202,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: Acco
   );
 };
 
-  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
+  export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }: AccountModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
 
@@ -246,7 +245,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: Acco
                 </button>
               </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {setUID(login(username, password)); setIsLIOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {setUserInfo(login(username, password)); setIsLIOpen(false)}}>
                   Login
                 </button>
                 </div>
@@ -311,35 +310,36 @@ return (
 );  
 };
 
-export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
-  const [username, setUserName] = useState('');
-  const [password, setPassword] = useState('');
-  const [email, setEmail] = useState('');
-  const handleUnChange = (newUn:string) => {
-    setUserName(newUn);}
+export const Profile = ({isOpen, setIsOpen, setUserInfo, username, email}: ProfileModalProps) => {
+  // const [username, setUserName] = useState('');
+  // const [password, setPassword] = useState('');
+  // const [email, setEmail] = useState('');
+  // const handleUnChange = (newUn:string) => {
+  //   setUserName(newUn);}
 
-  const handlePwChange = (newPw:string) => {
-    setPassword(newPw);}
+  // const handlePwChange = (newPw:string) => {
+  //   setPassword(newPw);}
 
-  const handleEmChange = (newEm:string) => {
-      setEmail(newEm);}
+  // const handleEmChange = (newEm:string) => {
+  //     setEmail(newEm);}
   if (!isOpen){ return null}
   return (
   <>
     <div className= "darkBG" onClick={() => setIsOpen(false)} />
       <div className= "centered">
         <div className= "modal">
-          <h1>Profile</h1>
+          <h2>Profile</h2>
           <button className= "closeBtn" onClick={() => setIsOpen(false)}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
             <div className= "modalContent">
+              <p>Username: {username}</p>
+              <p>Email: {email}</p>
               <button className = "forgetBtn" onClick={ () => setIsOpen(false)}>
                     Delete Account
               </button>
             </div>
           <div className= "modalActions">
-            <p>Username: {parameter}</p>
               {/*<div className= "actionsContainer">
                 <div>
                     <p>Change Username</p>
@@ -364,7 +364,7 @@ export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
                 </div>
               <div>
               */}
-              <button onClick={() => {setUID(logout()); setIsOpen(false)}}>
+              <button onClick={() => {setUserInfo(logout()); setIsOpen(false)}}>
                   Log Out
                 </button>
         </div>
