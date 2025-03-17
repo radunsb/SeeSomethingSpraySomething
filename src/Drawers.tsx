@@ -1,15 +1,11 @@
 import React from 'react';
 import "./styles/Drawer.css";
+import autoCalculateTiming from "./App.tsx";
+
 
 export enum DrawerDirection {
   Left = 'Left',
   Right = 'Right',
-}
-
-interface Node {
-  id: string;
-  name?: string;
-  children?: Node[];
 }
 
 type Props = {
@@ -37,16 +33,6 @@ export const Checkbox: React.FC<CheckboxProps> = ({checked, onChange, label = "A
       </label>
     );
 };
-
-function populateChildren(node: Node, children: Node[]): void {
-  if (!node.children) {
-      node.children = [];
-  }
-  node.children.push(...children);
-  children.forEach(child => {
-      populateChildren(child, child.children || []); 
-  });
-}
 
 export const NozzleDrawer = ({
   isOpen,
@@ -119,10 +105,11 @@ export const ControllerDrawer = ({
   const classNames = `Drawer ${direction} ${
     isOpen ? 'Open' : ''
   }`;
-  const autoCalculateTiming =({
-    
-  })
   const [isChecked, setIsChecked] = React.useState(false);
+  if (isChecked){
+    console.log("checked")
+    autoCalculateTiming
+  }
 
   return (
     <aside

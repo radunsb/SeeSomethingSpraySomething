@@ -72,3 +72,10 @@ export namespace UtilityInterfaces{
         value: string|number,
     }
 }
+
+interface IUser extends Document {
+    email: string;
+    password: string;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
+  }

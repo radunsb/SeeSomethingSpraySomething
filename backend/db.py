@@ -37,6 +37,13 @@ def get_user_by_id(user_id):
         return user
     except Exception as e:
         return e
+    
+def get_email(user_id):
+    try:
+        user = db.Users.find_one({'_user': user_id})
+        return user['email']
+    except Exception as e:
+        return e
 
 
 def get_nozzles():
