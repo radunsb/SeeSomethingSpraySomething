@@ -1,28 +1,11 @@
 import { useState } from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { logout } from "../utility/auth_requests";
+import { ProfileModalProps } from "./ModalInterfaces";
+import { TextField } from "./ModalUtil.tsx";
+import '../styles/Modals.css';
 
-interface ModalProps{
-    isOpen: boolean;
-    setIsOpen: (arg0: boolean) => void;
-  }
-
-interface ProfileModalProps extends ModalProps{
-    setUID: (arg: Promise<number>) => void;
-  }
-
-  interface TextFieldProps {
-    value?: string;
-    onChange: (val: string) => void;
-  }
-
-  export const TextField = ({ value, onChange }: TextFieldProps) => {
-    return (
-      <input value={value} onChange={({ target: { value } }) => onChange(value)}/>
-    );
-  };
-
-  export const Profile = ({isOpen, setIsOpen, setUID}: ProfileModalProps) => {
+  export const Profile = ({isOpen, setIsOpen, setUserInfo}: ProfileModalProps) => {
     const [username, setUserName] = useState('');
     const [password, setPassword] = useState('');
     const [email, setEmail] = useState('');
@@ -73,7 +56,7 @@ interface ProfileModalProps extends ModalProps{
                     </button>
                 </div>
                 <div>
-                <button onClick={() => {setUID(logout()); setIsOpen(false)}}>
+                <button onClick={() => { setIsOpen(false)}}>
                     Log Out
                   </button>
                 </div>

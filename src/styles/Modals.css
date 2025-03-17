@@ -27,13 +27,15 @@
 
   .infodarkBG {
     background-color: rgba(0, 0, 0, 0.2);
-    width: 100vw;
-    height: 103vh;
+    width: 300%;
+    height: 100%;
     z-index: 3;
     top: 0%;
-    left: 265%;
-    transform: translate(-94%, -5%);
+    left: 0%;
+    transform: translate(0%, 0%);
     position: absolute;
+    padding: 0px;
+    margin: 0px;
   }
   
   .infomodal {
@@ -189,7 +191,7 @@
     cursor: pointer;
     font-weight: 500;
     padding: 11px 28px;
-    border-radius: 12px;
+    border-radius: 8px;
     font-size: 0.8rem;
     border: none;
     color: #fff;
@@ -203,6 +205,19 @@
     background: #ff3e4e;
   }
   
+  .cancelBtn {
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: 500;
+    padding: 11px 28px;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    border: none;
+    color: #2c3e50;
+    background: #fcfcfc;
+    transition: all 0.25s ease;
+  }
+
   .cancelBtn {
     margin-top: 10px;
     cursor: pointer;

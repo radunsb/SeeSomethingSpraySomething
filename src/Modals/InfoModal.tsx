@@ -1,10 +1,6 @@
 import { RiCloseLine } from "react-icons/ri";
-
-interface InfoModalProps{
-    isOpen: boolean;
-    setIsOpen: (arg0: boolean) => void;
-    selectedId: number | null;
-  }
+import { InfoModalProps } from "./ModalInterfaces";
+import '../styles/Modals.css';
 
   let paraNames: string[] = [
     "Duty Cycle", "Fluid Pressure", "Last Modified", "Line Speed", "Line Width", 

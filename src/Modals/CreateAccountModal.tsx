@@ -1,29 +1,11 @@
 import { useState } from "react";
-import './styles/Modals.css';
 import { RiCloseLine } from "react-icons/ri";
 import { createAccount } from "../utility/auth_requests.ts";
+import { AccountModalProps } from './ModalInterfaces';
+import { TextField } from './ModalUtil.tsx';
+import '../styles/Modals.css';
 
-  interface TextFieldProps {
-    value?: string;
-    onChange: (val: string) => void;
-  }
-
-  interface AccountModalProps{
-    isOpen: boolean;
-    setIsLIOpen: (arg0: boolean) => void;
-    setIsCAOpen: (arg0: boolean) => void;
-    setIsFPOpen: (arg0: boolean) => void;
-    setUID: (arg: Promise<number>) => void;
-  }
-  
-export const TextField = ({ value, onChange }: TextFieldProps) => {
-  return (
-    <input value={value} onChange={({ target: { value } }) => onChange(value)}/>
-  );
-};
-
-
-export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: AccountModalProps) => {
+export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }: AccountModalProps) => {
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
   const [email, setEmail] = useState('');
@@ -71,7 +53,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUID }: Acco
             <div>
               </div>
               <div>
-              <button className= "loginBtn" onClick={() => {setUID(createAccount(username, password, email)); setIsCAOpen(false)}}>
+              <button className= "loginBtn" onClick={() => { setIsCAOpen(false)}}>
                 Create
               </button>
               </div>

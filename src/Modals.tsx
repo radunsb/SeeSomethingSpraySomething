@@ -5,7 +5,7 @@ import { Models, UtilityInterfaces } from "./utility/models";
 import { select } from "three/tsl";
 import { createAccount, login, logout, UserInfoResponse } from "./utility/auth_requests";
 import { saveProject, deleteProject, resetPassword} from "./utility/ProjectUtilities";
-import { createProjectMap} from "./utility/ProjectUtilities";
+import { createProjectMap, encodeHTML} from "./utility/ProjectUtilities";
 import { createNozzleArray, createControllerArray, listUserProjects} from "./utility/ProjectUtilities";
 import "./App.tsx";
 
@@ -116,7 +116,7 @@ interface DropdownProps {
 
 export const TextField = ({ value, onChange }: TextFieldProps) => {
   return (
-    <input value={value} onChange={({ target: { value } }) => onChange(value)}/>
+    <input value={value} onChange={({ target: { value } }) => onChange(encodeHTML(value))}/>
   );
 };
 
@@ -600,7 +600,7 @@ export const Profile = ({isOpen, setIsOpen, setUserInfo, username, email}: Profi
             </button>
             <div id="save_modal_content" className= "modalContent">
               <input id="rename_project" type="text" placeholder={projectName}></input>
-            <button onClick={save}>Save Project</button>
+            <button className = "cancelBtn" onClick={save}>Save Project</button>
               <div className = 'scrollable-container'>
                 {projectList}
               </div>
@@ -612,12 +612,6 @@ export const Profile = ({isOpen, setIsOpen, setUserInfo, username, email}: Profi
                 </button>
                 <button id="open_project_button" className= "openBtn" onClick={() => loadProject()}>
                   Open
-                </button>
-                <button
-                  className= "cancelBtn"
-                  onClick={() => setIsOpen(false)}
-                >
-                  Cancel
                 </button>
               </div>
             </div>

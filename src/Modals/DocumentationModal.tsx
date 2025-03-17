@@ -1,47 +1,9 @@
-import React, { useState, useEffect } from "react";
-import './styles/Modals.css';
+import { useState, useEffect } from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { createNozzleArray, createControllerArray} from "../utility/ProjectUtilities";
-
-interface ModalProps{
-    isOpen: boolean;
-    setIsOpen: (arg0: boolean) => void;
-  }
-
-interface Option {
-    value: string;
-    label: string;
-  }
-
-interface DropdownProps {
-  options: Option[];
-  onChange: (value: string) => void;
-}
-
-export const Dropdown: React.FC<DropdownProps> = ({ options, onChange}) => {
-  const [selectedValue, setSelectedValue] = useState<string>(options.length > 0 ? options[0].value : "");
-  useEffect(() => {
-    if (options.length > 0){
-      setSelectedValue(options[0].value);
-    }
-  }, [options])
-
-const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const value = event.target.value;
-  setSelectedValue(value);
-  onChange(value);
-};
-
-return (
-  <select value={selectedValue} onChange={handleChange}>
-    {options.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label}
-      </option>
-    ))}
-  </select>
-);
-};
+import { ModalProps, Option } from "./ModalInterfaces.tsx";
+import { Dropdown } from "./ModalUtil.tsx";
+import '../styles/Modals.css';
 
   export const Documentation = ({ isOpen, setIsOpen }: ModalProps) => {
     const [selectedNozzle, setSelectedNozzle] = useState<string>("");

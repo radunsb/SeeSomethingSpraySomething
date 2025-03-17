@@ -253,7 +253,7 @@ export async function getLatestProjectID(userID : number){
     }
 }
 
-export async function encodeHTML(str: string){
+export function encodeHTML(str: string): string{
     return str.replace(/[&<>"']/g, (match) => {
         switch (match) {
             case '&': return '&amp;';

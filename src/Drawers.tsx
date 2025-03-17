@@ -1,5 +1,6 @@
 import React from 'react';
 import "./styles/Drawer.css";
+import autoCalculateTiming from "./App.tsx";
 
 
 export enum DrawerDirection {
@@ -104,10 +105,11 @@ export const ControllerDrawer = ({
   const classNames = `Drawer ${direction} ${
     isOpen ? 'Open' : ''
   }`;
-  const autoCalculateTiming =({
-
-  })
   const [isChecked, setIsChecked] = React.useState(false);
+  if (isChecked){
+    console.log("checked")
+    autoCalculateTiming
+  }
 
   return (
     <aside
