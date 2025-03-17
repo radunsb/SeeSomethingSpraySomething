@@ -38,6 +38,7 @@ def get_user_by_id(user_id):
     except Exception as e:
         return e
 
+
 def get_nozzles():
     try:
         return list(db.Nozzles.find({}))
@@ -113,3 +114,4 @@ def delete_project(user_id, project_id):
         return user
     except Exception as e:
         return e   
+    

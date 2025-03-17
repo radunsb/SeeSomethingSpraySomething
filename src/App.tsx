@@ -2,6 +2,7 @@
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { SignIn, Profile, Documentation, SaveLoad, CreateAccount, ResetPassword, Info, Dropdown } from './Modals.tsx';
+import { UserInfoResponse } from './utility/auth_requests.ts';
 import { useState, useEffect, ChangeEvent, useLayoutEffect } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
@@ -31,7 +32,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [timingMode, setTimingMode] = timingModeState;
+  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -42,12 +44,25 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
+  const [timingMode, setTimingMode] = timingModeState;
 
   //When someone logs in, set the userID state and reload the project list
-  async function awaitAndSetUserID(newUID : Promise<number>) {
-    const IDToSet = await newUID;
+  async function awaitAndSetUserInfo(newInfo : Promise<UserInfoResponse>) {
+    const responseData = await newInfo;
+
+    let IDToSet = responseData.uid;
     setUserID(IDToSet);
     setProjectList(await listUserProjects(IDToSet));
+
+    let usernameToSet = responseData.username;
+    if(typeof usernameToSet === "string"){
+      setUsername(usernameToSet);
+    }
+
+    let emailToSet = responseData.email;
+    if(typeof emailToSet === "string"){
+      setEmail(emailToSet);
+    }
   }
   
   //Funky stuff happens with defaultValue on inputs and React. I don't know why
@@ -345,10 +360,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         {/* SIGN IN / PROFILE */}
 
         <ProfileButton userID={userID} setIsProfileOpen={setIsProfileOpen} setIsSignInOpen={setIsSignInOpen}/>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUID={awaitAndSetUserID}/>}
-        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUID={awaitAndSetUserID}/>}
+        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setUserInfo={awaitAndSetUserInfo}/>}
+        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setUserInfo={awaitAndSetUserInfo}/>}
         {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen}/>}
-        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUID={awaitAndSetUserID}/>}
+        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>}
 
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
@@ -380,7 +395,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       <div id='results'>
         {/* RESULTS */}
           <button onClick={navigateResults}> See Results </button>
-      </div>
+      </div>      
     </div>
   );
 }
