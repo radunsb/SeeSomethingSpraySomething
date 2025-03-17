@@ -127,7 +127,7 @@ li {
 }
 
 .grayed-timing-mode{
-  filter:brightness(0.25);
+  filter:brightness(0.45);
   background-color: gray;
   pointer-events: none;
 }

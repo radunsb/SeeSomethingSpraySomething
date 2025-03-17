@@ -162,50 +162,19 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     //start_delay should always be visible, so we don't need to do anything to it
     const stopDelayDiv = document.getElementById("stop-delay-div");
     const sprayDurDiv = document.getElementById("spray-duration-div");
-
-    const stopDelayParam = parameterMap.get("stop_delay");
-    const sprayDurationParam = parameterMap.get("spray_duration");
-
-    const lineSpeed = Number(getOrException(parameterMap, "line_speed").value) / 5; //divide by 5 to convert ft/min to in/s
-    
+   
     if(stopDelayDiv !== null && sprayDurDiv !== null){
-      if(typeof sprayDurationParam !== "undefined" && typeof stopDelayParam !== "undefined"){
         if(newTimeMode === "ft"){
           stopDelayDiv.classList.add("grayed-timing-mode");
           sprayDurDiv.classList.remove("grayed-timing-mode");
-     
-          if(newTimeMode !== timingMode){
-            stopDelayParam.value = 0;
-            setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
-
-            sprayDurationParam.value = Number(getOrException(parameterMap, "product_length").value) / lineSpeed;
-            setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
-          }
         }
         else if(newTimeMode === "vt"){
           stopDelayDiv.classList.remove("grayed-timing-mode");
           sprayDurDiv.classList.add("grayed-timing-mode");
-
-          if(newTimeMode !== timingMode){
-            stopDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / lineSpeed;
-            setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
-            
-            sprayDurationParam.value = 0;
-            setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
-          }
         }
-
-        const StopDelayInputBox =  document.getElementById("stop_delay_input") as HTMLInputElement;
-        if (StopDelayInputBox !== null) StopDelayInputBox.value = String(stopDelayParam.value);
-
-        const SprayDurationInputBox =  document.getElementById("spray_duration_input") as HTMLInputElement;
-        if (SprayDurationInputBox !== null) SprayDurationInputBox.value = String(sprayDurationParam.value);
 
         setTimingMode(newTimeMode);
         //console.log(`time mode state is now: ${newTimeMode}`);
-      }else{
-        console.error("ERROR: stop delay or spray duration parameter not found");
-      }
     }
     else{
       console.error("ERROR: timing mode div not found");
