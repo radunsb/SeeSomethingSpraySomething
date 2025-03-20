@@ -22,20 +22,6 @@
   cursor: pointer;
 }
 
-.Drawer.Right {
-  right: 0;
-  transform: translateX(100%);
-  box-shadow: 0.5rem 0 1.5rem #000;
-}
-
-.Drawer.Right .Close {
-  position: absolute;
-  top: 1rem;
-  left: 1rem;
-  display: flex;
-  cursor: pointer;
-}
-
 .Drawer .Content {
   margin: 4rem 1rem 1rem;
 }
@@ -89,6 +75,7 @@
   border: transparent;
   border-radius: 10px;
   border-width: 10px;
+  text-align: right;
 }
 
 /* Hopefully allows for proper wrapping of label and input on small screens */
@@ -127,7 +114,7 @@ li {
 }
 
 .grayed-timing-mode{
-  filter:brightness(0.25);
+  filter:brightness(0.45);
   background-color: gray;
   pointer-events: none;
 }

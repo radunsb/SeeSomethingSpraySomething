@@ -12,7 +12,9 @@ From the main folder,
 - npm install cors axios
 - npm install three @types/three @react-three/fiber
 - npm install @react-three/drei
-
+- npm i jsonwebtoken
+- pip install jwt
+- npm install html-to-image
 - npm i react-router
 
 Run server:

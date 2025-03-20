@@ -20,7 +20,7 @@ def create_account():
         return "User already exists", 409
     else:
         session["uid"] = new_uid
-        return f"{{\"uid\":{new_uid}}}", 200
+        return f'{{"uid":{new_uid}, "username":"{username}", "email":"{email}"}}'
 
 
 @auth_v1.route("/login/", methods=["POST"])
@@ -29,6 +29,7 @@ def login():
 
     username = incoming_datamap["username"]
     password = incoming_datamap["password"]
+    
 
     uid = account_exists(username)
     if uid == None:
@@ -40,8 +41,10 @@ def login():
         return f"Incorrect password for user: {username}"
     else:
         session["uid"] = uid
-        print(f"{{\"uid\":{uid}}}")
-        return f"{{\"uid\":{uid}}}", 200
+        
+        responseText = f'{{"uid":{uid}, "username":"{username}", "email":"{user_map["email"]}"}}'
+        #print(responseText)
+        return responseText, 200
 
 @auth_v1.route("/logout/", methods=["POST"])
 def logout():
