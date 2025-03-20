@@ -252,7 +252,7 @@ export async function resetPassword(user_id: string){
 
 export async function getLatestProjectID(userID : number){
     let user: Partial<Models.User> = {};
-    await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
+    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
