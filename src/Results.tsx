@@ -1,5 +1,5 @@
 import { Link, useNavigate} from "react-router";
-import { computeSprayPattern } from "./utility/SpraySimulation";
+import { computeSprayPattern, updateParams, getPatternDimensions } from "./utility/FullConveyorSimulation.ts";
 import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
 import * as htmlToImage from "html-to-image";
@@ -9,29 +9,62 @@ interface ResultsProps{
     timingMode: string
 }
 
+const BASE_GRANULARITY = 100;
+const SCREEN_WIDTH_FRACTION = 0.7;
+
 const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
 
-    const productAspray = computeSprayPattern(parameterMap, timingMode);
+    //pass the parametermap to the simulation
+    updateParams(parameterMap, timingMode);
+
+    //get the spray pattern dimensions
+    const [patternLength, patternWidth] = getPatternDimensions(); 
+
+    //assume length is greater than width
+    const widthToLengthRatio = patternWidth / patternLength;
+   
+    //determine display dimensions
+    const productImageWidth = SCREEN_WIDTH_FRACTION * window.innerWidth;
+    const productImageHeight = widthToLengthRatio * productImageWidth;
+
+    //determine granularity
+    const widthElements = BASE_GRANULARITY;
+    const lengthElements = widthElements * (1 / widthToLengthRatio);
+
+    //determine the width and height of each displayed element as a percentage
+    const elemHeight = 100 / widthElements;
+    const elemWidth = 100 / lengthElements;
+
+    //calculate the spray pattern
+    const sprayPattern = computeSprayPattern(lengthElements, widthElements)
+    const productAspray = sprayPattern.pattern;
 
     let maxSpray = 0;
-    let minSpray = Number.MAX_VALUE;
-
-    let curRow = 0;
-    for (let row of productAspray){
-        let curCol = 0;
-        curRow += 1;
-        for(let element of row){
+    for (let col of productAspray){
+        for(let element of col){
             const thisDensity = element.getElementSprayDensity();
             if (thisDensity > maxSpray){
                 maxSpray = thisDensity;
             }
-            if(thisDensity < minSpray){
-                minSpray = thisDensity;
-            }
-            curCol += 1;
         }
     }
+
+    //detect product edges
+    for(let colI = 1; colI < productAspray.length-1; colI++ ){
+        for(let rowI = 1; rowI < productAspray[colI].length; rowI++){
+            for(let colOffset = -1; colOffset < 2; colOffset+=2){
+                for(let rowOffset = -1; rowOffset < 2; rowOffset+=2){
+                    if( productAspray[colI][rowI].isProduct && !productAspray[colI+colOffset][rowI+rowOffset].isProduct){
+                        productAspray[colI+colOffset][rowI+rowOffset].isProductBorder = true;
+                    }
+                }
+            }
+        }
+    }
+
+//////////// code to export a screenshot ////////////////////////////////////////////////////////////////
+
 
     const screenshotArea = useRef(null);
     async function takeScreenshot(){
@@ -50,14 +83,17 @@ const Results = ({params, timingMode}:ResultsProps) => {
     return (
         <div id="results-root">
             <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-                <div id="product-image" ref={screenshotArea}>
+                <div id="product-image" style={{width:productImageWidth, height:productImageHeight}} ref={screenshotArea}>
                     {productAspray.map((col, colIndex) => 
-                        <div className="spray-column" key={colIndex}>
-                            {col.map((element, eIndex) => 
-                                <div className={`spray-element`} style={
-                                    {backgroundColor:`rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`}
+                        <div className="spray-column" key={colIndex} style={{width:`${elemWidth}%`}}>
+                            {col.map((element, rowIndex) => 
+                                <div className='spray-element' style={
+                                    {height:`${elemHeight}%`,
+                                        backgroundColor:!element.isProductBorder ? 
+                                            `rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`
+                                            : 'rgb(0,0,0)'}
                                 }
-                                key={eIndex}>
+                                key={rowIndex}>
                                     {/*element.getVolumeApplied().toFixed(4)*/}
                                 </div>)}
                         </div>)
@@ -69,8 +105,6 @@ const Results = ({params, timingMode}:ResultsProps) => {
                     </Link>
                     <button onClick={takeScreenshot}> Export as PDF/Print </button>
                 </div>
-                <p>Max Application Rate: {maxSpray.toFixed(5)} gallons / square inch</p>
-                <p>Min Application Rate: {minSpray.toFixed(5)} gallons / square inch</p>
             </div>
         </div>
     );
