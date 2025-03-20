@@ -64,6 +64,12 @@ def get_projects_by_user(user):
     except Exception as e:
         return e
     
+def get_user_recent_runs(user):
+    try:
+        return list(user['recent_runs'])
+    except Exception as e:
+        return e
+    
 def does_project_exist(user_id, pid):
     try:
         user = db.Users.find_one({'_id': user_id})
@@ -123,12 +129,12 @@ def delete_project(user_id, project_id):
     except Exception as e:
         return e   
 
-def push_recent_projects(user_id, project_id, projectJSON):
+def push_recent_project(user_id, project_id, projectJSON):
     try:
         if(project_id == 0):
             return None
         user = db.Users.find_one({"_id": user_id})
-        if(len(user['recent_runs']) >= 5):
+        if(len(user['recent_runs']) >= 30):
             db.Users.update_one(
                 {"_id": user_id},
                 {"$pop": {"recent_runs": -1}}
@@ -140,4 +146,13 @@ def push_recent_projects(user_id, project_id, projectJSON):
         user = db.Users.find_one({'_id': user_id})
         return user
     except Exception as e:
-        return e  
+        return e
+
+def get_recents_for_this_project(user_id, project_id):
+    try:
+        user = db.Users.find_one({"_id": user_id})
+        recents = get_user_recent_runs(user)
+        recents = list(filter(lambda run: run['project_id'] == project_id, recents))
+        return recents
+    except Exception as e:
+        return e

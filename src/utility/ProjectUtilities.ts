@@ -243,13 +243,34 @@ export async function resetPassword(user_id: string){
 
 export async function getLatestProjectID(userID : number){
     let user: Partial<Models.User> = {};
-    await axios.get(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
+    await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/`)
         .then(response => {
             user = <Models.User> response.data.user;
         })
         .catch(error => console.error(error));
     if(user.projects){
         return user.projects[user.projects.length-1].project_id;
+    }
+}
+
+export async function pushRunToDatabase(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
+    if(!project){
+        return;
+    }
+    const newProject = createProjectFromMap(project);
+    if(newProject !== undefined){
+        newProject.last_modified_date = new Date();
+        await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/run`,{
+            data:newProject,
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then(function (response) {
+            console.log(response);
+          })
+          .catch(function (error) {
+            console.log(error);
+          });
     }
 }
 

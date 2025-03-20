@@ -1,10 +1,13 @@
 from flask import Blueprint, request, session, make_response
 from authentication.accounts import create_user_account, global_hasher, account_exists
 from db import get_user_by_id
+from flask_cors import CORS
 import json
 
 auth_v1 = Blueprint(
     'auth_v1', 'auth_v1', url_prefix='/auth/v1')
+
+CORS(auth_v1)
 
 @auth_v1.route("/create/", methods=["POST"])
 def create_account():

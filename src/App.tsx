@@ -12,6 +12,7 @@ import { useState, useEffect, ChangeEvent } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
+import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
 
@@ -102,7 +103,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
   //Called when the results button is clicked. Not sure why this needs its own function.
   const navigate = useNavigate();
-  function navigateResults(){   
+  async function navigateResults(){
+    await pushRunToDatabase(userID, parameterMap)   
     navigate('/results/');
   }
   
@@ -392,7 +394,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       <div id='sprayModel'>
         {/* PROJECT NAME */}
         <h3 id='projectName'>{getOrException(parameterMap, "project_name").value}</h3>
-        <h3>{userID}</h3>
         {/* 3D MODEL */}
         <MainScreenVisual parameterMap={parameterMap}/>
       </div>
