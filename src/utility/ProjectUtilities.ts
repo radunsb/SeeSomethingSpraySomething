@@ -122,6 +122,15 @@ export async function createControllerArray(): Promise<string[]> {
 //Takes the current parameters and saves it in your projects folder
 //with the first unused ID
 export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
+    post_new_project_to_url(project, `${__BACKEND_URL__}/api/v1/users/${userID}/new`)
+}
+
+//pushes the current project into the recent_runs array
+export async function pushRunToDatabase(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
+    post_new_project_to_url(project, `${__BACKEND_URL__}/api/v1/users/${userID}/run`)
+}
+
+async function post_new_project_to_url(project: Map<string, UtilityInterfaces.Parameter>|undefined, url:string){
     if(!project){
         return;
     }
@@ -131,7 +140,7 @@ export async function saveProject(userID: number, project: Map<string, UtilityIn
         newProject.last_modified_date = new Date();
         //Backend handles determining whether we're overwriting something
         //or saving something new. Everything gets posted to the same url though.
-        await axios.post(`${__BACKEND_URL__}/api/v1/users/${userID}/new`,{
+        await axios.post(url,{
             data:newProject,
             headers: {
                 'Content-Type': 'application/json'
@@ -252,6 +261,8 @@ export async function getLatestProjectID(userID : number){
         return user.projects[user.projects.length-1].project_id;
     }
 }
+
+
 
 export function encodeHTML(str: string): string{
     return str.replace(/[&<>"']/g, (match) => {

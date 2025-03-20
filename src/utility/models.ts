@@ -54,7 +54,7 @@ export namespace Models{
         spray_duration:number,
         nozzle:Models.Nozzle,
         controller:Models.Controller,
-        gun:Models.Gun
+        gun:Models.Gun,
     }
 }
 
