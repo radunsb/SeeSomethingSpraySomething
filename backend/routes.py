@@ -4,7 +4,7 @@ from db import save_new_project, overwrite_existing_project, delete_project, get
 from db import push_recent_project
 #from reset import get_reset_token, send_email, verify_reset_token
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timezone
 
 api_v1 = Blueprint(
     'api_v1', 'api_v1', url_prefix='/api/v1')
@@ -15,7 +15,7 @@ CORS(api_v1)
 def api_get_controllers():
     controllers = get_controllers()
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"count": len(controllers),
 		"controllers": controllers
     })
@@ -24,7 +24,7 @@ def api_get_controllers():
 def api_get_nozzles():
     nozzles = get_nozzles()
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"count": len(nozzles),
 		"nozzles": nozzles
     })
@@ -33,7 +33,7 @@ def api_get_nozzles():
 def api_get_guns():
     guns = get_guns()
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"count": len(guns),
 		"guns": guns
     })
@@ -43,7 +43,7 @@ def api_get_guns():
 def api_get_users():
     users = get_users()
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"count": len(users),
 		"users": users
     })
@@ -53,7 +53,7 @@ def api_get_user_projects(user_id):
     user = get_user_by_id(user_id)
     del user['pass_hash']
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"user": user
     })
 
@@ -68,7 +68,7 @@ def api_post_new_project(user_id):
         user = save_new_project(user_id, project['data'])
     del user['pass_hash']
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"user": user
     })
 
@@ -77,8 +77,7 @@ def api_post_run(user_id):
     project = request.get_json()
     user = push_recent_project(user_id, project['data']['project_id'], project['data'])
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
-		"user": user
+        "retrieved": datetime.now(timezone.utc).isoformat()
     })
 
 
@@ -86,7 +85,7 @@ def api_post_run(user_id):
 def api_delete_project(user_id, project_id):
     user = delete_project(user_id, project_id)
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"user": user
     })
 
@@ -94,7 +93,7 @@ def api_delete_project(user_id, project_id):
 def api_get_project_recent_runs(user_id, project_id):
     recents = get_recents_for_this_project(user_id, project_id)
     return jsonify({
-        "retrieved": datetime.utcnow().isoformat(),
+        "retrieved": datetime.now(timezone.utc).isoformat(),
 		"recents": recents
     })
 
