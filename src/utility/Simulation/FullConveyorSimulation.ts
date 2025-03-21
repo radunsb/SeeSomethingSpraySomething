@@ -1,4 +1,4 @@
-import {UtilityInterfaces} from "./models.ts"
+import {UtilityInterfaces} from "../models.ts"
 
 /* A NOTE ON UNITS AND COORDINATES
 
@@ -209,7 +209,7 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
 }
 
 namespace LocalConstants{
-    export const TIME_STEP = 0.0001; //second
+    export let TIME_STEP = 0.0001; //second
 
     export let NUM_WIDTH_ELEMENTS = 100;
     export let ELEMENT_WIDTH = GlobalParams.LINE_WIDTH/NUM_WIDTH_ELEMENTS;
@@ -221,7 +221,9 @@ namespace LocalConstants{
 
     export let INITIAL_X_FRONT = GlobalParams.LINE_SPEED * (0.1 * GlobalParams.SPRAY_DURATION - GlobalParams.SPRAY_START_TIME);
 
-    export function updateSimulationDimensions(lengthElements : number, widthElements: number){
+    export function updateSimulationDimensions(lengthElements : number, widthElements: number, timeStep:number){
+        TIME_STEP = timeStep;
+
         NUM_LENGTH_ELEMENTS = lengthElements;
         NUM_WIDTH_ELEMENTS = widthElements;
 
@@ -475,11 +477,11 @@ export function getPatternDimensions() : [number, number] {
     return [patternLength, patternWidth];
 }
 
+
 //BE SURE TO CALL UPDATE_PARAMS BEFORE CALLING THIS METHOD
-export function computeSprayPattern(numLengthElements:number, numWidthElements:number, anti_aliasing_radius:number) : SprayPattern{
-    
+export function computeSprayPattern(numLengthElements:number, numWidthElements:number, timeStep:number, anti_aliasing_radius:number) : SprayPattern{
     //update line element dimensions
-    LocalConstants.updateSimulationDimensions(numLengthElements, numWidthElements);
+    LocalConstants.updateSimulationDimensions(numLengthElements, numWidthElements, timeStep);
 
     //create line array
     let productASPRAY = InitializeConveyorArray();

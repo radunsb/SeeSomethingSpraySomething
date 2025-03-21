@@ -1,4 +1,4 @@
-import {UtilityInterfaces} from "./models.ts"
+import {UtilityInterfaces} from "../models.ts"
 
 /* A NOTE ON UNITS AND COORDINATES
 

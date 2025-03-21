@@ -1,5 +1,5 @@
 import { Link, useNavigate} from "react-router";
-import { computeSprayPattern, updateParams, getPatternDimensions } from "./utility/FullConveyorSimulation.ts";
+import { computeSprayPattern, updateParams, getPatternDimensions } from "./utility/Simulation/FullConveyorSimulation.ts";
 import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
 import * as htmlToImage from "html-to-image";
@@ -13,7 +13,7 @@ interface ResultsProps{
 const LENGTH_GRANULARITY = 100;
 const SIM_TIME_STEP = 0.001;
 const ANTI_ALIASING_RADIUS = 2;
-const SCREEN_WIDTH_FRACTION = 0.55;
+const IMAGE_SCREEN_FRACTION = 0.6;
 
 const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
@@ -24,13 +24,8 @@ const Results = ({params, timingMode}:ResultsProps) => {
     //get the spray pattern dimensions
     const [patternLength, patternWidth] = getPatternDimensions(); 
 
-    //assume length is greater than width
     const widthToLengthRatio = patternWidth / patternLength;
    
-    //determine display dimensions
-    const productImageWidth = SCREEN_WIDTH_FRACTION * window.innerWidth;
-    const productImageHeight = widthToLengthRatio * productImageWidth;
-
     //determine granularity
     const widthElements = LENGTH_GRANULARITY;
     const lengthElements = widthElements * (1 / widthToLengthRatio);
@@ -40,9 +35,10 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const elemWidth = 100 / lengthElements;
 
     //calculate the spray pattern
-    const sprayPattern = computeSprayPattern(lengthElements, widthElements, ANTI_ALIASING_RADIUS)
+    const sprayPattern = computeSprayPattern(lengthElements, widthElements, SIM_TIME_STEP, ANTI_ALIASING_RADIUS)
     const productAspray = sprayPattern.pattern;
 
+    //find the most dense part of the spray pattern
     let maxSpray = 0;
     for (let col of productAspray){
         for(let element of col){
@@ -84,11 +80,29 @@ const Results = ({params, timingMode}:ResultsProps) => {
 
 //////////////////// prepare to draw the spray manifold ///////////////////////////////////////////
 
+    //// determine display dimensions ////
+    const desiredProductDisplayLengthPX = IMAGE_SCREEN_FRACTION * window.innerWidth;
+    const desiredProductDisplayWidthPX = IMAGE_SCREEN_FRACTION * window.innerHeight;
+
+    //assume screen height is the limiting factor
+    let productImageHeight = desiredProductDisplayWidthPX;
+    let productImageWidth = desiredProductDisplayWidthPX / widthToLengthRatio;
+
+    if(desiredProductDisplayWidthPX / desiredProductDisplayLengthPX >= widthToLengthRatio){
+        //the screen width is actually the limiting factor
+        productImageWidth = desiredProductDisplayLengthPX;
+        productImageHeight = desiredProductDisplayLengthPX * widthToLengthRatio;
+    } 
+
+    console.log(`the product image wants to be ${productImageWidth}px wide and ${productImageHeight}px high`)
+
+
+
     //get the ratio of pixels to inches
-    const PixelsPerInch = productImageWidth / patternWidth; 
+    const PixelsPerInch = productImageWidth / patternLength; 
 
     const numNozzles = Number(getOrException(parameterMap, "nozzle_count").value);
-    const nozzleSpacing = Number(getOrException(parameterMap, "nozzle_spacing"));
+    const nozzleSpacing = Number(getOrException(parameterMap, "nozzle_spacing").value);
 
     const nozzleOffsets = [];
     for(let i = 0; i < numNozzles; i++){
@@ -98,12 +112,19 @@ const Results = ({params, timingMode}:ResultsProps) => {
     }
 
 //////////////////// return your html //////////////////////////////////////////////////////////
+    console.log(`offsets: ${nozzleOffsets}`);
+
     return (
         <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
             <div id="images">    
-                <div id="manifold-image">
-                    {nozzleOffsets.map((offset, index) => <div key={index} id="nozzle-rect" 
-                    style={{transform:`translateY${offset}px`, height:(productImageHeight/1.5)}}></div>)}
+                <div id="manifold-image" style={{height:`${productImageHeight*1.2}px`, width:`${productImageWidth*0.02}px`, overflow:"visible"}}>
+                    {nozzleOffsets.map((offset, index) => <div key={index} className="nozzle-rect" 
+                    style={{
+                        position:"absolute", 
+                        transform:`translate(-${productImageWidth*0.0125}px, ${offset}px)`,
+                        height:`${productImageWidth*0.05}px`,
+                        width: `${productImageWidth*0.05}px`
+                    }}></div>)}
                 </div>
                 <div id="conveyor-image" style={{width:productImageWidth, height:productImageHeight}} ref={screenshotArea}>
                     {productAspray.map((col, colIndex) => 
