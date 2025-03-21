@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
-import { SignIn } from './modals/SignInModal.tsx'
-import { Documentation } from './modals/DocumentationModal.tsx'
-import { SaveLoad } from './modals/SaveLoadModal.tsx'
+import { SignIn } from './Modals/SignInModal.tsx'
+import { Documentation } from './Modals/DocumentationModal.tsx'
+import { SaveLoad } from './Modals/SaveLoadModal.tsx'
 import { CreateAccount, Profile } from './Modals.tsx'
-import { ResetPassword, ResetPasswordConfirm } from './modals/ResetPasswordModal.tsx'
-import { Info } from './modals/InfoModal.tsx'
+import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
+import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
 import { useState, useEffect, ChangeEvent } from "react";
 import { Models } from './utility/models';
@@ -16,8 +16,7 @@ import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
 
-import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts"
-import { Console } from 'console';
+import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
