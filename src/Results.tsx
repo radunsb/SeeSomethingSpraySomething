@@ -4,13 +4,16 @@ import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
 import * as htmlToImage from "html-to-image";
 import { useRef } from "react";
+import { getOrException } from "./utility/ProjectUtilities.ts";
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
     timingMode: string
 }
 
-const BASE_GRANULARITY = 100;
-const SCREEN_WIDTH_FRACTION = 0.7;
+const LENGTH_GRANULARITY = 100;
+const SIM_TIME_STEP = 0.001;
+const ANTI_ALIASING_RADIUS = 2;
+const SCREEN_WIDTH_FRACTION = 0.55;
 
 const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
@@ -29,7 +32,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const productImageHeight = widthToLengthRatio * productImageWidth;
 
     //determine granularity
-    const widthElements = BASE_GRANULARITY;
+    const widthElements = LENGTH_GRANULARITY;
     const lengthElements = widthElements * (1 / widthToLengthRatio);
 
     //determine the width and height of each displayed element as a percentage
@@ -37,7 +40,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const elemWidth = 100 / lengthElements;
 
     //calculate the spray pattern
-    const sprayPattern = computeSprayPattern(lengthElements, widthElements)
+    const sprayPattern = computeSprayPattern(lengthElements, widthElements, ANTI_ALIASING_RADIUS)
     const productAspray = sprayPattern.pattern;
 
     let maxSpray = 0;
@@ -79,11 +82,30 @@ const Results = ({params, timingMode}:ResultsProps) => {
         navigate('/print/', {state:{img:dataURL}});
     }
 
+//////////////////// prepare to draw the spray manifold ///////////////////////////////////////////
 
+    //get the ratio of pixels to inches
+    const PixelsPerInch = productImageWidth / patternWidth; 
+
+    const numNozzles = Number(getOrException(parameterMap, "nozzle_count").value);
+    const nozzleSpacing = Number(getOrException(parameterMap, "nozzle_spacing"));
+
+    const nozzleOffsets = [];
+    for(let i = 0; i < numNozzles; i++){
+        const inchesOffset = nozzleSpacing * (i - (numNozzles - 1)/2);
+        const pixelsOffset = PixelsPerInch * inchesOffset;
+        nozzleOffsets.push(pixelsOffset);
+    }
+
+//////////////////// return your html //////////////////////////////////////////////////////////
     return (
-        <div id="results-root">
-            <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
-                <div id="product-image" style={{width:productImageWidth, height:productImageHeight}} ref={screenshotArea}>
+        <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
+            <div id="images">    
+                <div id="manifold-image">
+                    {nozzleOffsets.map((offset, index) => <div key={index} id="nozzle-rect" 
+                    style={{transform:`translateY${offset}px`, height:(productImageHeight/1.5)}}></div>)}
+                </div>
+                <div id="conveyor-image" style={{width:productImageWidth, height:productImageHeight}} ref={screenshotArea}>
                     {productAspray.map((col, colIndex) => 
                         <div className="spray-column" key={colIndex} style={{width:`${elemWidth}%`}}>
                             {col.map((element, rowIndex) => 
@@ -94,17 +116,16 @@ const Results = ({params, timingMode}:ResultsProps) => {
                                             : 'rgb(0,0,0)'}
                                 }
                                 key={rowIndex}>
-                                    {/*element.getVolumeApplied().toFixed(4)*/}
                                 </div>)}
                         </div>)
                     }
                 </div>
-                <div>
-                    <Link to={"/"}>
-                        <button> Back </button>
-                    </Link>
-                    <button onClick={takeScreenshot}> Export as PDF/Print </button>
-                </div>
+            </div>
+            <div>
+                <Link to={"/"}>
+                    <button> Back </button>
+                </Link>
+                <button onClick={takeScreenshot}> Export as PDF/Print </button>
             </div>
         </div>
     );

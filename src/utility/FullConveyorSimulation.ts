@@ -407,8 +407,11 @@ function isActive(t: number) : boolean {
 class SprayPattern{
     readonly pattern : SprayedElement[][];
 
-    constructor(p : SprayedElement[][]){
+    constructor(p : SprayedElement[][], aa_radius:number){
         this.pattern = this.removeFalseOverspray(p);
+        if(aa_radius > 0){
+            this.pattern = this.antiAliasing(this.pattern, aa_radius);
+        }
     }
 
     private removeFalseOverspray(p : SprayedElement[][]) : SprayedElement[][]{
@@ -430,7 +433,41 @@ class SprayPattern{
         }
         return p;
     }
-}
+
+    //mitigate the aliasing patterns that show up on the results page  
+    private antiAliasing(p: SprayedElement[][], radius:number) : SprayedElement[][] {
+        //let p2 be an array with the same dimensions as p
+        const p2 : SprayedElement[][] = InitializeConveyorArray();
+
+        //loop through the display array
+        for(let iCol = 0; iCol < p.length; iCol++){
+            for(let iRow = 0; iRow < p[iCol].length; iRow++){
+                    let spraySum = 0;
+                    let cellCount = 0;
+                    //look at adjacent columns to our current element
+                    for(let cOffset = -1 * radius; cOffset <= radius; cOffset++){
+                        //if the column index is in bounds
+                        if(iCol + cOffset >= 0 && iCol + cOffset < p.length){
+                            //look at adjacent rows
+                            for(let rOffset = -1 * radius; rOffset <= radius; rOffset++){
+                                //if the row index is in bounds
+                                if(iRow + rOffset >= 0 && iRow + rOffset < p[iCol + cOffset].length){
+                                    //if the elements we're comparing are both on/off the product
+                                    if(p[iCol][iRow].isProduct === p[iCol + cOffset][iRow + rOffset].isProduct){
+                                        spraySum += p[iCol + cOffset][iRow + rOffset].getElementSprayDensity();
+                                        cellCount += 1;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    const avgSpray = spraySum / cellCount;
+                    p2[iCol][iRow].addSpray(avgSpray);
+                }
+            }
+            return p2;
+        }
+    }
 
 export function getPatternDimensions() : [number, number] {
     const patternLength = GlobalParams.VIRTUAL_LINE_LENGTH;
@@ -439,7 +476,7 @@ export function getPatternDimensions() : [number, number] {
 }
 
 //BE SURE TO CALL UPDATE_PARAMS BEFORE CALLING THIS METHOD
-export function computeSprayPattern(numLengthElements:number, numWidthElements:number) : SprayPattern{
+export function computeSprayPattern(numLengthElements:number, numWidthElements:number, anti_aliasing_radius:number) : SprayPattern{
     
     //update line element dimensions
     LocalConstants.updateSimulationDimensions(numLengthElements, numWidthElements);
@@ -492,5 +529,5 @@ export function computeSprayPattern(numLengthElements:number, numWidthElements:n
     
         t = nextActiveTime(t);
     }
-    return new SprayPattern(productASPRAY);
+    return new SprayPattern(productASPRAY, anti_aliasing_radius);
 }
