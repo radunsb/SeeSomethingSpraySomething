@@ -37,6 +37,13 @@ def get_user_by_id(user_id):
         return user
     except Exception as e:
         return e
+    
+def get_email(user_id):
+    try:
+        user = db.Users.find_one({'_user': user_id})
+        return user['email']
+    except Exception as e:
+        return e
 
 
 def get_nozzles():
@@ -54,6 +61,12 @@ def get_guns():
 def get_projects_by_user(user):
     try:
         return list(user['projects'])
+    except Exception as e:
+        return e
+    
+def get_user_recent_runs(user):
+    try:
+        return list(user['recent_runs'])
     except Exception as e:
         return e
     
@@ -114,4 +127,31 @@ def delete_project(user_id, project_id):
         return user
     except Exception as e:
         return e   
-    
+
+def push_recent_project(user_id, project_id, projectJSON):
+    try:
+        if(project_id == 0):
+            return None
+        user = db.Users.find_one({"_id": user_id})
+        if(len(user['recent_runs']) >= 30):
+            db.Users.update_one(
+                {"_id": user_id},
+                {"$pop": {"recent_runs": -1}}
+            )
+        db.Users.update_one(
+            {"_id": user_id},
+            {"$push": {"recent_runs": projectJSON}}
+        )
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e
+
+def get_recents_for_this_project(user_id, project_id):
+    try:
+        user = db.Users.find_one({"_id": user_id})
+        recents = get_user_recent_runs(user)
+        recents = list(filter(lambda run: run['project_id'] == project_id, recents))
+        return recents
+    except Exception as e:
+        return e

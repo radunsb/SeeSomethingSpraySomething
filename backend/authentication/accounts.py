@@ -44,7 +44,7 @@ def create_user_account(un:str, pwd:str, email:str) -> int:
     role = "user"
     projects = []
 
-    user_object = {"_id":user_id, "username":un, "email":email, "pass_hash":pwd_hash, "role":role, "projects":[]}
+    user_object = {"_id":user_id, "username":un, "email":email, "pass_hash":pwd_hash, "role":role, "projects":[], "recent_runs":[]}
 
     db = get_db()
     collection = db.get_collection("Users")

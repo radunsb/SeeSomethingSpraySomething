@@ -54,7 +54,7 @@ export namespace Models{
         spray_duration:number,
         nozzle:Models.Nozzle,
         controller:Models.Controller,
-        gun:Models.Gun
+        gun:Models.Gun,
     }
 }
 
@@ -72,3 +72,10 @@ export namespace UtilityInterfaces{
         value: string|number,
     }
 }
+
+interface IUser extends Document {
+    email: string;
+    password: string;
+    resetPasswordToken?: string;
+    resetPasswordExpires?: Date;
+  }

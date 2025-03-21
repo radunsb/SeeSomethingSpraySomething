@@ -1,11 +1,3 @@
-#results-root {
-    width: 100vw;
-    height: 100vh;
-
-    display: flex;
-    flex-direction: row;
-}
-
 #results-container {
     height: 90%;
     width: 70%;
@@ -17,10 +9,16 @@
     text-align: center;
 }
 
-#product-image{
-    height: 100%;
+#images {
     width: 100%;
+    height: 100%;
 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+#conveyor-image{
     border-collapse: collapse;
 
     border: 2px solid darkgray;
@@ -29,9 +27,25 @@
     flex-direction: row;
 }
 
+#manifold-image{
+    width: 2%;
+
+    background-color: darkgray;
+
+    overflow: visible;
+}
+
+.nozzle-rect{
+    position: fixed;
+
+    width:100vw;
+    height: 5%;
+
+    background-color: black;
+}
+
 .spray-column{
     height: 100%;
-    width: 1%;
 
     display:flex;
     flex-direction:column;
@@ -39,6 +53,9 @@
 
 .spray-element{
     width: 100%;
-    height: 1%;
     font-size: 0.8rem;
+}
+
+.product-border{
+    background-color: black;
 }
