@@ -20,17 +20,6 @@
   z-index: 1;
 }
 
-/* Center the spray model visual */
-#sprayModel {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 70%;
-  height: 75%; 
-  z-index: 0;
-}
-
 /* Position the results section at the bottom right */
 #results {
   position: absolute;
@@ -43,5 +32,35 @@
 }
 
 #projectName {
-  margin-top: -5vh;
+  margin-top: -3vh;
+  padding-top: 0px;
+  text-align: center;
+}
+
+/* Center the spray model visual */
+#sprayModel {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 70%;
+  height: 90%;
+  z-index: 0;
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+#mainScreenVisual {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: 100%;
+  width: 100%;
+  margin-top: 0px;
+  padding-top: 0px;
+}
+
+#productSlider {
+  width: 100%;
 }
