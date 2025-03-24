@@ -1,8 +1,8 @@
 import { UtilityInterfaces } from "./utility/models";
-import { Canvas, useThree } from "@react-three/fiber";
+import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
-import { useRef } from "react";
+import { useRef, useEffect, useState } from "react";
 
 
 //------------------------------------------------------------------------------------------------------
@@ -13,51 +13,76 @@ type MainScreenVisualProps = {
 
 const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
 
+  const SCALING_FACTOR = 2;
+
   // Get all of the values from the current model that we need to build the visual
   const line_speed: number = (parameterMap.get('line_speed')?.value ?? 0) as number;
-  const line_width: number = ((parameterMap.get('line_width')?.value ?? 0) as number)/2;
-  const nozzle_height: number = ((parameterMap.get('nozzle_height')?.value ?? 0) as number)/2;
+  const line_width: number = ((parameterMap.get('line_width')?.value ?? 0) as number)/SCALING_FACTOR;
+  const nozzle_height: number = ((parameterMap.get('nozzle_height')?.value ?? 0) as number)/SCALING_FACTOR;
   const spray_angle: number = (parameterMap.get('angle')?.value ?? 0) as number;
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
-  const nozzle_spacing: number = ((parameterMap.get('nozzle_spacing')?.value ?? 0) as number)/2;
-  const sensor_distance: number = ((parameterMap.get('sensor_distance')?.value ?? 0) as number)/2;
-  const product_width: number = ((parameterMap.get('product_width')?.value ?? 0) as number)/2;
-  const product_length: number = ((parameterMap.get('product_length')?.value ?? 0) as number)/2;
-  const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/2;
+  const nozzle_spacing: number = ((parameterMap.get('nozzle_spacing')?.value ?? 0) as number)/SCALING_FACTOR;
+  const sensor_distance: number = ((parameterMap.get('sensor_distance')?.value ?? 0) as number)/SCALING_FACTOR;
+  const product_width: number = ((parameterMap.get('product_width')?.value ?? 0) as number)/SCALING_FACTOR;
+  const product_length: number = ((parameterMap.get('product_length')?.value ?? 0) as number)/SCALING_FACTOR;
+  const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/SCALING_FACTOR;
+  const twist_angle: number = ((parameterMap.get('twist_angle')?.value ?? 0) as number);
+
+  const [sliderValue, setSliderValue] = useState(-100);
+
+  const handleSliderChange = (event: any) => {
+    setSliderValue(parseFloat(event.target.value));
+    console.log(sliderValue);
+  }
+
+  // console.log(-((sensor_distance)+product_length+8));
+  // console.log((sensor_distance)+product_length+16+sensor_distance+product_length);
 
   return (
-    <Canvas>
+    <div id="mainScreenVisual">
+      <Canvas camera = {{ position: [-1*line_width/2, nozzle_height, nozzle_height*2] }}>
+        {/* Camera Controls: Moveable, Zoomable, Focus Point */}
+        
+        <OrbitControls 
+          maxPolarAngle={Math.PI / 2}
+        />
 
-      {/* Camera Controls: Moveable, Zoomable, Focus Point */}
-      <OrbitControls 
-        maxPolarAngle={Math.PI / 2}
-      />
+        {/* Model Lighting:
+        - Directional light coming in from the right (of the original camera angle)
+        - Hemisphere light to light from top to bottom (white to gray)
+        - ambient light to light everything at a low intensity
+        */}
+        <directionalLight position={[5,10,0]} intensity={2} />
+        <hemisphereLight args={["#fff", "#333", 1]}/>
+        <ambientLight intensity={.5}/>
 
-      {/* Model Lighting:
-      - Directional light coming in from the right (of the original camera angle)
-      - Hemisphere light to light from top to bottom (white to gray)
-      - ambient light to light everything at a low intensity
-      */}
-      <directionalLight position={[5,2,2]} intensity={2} />
-      <hemisphereLight args={["#fff", "#333", 1]}/>
-      <ambientLight intensity={.5}/>
-      
-      {/* Conveyor belt */}
-      <Conveyor position={[0,-1,(sensor_distance)+product_length+8]} width={line_width} length={(sensor_distance)+product_length+16+sensor_distance+product_length}/>
-      <Sensor distance={sensor_distance} />
-      {/* Product */}
-      <Box position={[0,-1+(product_height/2)+.125, (-1*product_length/2)-1]} size={[product_width, product_height, product_length]} color={"darkgray"}/>
-      {/* (sensor_distance)+product_length/2+4 */}
+        {/* Conveyor belt */}
+        <Conveyor position={[0,-1,(sensor_distance)+product_length+8]} width={line_width} length={(sensor_distance*3)+(product_length*2)+16}/>
+        <Sensor distance={sensor_distance} />
+        {/* Product */}
+        <Product size={[product_width, product_height, product_length]} sliderValue={sliderValue} sensor_distance={sensor_distance}/>
+        {/* (sensor_distance)+product_length/2+4 */}
 
-      {/* Nozzle Apparatus */}
-      <NozzleApparatus
-        position={[0,-1,0]}
-        num_nozzles={nozzle_count}
-        nozzle_spacing={nozzle_spacing}
-        nozzle_height={nozzle_height}
-        spray_angle={spray_angle}
-      />
-    </Canvas>
+        {/* Nozzle Apparatus */}
+        <NozzleApparatus
+          position={[0,-1,0]}
+          num_nozzles={nozzle_count}
+          nozzle_spacing={nozzle_spacing}
+          nozzle_height={nozzle_height}
+          spray_angle={spray_angle}
+          twist_angle={twist_angle}
+        />
+        </Canvas>
+        <input
+          id="productSlider"
+          type="range"
+          min="-100"
+          max="100"
+          step="0.1"
+          value={sliderValue}
+          onChange={handleSliderChange}
+        />
+    </div>
   );
 };
 export default MainScreenVisual;
@@ -71,6 +96,7 @@ type NozzleApparatusProps = {
   nozzle_spacing: number;
   nozzle_height: number;
   spray_angle: number;
+  twist_angle: number;
 };
 
 const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
@@ -79,11 +105,12 @@ const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
   nozzle_spacing,
   nozzle_height,
   spray_angle,
+  twist_angle
 }) => {
   const nozzles = Array.from({ length: num_nozzles }).map((_, index) => {
     const xPosition = index * nozzle_spacing - (nozzle_spacing * (num_nozzles - 1)) / 2;
     const location: [number, number, number] = [xPosition, nozzle_height, 0];
-    return <Nozzle key={`${index}_${location}_${spray_angle}`} location={location} spray_angle={spray_angle} />;
+    return <Nozzle key={`${index}_${location}_${spray_angle}`} location={location} spray_angle={spray_angle} twist_angle={twist_angle} />;
   });
 
   return <group position={position}>{nozzles}</group>;
@@ -96,21 +123,24 @@ const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
 type NozzleProps = {
   location: [number, number, number];
   spray_angle: number;
+  twist_angle: number;
 };
 
-const Nozzle: React.FC<NozzleProps> = ({location, spray_angle}) => {
+const Nozzle: React.FC<NozzleProps> = ({location, spray_angle, twist_angle}) => {
+  const GUN_SIZE:[number, number, number] = [.2, .2, .2];
+  const TIP_SIZE:[number, number, number] = [.1, .1, .05];
 
   return (
     <group>
       <mesh position = {[location[0], location[1] + .125, location[2]]}>
-      <cylinderGeometry args={[.2, .2, .2]}/>
+      <cylinderGeometry args={GUN_SIZE}/>
       <meshStandardMaterial color={'silver'}/>
       </mesh>
       <mesh position={location}>
-        <cylinderGeometry args={[.1, .1, .05]}/>
+        <cylinderGeometry args={TIP_SIZE}/>
         <meshStandardMaterial color={'yellow'}/>
       </mesh>
-      <Spray top_vertex={location} angle={spray_angle} height={location[1]}/>
+      <Spray top_vertex={location} angle={spray_angle} height={location[1]} twist_angle={twist_angle}/>
     </group>
   );
 };
@@ -125,9 +155,12 @@ type ConveyorProps = {
 };
 
 const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
+  const BIG_PIECE_LENGTH: number = 1.5;
+  const SMALL_PIECE_LENGTH: number = 0.25;
+
   const num_pieces: number = Math.floor(length / 1.75);
   const firstPieceZ = 0;
-  const lastPieceZ = (num_pieces - 1) * (1.5 + 0.25) * -1;
+  const lastPieceZ = (num_pieces - 1) * (BIG_PIECE_LENGTH + SMALL_PIECE_LENGTH) * -1;
   const pieceHeight = 0.25;
 
   return (
@@ -135,17 +168,17 @@ const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
       {Array.from({ length: num_pieces }).map((_, index) => (
         <>
           <Box
-            key={`main-${index}`}
-            position={[0, 0, index * (1.5 + 0.25) * -1]}
-            size={[width, pieceHeight, 1.5]}
+            key={`big-${index}`}
+            position={[0, 0, index * (BIG_PIECE_LENGTH + SMALL_PIECE_LENGTH) * -1]}
+            size={[width, pieceHeight, BIG_PIECE_LENGTH]}
             color="gray"
           />
           {/* Smaller pieces */}
           {index < num_pieces - 1 && (
             <Box
               key={`small-${index}`}
-              position={[0, 0, (index * (1.5 + 0.25) - 0.875) * -1]}
-              size={[width, pieceHeight / 2, 0.25]}
+              position={[0, 0, (index * (BIG_PIECE_LENGTH + SMALL_PIECE_LENGTH) - 0.875) * -1]}
+              size={[width, pieceHeight / 2, SMALL_PIECE_LENGTH]}
               color="darkgray"
             />
           )}
@@ -174,12 +207,38 @@ type BoxProps = {
 
 // Box Component
 const Box: React.FC<BoxProps> = ({position, size, color}) => {
-    return (
-      <mesh position={position}>
-        <boxGeometry args={size}/>
-        <meshStandardMaterial color={color}/>
-      </mesh>
-    );
+  return (
+    <mesh position={position}>
+      <boxGeometry args={size}/>
+      <meshStandardMaterial color={color}/>
+    </mesh>
+  );
+};
+//------------------------------------------------------------------------------------------------------
+
+//------------------------------------------------------------------------------------------------------
+// Product Component
+type ProductProps = {
+  size: [number, number, number];
+  sliderValue: number;
+  sensor_distance: number;
+};
+
+const Product: React.FC<ProductProps> = ({size, sliderValue, sensor_distance}) => {
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useFrame(() => {
+    if(meshRef.current){
+      meshRef.current.position.z = (sliderValue/100)*(((sensor_distance)+size[2]));
+    }
+  });
+
+  return (
+    <mesh position={[0,-1+(size[1]/2)+.125, 0]} ref={meshRef} >
+      <boxGeometry args={size}/>
+      <meshStandardMaterial color={"silver"} roughness={.5}/>
+    </mesh>
+  );
 };
 //------------------------------------------------------------------------------------------------------
 
@@ -190,14 +249,25 @@ type SprayProps = {
   top_vertex: [number, number, number];
   angle: number; // Assume this is in degrees
   height: number;
+  twist_angle: number; // in degrees
   color?: string;
   transparency?: number;
 };
 
-const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue", transparency = .15 }) => {
+const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, twist_angle, color = "blue", transparency = .15}) => {
   const [x, y, z] = top_vertex;
   const angleInRadians = angle * (Math.PI / 180);
   const r = height * Math.tan(angleInRadians / 2);
+
+  const meshRef = useRef<THREE.Mesh>(null);
+
+  useEffect(() => {
+    if (meshRef.current) {
+      meshRef.current.geometry.center();
+      meshRef.current.position.y = top_vertex[1]/2;
+      meshRef.current.position.x = top_vertex[0];
+    }
+  }, [meshRef]);
 
   const vertices = new Float32Array([
     x, y, z,    // Top vertex
@@ -217,7 +287,7 @@ const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, color = "blue"
   ]);
 
   return (
-    <mesh>
+    <mesh ref={meshRef} rotation={[0,-1*twist_angle*Math.PI/180,0]}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" array={vertices} count={5} itemSize={3} />
         <bufferAttribute attach="index" array={indices} count={indices.length} itemSize={1} />
@@ -238,7 +308,7 @@ type SensorProps = {
 
 const Sensor: React.FC<SensorProps> = ({distance}) => {
   return (
-    <mesh position={[0, -.875, distance]}>
+    <mesh position={[0, -.875, -distance]}>
       <cylinderGeometry args={[.25,.25,.01]}/>
       <meshStandardMaterial color={'red'}/>
     </mesh>
