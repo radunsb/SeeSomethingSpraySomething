@@ -13,6 +13,7 @@ import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { UtilityInterfaces } from "./utility/models";
 import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
+import { ParameterConstraints} from './utility/ParameterConstraints.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
 
@@ -106,7 +107,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     await pushRunToDatabase(userID, parameterMap)   
     navigate('/results/');
   }
-  
+
   //Construct a list of the parameters and the values given
   //to App.tsx as props
   //parameterList is the list of HTML elements that are rendered in the drawers for
@@ -125,10 +126,18 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       //Should always be true since a project should always be loaded
       if(currentParameter){
         if(currentParameter.type != UtilityInterfaces.types.STRING){
-          newVal = Number(parameterInput.value)
+          if(currentParameter.min!=null && Number(parameterInput.value) < currentParameter.min){
+            newVal = currentParameter.min;
+          }
+          else if(currentParameter.max!=null && Number(parameterInput.value) > currentParameter.max){
+            newVal = currentParameter.max;
+          }
+          else{
+            newVal = Number(parameterInput.value);
+          }  
         }
         else{
-          newVal = parameterInput.value;
+            newVal = parameterInput.value;      
         }
         currentParameter.value = newVal;
         setParameterMap(parameterMap.set(key, currentParameter));

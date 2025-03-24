@@ -5,7 +5,9 @@ import { Models, UtilityInterfaces } from "../utility/models";
 import { listUserProjects} from "../utility/ProjectUtilities";
 import { createProjectMap} from "../utility/ProjectUtilities";
 import { SaveLoadProps } from "./ModalInterfaces";
+import { getLatestProjectID } from "../utility/ProjectUtilities";
 import '../styles/Modals.css';
+
 
   export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
@@ -22,11 +24,23 @@ import '../styles/Modals.css';
           value: renameProjectInput.value
         }
         parameterMap.set("project_name", nameParam)
-      }
-      setIsOpen(false);
+      }     
       await saveProject(userID, parameterMap);
+      console.log("Finished Saving Project");
       setProjects(await listUserProjects(userID));
-      setProjectList(constructProjectList());    
+      setProjectList(constructProjectList()); 
+      if(parameterMap.get("project_id")?.value == 0){
+        const id = await getLatestProjectID(userID);
+        if(id){
+          const parameter: UtilityInterfaces.Parameter = {
+            name:"id",
+            type: UtilityInterfaces.types.INT,
+            value: id
+        }
+          parameterMap.set("project_id", parameter);
+        }       
+      }
+      setIsOpen(false);   
     }
     async function loadProject(){
       console.log("Loading Project " + selectedButton);
