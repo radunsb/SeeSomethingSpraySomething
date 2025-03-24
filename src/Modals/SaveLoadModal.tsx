@@ -15,7 +15,7 @@ import '../styles/Modals.css';
     console.log("Projects: " + projects);
     async function save(){
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
-      if(renameProjectInput){
+      if(renameProjectInput && renameProjectInput.value != ""){
         const nameParam: UtilityInterfaces.Parameter = {
           name: "project_name",
           type: UtilityInterfaces.types.STRING,
