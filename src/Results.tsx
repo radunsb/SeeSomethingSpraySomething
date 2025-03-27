@@ -21,14 +21,14 @@ const Results = ({params, timingMode}:ResultsProps) => {
     //pass the parametermap to the simulation
     updateParams(parameterMap, timingMode);
 
-    //get the spray pattern dimensions
+    //get the spray pattern dimensions in inches
     const [patternLength, patternWidth] = getPatternDimensions(); 
 
     const widthToLengthRatio = patternWidth / patternLength;
    
     //determine granularity
     const widthElements = LENGTH_GRANULARITY;
-    const lengthElements = widthElements * (1 / widthToLengthRatio);
+    const lengthElements = Math.ceil( widthElements * (1 / widthToLengthRatio) );
 
     //determine the width and height of each displayed element as a percentage
     const elemHeight = 100 / widthElements;
@@ -40,14 +40,21 @@ const Results = ({params, timingMode}:ResultsProps) => {
 
     //find the most dense part of the spray pattern
     let maxSpray = 0;
+
+    let totalSprayGallons = 0;
+    const patternArea = patternLength * patternWidth;
+    const pixelAreaInches = patternArea / (widthElements * lengthElements)
+
     for (let col of productAspray){
         for(let element of col){
             const thisDensity = element.getElementSprayDensity();
+            totalSprayGallons = totalSprayGallons + (thisDensity * pixelAreaInches);
             if (thisDensity > maxSpray){
                 maxSpray = thisDensity;
             }
         }
     }
+    console.log(`total volume applied was ${totalSprayGallons}`);
 
     //detect product edges
     for(let colI = 1; colI < productAspray.length-1; colI++ ){
@@ -94,10 +101,6 @@ const Results = ({params, timingMode}:ResultsProps) => {
         productImageHeight = desiredProductDisplayLengthPX * widthToLengthRatio;
     } 
 
-    console.log(`the product image wants to be ${productImageWidth}px wide and ${productImageHeight}px high`)
-
-
-
     //get the ratio of pixels to inches
     const PixelsPerInch = productImageWidth / patternLength; 
 
@@ -112,8 +115,6 @@ const Results = ({params, timingMode}:ResultsProps) => {
     }
 
 //////////////////// return your html //////////////////////////////////////////////////////////
-    console.log(`offsets: ${nozzleOffsets}`);
-
     return (
         <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
             <div id="images">    
@@ -136,7 +137,12 @@ const Results = ({params, timingMode}:ResultsProps) => {
                                             `rgb(${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},${255 - (element.getElementSprayDensity()/maxSpray * 235 + 20)},255)`
                                             : 'rgb(0,0,0)'}
                                 }
-                                key={rowIndex}>
+                                key={rowIndex}
+                                >
+                                    <div className="tooltiptext">
+                                        <p className="tooltipP">{(128 * element.getElementSprayDensity()).toFixed(5)}</p>
+                                        <p className="tooltipP">oz per square inch</p>
+                                    </div>
                                 </div>)}
                         </div>)
                     }
