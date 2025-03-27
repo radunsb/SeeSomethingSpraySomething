@@ -75,14 +75,21 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const screenshotArea = useRef(null);
     async function takeScreenshot(){
         if(!screenshotArea.current) return;
-        await htmlToImage.toPng(screenshotArea.current, {quality:0.01, pixelRatio:0.5}).then(navigatePrint);
+        htmlToImage.toPng(screenshotArea.current, {cacheBust: true})
+            .then((dataUrl) => {
+                navigatePrint(dataUrl);
+            })
     }
 
     const navigate = useNavigate();
     function navigatePrint(dataURL: string){
-        const img = new Image();
-        img.src = dataURL;
-        navigate('/print/', {state:{img:dataURL}});
+        //const img = new Image();
+        //img.src = dataURL;
+        //navigate('/print/', {state:{img:dataURL}});
+        const link = document.createElement('a')
+        link.download = 'my-image-name.png'
+        link.href = dataURL;
+        link.click()
     }
 
 //////////////////// prepare to draw the spray manifold ///////////////////////////////////////////
