@@ -20,7 +20,7 @@ export class ParameterConstraints{
         this.constraintMap.set("stop_delay", [0, 64]);
         this.constraintMap.set("spray_duration", [0, 64]);
         this.constraintMap.set("flow_rate", [0, 1]);
-        this.constraintMap.set("angle", [1, 180]);
+        this.constraintMap.set("angle", [1, 179]);
         this.constraintMap.set("twist_angle", [0, 90]);
     }
     public static get Instance()

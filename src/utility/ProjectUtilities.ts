@@ -122,7 +122,7 @@ export async function createControllerArray(): Promise<string[]> {
 //Takes the current parameters and saves it in your projects folder
 //with the first unused ID
 export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined){
-    post_new_project_to_url(project, `${__BACKEND_URL__}/api/v1/users/${userID}/new`)
+    await post_new_project_to_url(project, `${__BACKEND_URL__}/api/v1/users/${userID}/new`)
 }
 
 //pushes the current project into the recent_runs array
