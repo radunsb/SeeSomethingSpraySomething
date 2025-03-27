@@ -1,5 +1,5 @@
 import {UtilityInterfaces} from "../models.ts"
-
+import { toRadians, distance } from "./MathFunctions.ts";
 /* A NOTE ON UNITS AND COORDINATES
 
 all lengths are stored in inches, all times in seconds, and all angles in degrees
@@ -14,16 +14,6 @@ t=0 at the instant the product reaches the sensor
 
 */
 
-//take an angle in degrees and return it in radians
-function toRadians(angleInDegrees : number) : number{
-    return angleInDegrees * Math.PI / 180;
-}
-
-//find the cartesian distance between two points
-function distance(x1:number, y1:number, x2:number, y2:number) : number{
-    return Math.sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1))
-}
-
 namespace GlobalParams{
     //once this is integrated into the application, these will be acquired from the drawer
     //THESE VALUES SHOULD NOT BE CHANGED OUTSIDE OF THE SETGLOBALPARAMS METHOD
@@ -37,6 +27,8 @@ namespace GlobalParams{
     export let PRODUCT_HEIGHT = 2;
 
     export let NOZZLE_HEIGHT = 6; //in.
+
+    export const WIDTH_ANGLE = 3; //let the spray width be three degrees
 
     export let SPRAY_START_TIME = 1.8; //s
     export let SPRAY_END_TIME = 5.4;
@@ -120,7 +112,7 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
         GlobalParams.NOZZLE_LIST = [];
         for (let i = 0; i < Number(new_nozzle_count.value); i++){
             const this_pos = 0.5 * GlobalParams.LINE_WIDTH + Number(new_nozzle_spacing.value) * (0.5 - 0.5*Number(new_nozzle_count.value) + i);
-            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),3,Number(new_twist_angle.value),Number(new_flow_rate.value),this_pos);//read and replace parameters
+            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),GlobalParams.WIDTH_ANGLE,Number(new_twist_angle.value),Number(new_flow_rate.value),this_pos);//read and replace parameters
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
     }
