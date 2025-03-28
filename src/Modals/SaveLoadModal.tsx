@@ -25,6 +25,10 @@ import '../styles/Modals.css';
         }
         document.getElementById("saves_sign_in_message")?.removeAttribute("hidden");
       }
+      const projectButtons = document.getElementsByClassName("saves_project_button");
+      for(const button of projectButtons){
+        button.addEventListener("blur", deselectProjectButton);
+      }
     });      
     
     async function save(copy:boolean){
@@ -55,6 +59,9 @@ import '../styles/Modals.css';
       setIsOpen(false);   
     }
     async function loadProject(){
+      if(selectedButton === -1){
+        return;
+      }
       console.log("Loading Project " + selectedButton);
       parameterMap = await createProjectMap(userID, selectedButton);
       console.log(parameterMap);
@@ -62,6 +69,9 @@ import '../styles/Modals.css';
       setIsOpen(false);
     }
     async function tryToDelete(){
+      if(selectedButton === -1){
+        return;
+      }
       await deleteProject(userID, selectedButton);
       setProjects(await listUserProjects(userID));
       setIsOpen(false);
@@ -78,15 +88,19 @@ import '../styles/Modals.css';
       document.getElementById("pb_" + project_id)?.classList.add("saves_selected_project");
     }
 
-    function deselectProjectButton(){
-      document.getElementById("open_project_button")?.setAttribute("disabled", "active");
-      document.getElementById("open_project_button")?.classList.add("saves_open_inactive");
-      document.getElementById("delete_project_button")?.setAttribute("disabled", "active");
-      document.getElementById("delete_project_button")?.classList.add("saves_delete_inactive");
+    function deselectProjectButton(event: MouseEvent){
+      const button = document.getElementById("open_project_button");
+      const button2 = document.getElementById("delete_project_button");
+      if(event.relatedTarget !== button && event.relatedTarget !== button2){
+        document.getElementById("open_project_button")?.setAttribute("disabled", "active");
+        document.getElementById("open_project_button")?.classList.add("saves_open_inactive");
+        document.getElementById("delete_project_button")?.setAttribute("disabled", "active");
+        document.getElementById("delete_project_button")?.classList.add("saves_delete_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
       }
       setSelectedButton(-1);
+      }   
     }
 
     function constructProjectList(){
@@ -94,7 +108,7 @@ import '../styles/Modals.css';
         new Date(b.last_modified_date).getTime() - new Date(a.last_modified_date).getTime());
       const projectList = projects.map(project => <li
         key = {project.project_id}>
-        <button className="saves_project_button" id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)} onBlur={() => deselectProjectButton}>{project.project_name}</button>
+        <button className="saves_project_button" id={"pb_" + project.project_id} onClick={() => clickedProjectButton(project.project_id)} >{project.project_name}</button>
       </li>)
       return projectList;
     }
