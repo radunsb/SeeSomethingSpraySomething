@@ -18,7 +18,7 @@ import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
 
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
-import { flowRateEstimate } from './utility/Simulation/MathFunctions.ts';
+import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
 import { getFontEmbedCSS } from 'html-to-image';
 
 interface AppProps{
@@ -244,6 +244,18 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const basePressure = 40;
   const estimatedFlowrate = flowRateEstimate(flowrate, basePressure, pressure);
 
+  //calculate overlap %
+  const product_height = Number(getOrException(parameterMap, "product_height").value);
+  const nozzle_height = Number(getOrException(parameterMap, "nozzle_height").value);
+  const spray_height = nozzle_height - product_height;
+  
+  const twist_angle = Number(getOrException(parameterMap, "twist_angle").value);
+  const nozzle_angle = Number(getOrException(parameterMap, "angle").value);
+
+  const nozzle_spacing = Number(getOrException(parameterMap, "nozzle_spacing").value);
+
+  const overlap = overlapPercentage(spray_height, nozzle_spacing, nozzle_angle, twist_angle);
+
 // ParameterList Indexes
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
 // 6 = Nozzle Height, 7 = Nozzle Spacing, 8 = Owner ID, 9 = Product Height, 10 = Product Length,
@@ -288,6 +300,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           {parameterList[7]} <button className='info-btn' onClick={() => {handleOpenInfo(7)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Nozzle Count"></button></div>
+          <p>Nozzle Overlap Percentage: {overlap.toFixed(0)}%</p>
           <div style = {{display: "flex", alignItems: "center", gap: "15px"}}>
           {parameterList[1]} <button className='info-btn' onClick={() => {handleOpenInfo(1)}}
                     aria-expanded={isInfoOpen}
