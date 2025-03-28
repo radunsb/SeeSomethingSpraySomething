@@ -27,8 +27,14 @@ const Results = ({params, timingMode}:ResultsProps) => {
     const widthToLengthRatio = patternWidth / patternLength;
    
     //determine granularity
-    const widthElements = LENGTH_GRANULARITY;
-    const lengthElements = Math.ceil( widthElements * (1 / widthToLengthRatio) );
+    let widthElements = LENGTH_GRANULARITY;
+    let lengthElements = Math.ceil( widthElements * (1 / widthToLengthRatio) );
+
+    if(widthToLengthRatio > 1){
+        //if width is greater than length, 
+        lengthElements = LENGTH_GRANULARITY;
+        widthElements = Math.ceil( lengthElements * widthToLengthRatio);
+    }
 
     //determine the width and height of each displayed element as a percentage
     const elemHeight = 100 / widthElements;

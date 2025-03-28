@@ -18,6 +18,8 @@ import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
 
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
+import { flowRateEstimate } from './utility/Simulation/MathFunctions.ts';
+import { getFontEmbedCSS } from 'html-to-image';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -236,6 +238,12 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     stopDelayGrayed = "grayed-timing-mode";
   }
 
+  //calculate projected flowrate
+  const flowrate = Number(getOrException(parameterMap, "flow_rate").value);
+  const pressure = Number(getOrException(parameterMap, "fluid_pressure").value)
+  const basePressure = 40;
+  const estimatedFlowrate = flowRateEstimate(flowrate, basePressure, pressure);
+
 // ParameterList Indexes
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
 // 6 = Nozzle Height, 7 = Nozzle Spacing, 8 = Owner ID, 9 = Product Height, 10 = Product Length,
@@ -284,6 +292,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           {parameterList[1]} <button className='info-btn' onClick={() => {handleOpenInfo(1)}}
                     aria-expanded={isInfoOpen}
                     aria-controls="Fluid Pressure"></button></div>
+          <p>Projected Flow Rate: {estimatedFlowrate.toFixed(3)} gal/min</p>
           <div style = {{display: "flex", alignItems: "center", gap: "35px"}}>
           {parameterList[25]} <button className='info-btn' onClick={() => {handleOpenInfo(25)}}
                     aria-expanded={isInfoOpen}
