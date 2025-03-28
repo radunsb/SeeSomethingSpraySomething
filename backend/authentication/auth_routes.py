@@ -49,7 +49,7 @@ def login():
         #print(responseText)
         return responseText, 200
 
-@auth_v1.route("/logout/", methods=["POST"])
+@auth_v1.route("/logout", methods=["POST"])
 def logout():
     uid = session.get("uid")
 
