@@ -40,6 +40,12 @@
     height: 200px;
     margin-top: 10px;
   }
+
+  #saves_container{
+    overflow-y: auto;
+    height: 200px;
+    margin-top: 10px;
+  }
   
   .infomodal {
     padding: 20px;

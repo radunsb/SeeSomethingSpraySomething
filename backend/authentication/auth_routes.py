@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, make_response
 from authentication.accounts import create_user_account, global_hasher, account_exists
-from db import get_user_by_id
+from db import get_user_by_id, get_user_by_id_with_pass
 from flask_cors import CORS
 import json
 
@@ -38,7 +38,7 @@ def login():
     if uid == None:
         return f"No user exists with username {username}", 400
     
-    user_map = get_user_by_id(uid)
+    user_map = get_user_by_id_with_pass(uid)
 
     if not global_hasher.check_password(password, user_map["pass_hash"]):
         return f"Incorrect password for user: {username}"
@@ -49,7 +49,7 @@ def login():
         #print(responseText)
         return responseText, 200
 
-@auth_v1.route("/logout/", methods=["POST"])
+@auth_v1.route("/logout", methods=["POST"])
 def logout():
     uid = session.get("uid")
 

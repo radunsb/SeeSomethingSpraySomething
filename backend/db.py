@@ -37,7 +37,15 @@ def get_user_by_id(user_id):
         return user
     except Exception as e:
         return e
-    
+
+def get_user_by_id_with_pass(user_id):
+    try:
+        user = db.Users.find_one({'_id': user_id})
+        return user
+    except Exception as e:
+        return e
+
+
 def get_email(user_id):
     try:
         user = db.Users.find_one({'_id': user_id}, {'pass_hash':0})
