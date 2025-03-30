@@ -27,21 +27,24 @@
 
   .infodarkBG {
     background-color: rgba(0, 0, 0, 0.2);
-    width: 300%;
-    height: 100%;
+    width: 99vw;
+    height: 98vh;
     z-index: 3;
-    top: 0%;
-    left: 0%;
-    transform: translate(0%, 0%);
+    top: -5%;
     position: absolute;
-    padding: 0px;
-    margin: 0px;
+    z-index: 3;
+  }
+
+  #saves_container{
+    overflow-y: auto;
+    height: 200px;
+    margin-top: 10px;
   }
   
   .infomodal {
     padding: 20px;
-    width: 450px;
-    height: 300px;
+    width: 30vw;
+    height: 50vh;
     background: white;
     color: black;
     z-index: 10;
@@ -52,14 +55,28 @@
 
   .modal {
     padding: 20px;
-    width: 500px;
-    height: 400px;
+    width: 50vw;
+    height: 70vh;
     background: white;
     color: black;
     z-index: 10;
     border-radius: 8px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
     z-index: 4;
+  }
+
+  @media (max-width: 1000px) {
+    .saveLoad {
+      width: 70vw;
+      height: 70vh;
+    }
+  }
+
+  /* TODO: MAKE THE CREATE ACCOUNT MODAL SCROLLABLE */
+  /* THIS DOESN'T WORK FOR SOME REASON */
+  .createAccount {
+    height: 70%;
+    overflow-y: auto;
   }
   
   .createSwitchBtn {
@@ -193,6 +210,7 @@
     padding: 11px 28px;
     border-radius: 8px;
     font-size: 0.8rem;
+    margin-right: 10px;
     border: none;
     color: #fff;
     background: #ff3e4e;
@@ -251,4 +269,37 @@
 
   .TextField {
     padding: 25px 25px;
+  }
+
+  .saves_delete_inactive {
+    background: #ffcbd0;
+  }
+
+  .saves_open_inactive {
+    color: gray;
+  }
+
+  .saves_save_button {
+    background-color: rgb(196, 255, 202);
+    margin-right: 10px;
+  }
+
+  .saves_project_button {
+    background-color: rgb(231, 231, 231);
+    border-radius: 3px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+  }
+
+  .saves_selected_project {
+    background-color: rgb(203, 203, 203);
+  }
+
+  .save_load_header {
+    display:flex;
+    #rename_project{
+      margin-left: 10px;
+      height: 50%;
+      align-self: center;
+    }
   }

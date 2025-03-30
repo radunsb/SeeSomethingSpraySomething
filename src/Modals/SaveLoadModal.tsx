@@ -79,7 +79,7 @@ import '../styles/Modals.css';
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
         <div className= "centered">
-          <div className= "modal">
+          <div className= "modal saveLoad">
             <div className= "modalHeader">
               <h2 className= "heading">Projects</h2>
             </div>

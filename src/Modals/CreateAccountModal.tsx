@@ -24,7 +24,7 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }:
     <>
       <div className= "darkBG" onClick={() => setIsCAOpen(false)} />
       <div className= "centered">
-        <div className= "modal">
+        <div className= "modal createAccount">
           <button className= "closeBtn" onClick={() => setIsCAOpen(false)}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
