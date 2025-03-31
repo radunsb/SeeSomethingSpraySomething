@@ -27,15 +27,18 @@
 
   .infodarkBG {
     background-color: rgba(0, 0, 0, 0.2);
-    width: 300%;
-    height: 100%;
+    width: 99vw;
+    height: 98vh;
     z-index: 3;
-    top: 0%;
-    left: 0%;
-    transform: translate(0%, 0%);
+    top: -5%;
     position: absolute;
-    padding: 0px;
-    margin: 0px;
+    z-index: 3;
+  }
+
+  #saves_container{
+    overflow-y: auto;
+    height: 200px;
+    margin-top: 10px;
   }
 
   #saves_container{
@@ -46,8 +49,8 @@
   
   .infomodal {
     padding: 20px;
-    width: 450px;
-    height: 300px;
+    width: 30vw;
+    height: 50vh;
     background: white;
     color: black;
     z-index: 10;
@@ -58,14 +61,28 @@
 
   .modal {
     padding: 20px;
-    width: 500px;
-    height: 400px;
+    width: 50vw;
+    height: 70vh;
     background: white;
     color: black;
     z-index: 10;
     border-radius: 8px;
     box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
     z-index: 4;
+  }
+
+  @media (max-width: 1000px) {
+    .saveLoad {
+      width: 70vw;
+      height: 70vh;
+    }
+  }
+
+  /* TODO: MAKE THE CREATE ACCOUNT MODAL SCROLLABLE */
+  /* THIS DOESN'T WORK FOR SOME REASON */
+  .createAccount {
+    height: 70%;
+    overflow-y: auto;
   }
   
   .createSwitchBtn {
