@@ -4,7 +4,8 @@ import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
-import { CreateAccount, Profile } from './Modals.tsx'
+import { Loading } from './Modals/LoadingModal.tsx'
+import { CreateAccount, Profile} from './Modals.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
@@ -43,6 +44,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -60,22 +62,27 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
   //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserInfo(newInfo : Promise<UserInfoResponse>) {
-    const responseData = await newInfo;
-
-    let IDToSet = responseData.uid;
-    setUserID(IDToSet);
-    console.log(IDToSet);
-    setProjectList(await listUserProjects(IDToSet));
-
-    let usernameToSet = responseData.username;
-    if(typeof usernameToSet === "string"){
-      setUsername(usernameToSet);
+    setIsSignInOpen(false);
+    setIsLoading(true);
+    try{
+      const responseData = await newInfo;
+      const IDToSet = responseData.uid;
+      setUserID(IDToSet);
+      console.log(IDToSet);
+      setProjectList(await listUserProjects(IDToSet));
+      const usernameToSet = responseData.username;
+      if(typeof usernameToSet === "string"){
+        setUsername(usernameToSet);
+      }
+      const emailToSet = responseData.email;
+      if(typeof emailToSet === "string"){
+        setEmail(emailToSet);
+      }
     }
-
-    let emailToSet = responseData.email;
-    if(typeof emailToSet === "string"){
-      setEmail(emailToSet);
+    catch (error){
+      console.log(error);
     }
+    setIsLoading(false);        
   }
   
   //Funky stuff happens with defaultValue on inputs and React. I don't know why
@@ -106,7 +113,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   //Called when the results button is clicked. Not sure why this needs its own function.
   const navigate = useNavigate();
   async function navigateResults(){
-    await pushRunToDatabase(userID, parameterMap)   
+    await pushRunToDatabase(userID, parameterMap)
     navigate('/results/');
   }
 
@@ -265,10 +272,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
 
 // Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
-  return (
+  return (    
     // THIS IS THE PARENT DIV TO CONTAIN EVERYTHING
     <div id='pageContainer'>
-
+      {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={true}/>}     
       {/* THIS DIV IS FOR THE DRAWERS */}
       <div id='drawers'>
         {/* NOZZLE DRAWER */}
@@ -431,7 +438,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       {/* THIS DIV IS FOR THE BUTTON TO SEE THE RESULTS */}
       <div id='results'>
         {/* RESULTS */}
-          <button onClick={navigateResults}> See Results </button>
+          <button onClick={() => {setIsLoading(true);navigateResults();}}> See Results </button>
       </div>      
     </div>
   );

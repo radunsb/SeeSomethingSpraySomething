@@ -45,6 +45,12 @@ export interface InfoModalProps{
   selectedId: number | null;
 }
 
+export interface LoadingProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  setBG: boolean;
+}
+
 export interface TextFieldProps {
   value?: string;
   onChange: (val: string) => void;

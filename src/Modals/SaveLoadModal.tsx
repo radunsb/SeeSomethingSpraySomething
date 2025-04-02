@@ -6,6 +6,7 @@ import { listUserProjects} from "../utility/ProjectUtilities";
 import { createProjectMap} from "../utility/ProjectUtilities";
 import { SaveLoadProps } from "./ModalInterfaces";
 import { getLatestProjectID } from "../utility/ProjectUtilities";
+import { Loading } from "./LoadingModal";
 import '../styles/Modals.css';
 
 
@@ -13,6 +14,7 @@ import '../styles/Modals.css';
     const [selectedButton, setSelectedButton] = useState(-1);
     const [projects, setProjects] = projectState;
     const [projectList, setProjectList] = useState(constructProjectList());
+    const [isLoading, setIsLoading] = useState(false);
     const [userID] = userIDstate;
 
     useEffect(() => {
@@ -32,6 +34,7 @@ import '../styles/Modals.css';
     });      
     
     async function save(copy:boolean){
+      setIsLoading(true);
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
       if(renameProjectInput && renameProjectInput.value != ""){
         const nameParam: UtilityInterfaces.Parameter = {
@@ -56,24 +59,29 @@ import '../styles/Modals.css';
           parameterMap.set("project_id", parameter);
         }       
       }
+      setIsLoading(false);
       setIsOpen(false);   
     }
     async function loadProject(){
       if(selectedButton === -1){
         return;
       }
+      setIsLoading(true);
       console.log("Loading Project " + selectedButton);
       parameterMap = await createProjectMap(userID, selectedButton);
       console.log(parameterMap);
       onLoad(parameterMap);
+      setIsLoading(false);
       setIsOpen(false);
     }
     async function tryToDelete(){
       if(selectedButton === -1){
         return;
       }
+      setIsLoading(true);
       await deleteProject(userID, selectedButton);
       setProjects(await listUserProjects(userID));
+      setIsLoading(false);
       setIsOpen(false);
     }
     function clickedProjectButton(project_id: number){
@@ -124,6 +132,7 @@ import '../styles/Modals.css';
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
         <div className= "centered">
           <div className= "modal">
+          {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
             <div className= "save_load_header">
               <h2 className= "heading">Currently Editing: </h2>
               <input id="rename_project" type="text" placeholder={projectName}></input>
