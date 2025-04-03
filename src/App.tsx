@@ -26,6 +26,7 @@ import './utility/auth_requests.ts';
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
 import { getFontEmbedCSS } from 'html-to-image';
+import { Console } from 'console';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -57,7 +58,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
   const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -212,24 +213,23 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     const stopDelayParam = parameterMap.get("stop_delay");
     const startDelayParam = parameterMap.get("start_delay");
     const sprayDurationParam = parameterMap.get("spray_duration");
-    console.log("function happened")
 
+    if (isChecked){
+      console.log(typeof startDelayParam)
     if (typeof startDelayParam !== "undefined"){
       startDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
       setParameterMap(parameterMap.set("start_delay", startDelayParam));
-      console.log(startDelayParam)
     }
     if (typeof stopDelayParam !== "undefined"){
       stopDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
       setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
-      console.log(stopDelayParam)
     }
     if (typeof SensorDis !== "undefined" && typeof sprayDurationParam !== "undefined"){
       sprayDurationParam.value = Number(getOrException(parameterMap, "product_length").value) / LineSpeed;
       setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
-      console.log(sprayDurationParam)
-
     }
+    }
+    else{}
   }
 
   function updateTimingModeHelper(newTimeMode:string) : void{
@@ -313,11 +313,11 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
           <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
 
-          <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
-            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
-
           <Parameter key = {25} parameterList= {parameterList} paramUnits = {paraUnits} 
             isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {25} />
+
+          <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
         
         </NozzleDrawer>
 
@@ -336,31 +336,20 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming }}
+        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming(); console.log(isChecked) }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
+
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
-          
           <div>
+            <Checkbox checked = {isChecked} onChange={setIsChecked}/>
+            { !isChecked && 
             <select value={timingMode} onChange={updateTimingMode}>
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
-            </select>
+            </select> }
           </div>
           
-          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Start Delay"></button></div>
-          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Stop Delay"></button></div>
-          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Spray Duration"></button></div>
-                    
           <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
 
@@ -370,6 +359,27 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           <Parameter key = {0} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {0} />
 
+          <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+
+          { !isChecked && 
+          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Start Delay"></button></div>
+          }
+          { !isChecked && 
+          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Stop Delay"></button></div>
+          }
+          { !isChecked && 
+          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Spray Duration"></button></div>
+          }
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>

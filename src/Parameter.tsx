@@ -2,7 +2,6 @@ import React from 'react';
 import { createControllerArray} from "./utility/ProjectUtilities";
 import { useState } from 'react';
 import { Option } from "./Modals/ModalInterfaces.tsx";
-import './styles/Parameter.css';
 import './styles/Drawer.css';
 
 export const paraNames: string[] = [
