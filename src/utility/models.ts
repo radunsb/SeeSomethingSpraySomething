@@ -10,7 +10,7 @@ export namespace Models{
         nozzle_name:string,
         nozzle_doc_link:string,
         flow_rate:number,
-        spray_ngle:number,
+        spray_angle:number,
         spray_shape:string,
         alignment:number
     }
