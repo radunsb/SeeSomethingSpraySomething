@@ -9,305 +9,304 @@
   position: absolute;
 }
   
-  .centered {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 4;
-  }
+.centered {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
 
-  .infocentered {
-    position: fixed;
-    top: 50%;
-    right: 42%;
-    transform: translate(-50%, -50%);
-    z-index: 4;
-  }
+.infocentered {
+  position: fixed;
+  top: 50%;
+  right: 42%;
+  transform: translate(-50%, -50%);
+  z-index: 4;
+}
 
-  
+.infodarkBG {
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 30vw;
+  height: 99vh;
+  z-index: 3;
+  top: -5%;
+  position: absolute;
+  z-index: 3;
+  left: -1vw;
+}
 
-  .infodarkBG {
-    background-color: rgba(0, 0, 0, 0.2);
-    width: 99vw;
-    height: 98vh;
-    z-index: 3;
-    top: -5%;
-    position: absolute;
-    z-index: 3;
-  }
+#saves_container{
+  overflow-y: auto;
+  height: 200px;
+  margin-top: 10px;
+}
 
-  #saves_container{
-    overflow-y: auto;
-    height: 200px;
-    margin-top: 10px;
-  }
+#saves_container{
+  overflow-y: auto;
+  height: 200px;
+  margin-top: 10px;
+}
 
-  #saves_container{
-    overflow-y: auto;
-    height: 200px;
-    margin-top: 10px;
-  }
-  
-  .infomodal {
-    padding: 20px;
-    width: 30vw;
-    height: 50vh;
-    background: white;
-    color: black;
-    z-index: 10;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
-    z-index: 4;
-  }
+.infomodal {
+  padding: 20px;
+  width: 30vw;
+  height: 50vh;
+  background: white;
+  color: black;
+  z-index: 10;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+  z-index: 4;
+}
 
-  .modal {
-    padding: 20px;
-    width: 50vw;
+.modal {
+  padding: 20px;
+  width: 50vw;
+  height: 70vh;
+  background: white;
+  color: black;
+  z-index: 10;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+  z-index: 4;
+}
+
+@media (max-width: 1000px) {
+  .saveLoad {
+    width: 70vw;
     height: 70vh;
-    background: white;
-    color: black;
-    z-index: 10;
-    border-radius: 8px;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
-    z-index: 4;
   }
+}
 
-  @media (max-width: 1000px) {
-    .saveLoad {
-      width: 70vw;
-      height: 70vh;
-    }
-  }
+/* TODO: MAKE THE CREATE ACCOUNT MODAL SCROLLABLE */
+/* THIS DOESN'T WORK FOR SOME REASON */
+.createAccount {
+  height: 70%;
+  overflow-y: auto;
+}
 
-  /* TODO: MAKE THE CREATE ACCOUNT MODAL SCROLLABLE */
-  /* THIS DOESN'T WORK FOR SOME REASON */
-  .createAccount {
-    height: 70%;
-    overflow-y: auto;
-  }
-  
-  .createSwitchBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: #2c3e50;
-    background: white;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    position: absolute;
-    right: -3;
-    top: 3;
-    align-self: flex-end;
-    margin-right: -7px;
-  }
+.createSwitchBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: #2c3e50;
+  background: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  position: absolute;
+  right: -3;
+  top: 3;
+  align-self: flex-end;
+  margin-right: -7px;
+}
 
-  .onCreateSwitchBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: white;
-    background: blue;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    position: absolute;
-    right: -3;
-    top: 3;
-    align-self: flex-end;
-    margin-right: -7px;
-  }
+.onCreateSwitchBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: white;
+  background: blue;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  position: absolute;
+  right: -3;
+  top: 3;
+  align-self: flex-end;
+  margin-right: -7px;
+}
 
-  .loginSwitchBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: #2c3e50;
-    background: white;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: -5;
-    top: 3;
-    align-self: flex-end;
-    margin-right: 3px;
-  }
+.loginSwitchBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: #2c3e50;
+  background: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  right: -5;
+  top: 3;
+  align-self: flex-end;
+  margin-right: 3px;
+}
 
-  .onLoginSwitchBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: white;
-    background: blue;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: -5;
-    top: 3;
-    align-self: flex-end;
-    margin-right: 3px;
-  }
+.onLoginSwitchBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: white;
+  background: blue;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  right: -5;
+  top: 3;
+  align-self: flex-end;
+  margin-right: 3px;
+}
 
-  .loginBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: #2c3e50;
-    background: white;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: 0;
-    top: 0;
-    align-self: flex-end;
-    margin-top: 5px;
-    margin-right: -7px;
-  }
+.loginBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: #2c3e50;
+  background: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  right: 0;
+  top: 0;
+  align-self: flex-end;
+  margin-top: 5px;
+  margin-right: -7px;
+}
 
-  .forgetBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border: none;
-    font-size: 18px;
-    color: #0080ff;
-    background: white;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    right: 0;
-    top: 0;
-    align-self: flex-end;
-    margin-top: 5px;
-    margin-right: -7px;
-  }
+.forgetBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border: none;
+  font-size: 18px;
+  color: #0080ff;
+  background: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  right: 0;
+  top: 0;
+  align-self: flex-end;
+  margin-top: 5px;
+  margin-right: -7px;
+}
 
-  .closeBtn {
-    cursor: pointer;
-    font-weight: 500;
-    padding: 4px 8px;
-    border-radius: 8px;
-    border: none;
-    font-size: 18px;
-    color: #2c3e50;
-    background: white;
-    transition: all 0.25s ease;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
-    position: absolute;
-    right: 0;
-    top: 0;
-    align-self: flex-end;
-    margin-top: -7px;
-    margin-right: -7px;
-  }
-  
-  .closeBtn:hover {
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
-    transform: translate(-4px, 4px);
-  }
-  
-  .deleteBtn {
-    margin-top: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    padding: 11px 28px;
-    border-radius: 8px;
-    font-size: 0.8rem;
-    margin-right: 10px;
-    border: none;
-    color: #fff;
-    background: #ff3e4e;
-    transition: all 0.25s ease;
-  }
-  
-  .deleteBtn:hover {
-    box-shadow: 0 10px 20px -10px rgba(255, 62, 78, 0.6);
-    transform: translateY(-5px);
-    background: #ff3e4e;
-  }
-  
-  .cancelBtn {
-    margin-top: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    padding: 11px 28px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    border: none;
-    color: #2c3e50;
-    background: #fcfcfc;
-    transition: all 0.25s ease;
-  }
+.closeBtn {
+  cursor: pointer;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 8px;
+  border: none;
+  font-size: 18px;
+  color: #2c3e50;
+  background: white;
+  transition: all 0.25s ease;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.06);
+  position: absolute;
+  right: 0;
+  top: 0;
+  align-self: flex-end;
+  margin-top: -7px;
+  margin-right: -7px;
+}
 
-  .cancelBtn {
-    margin-top: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    padding: 11px 28px;
-    border-radius: 12px;
-    font-size: 0.8rem;
-    border: none;
-    color: #2c3e50;
-    background: #fcfcfc;
-    transition: all 0.25s ease;
-  }
-  
-  .cancelBtn:hover {
-    box-shadow: none;
-    transform: none;
-    background: whitesmoke;
-  }
+.closeBtn:hover {
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+  transform: translate(-4px, 4px);
+}
 
-  .docBtn {
-    margin-top: 10px;
-    cursor: pointer;
-    font-weight: 500;
-    border-radius: 5px;
-    font-size: 1.5rem;
-    border: none;
-    color: #2c3e50;
-    background: #fcfcfc;
-    transition: all 0.25s ease;
-  }
+.deleteBtn {
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 11px 28px;
+  border-radius: 8px;
+  font-size: 0.8rem;
+  margin-right: 10px;
+  border: none;
+  color: #fff;
+  background: #ff3e4e;
+  transition: all 0.25s ease;
+}
 
-  .TextField {
-    padding: 25px 25px;
-  }
+.deleteBtn:hover {
+  box-shadow: 0 10px 20px -10px rgba(255, 62, 78, 0.6);
+  transform: translateY(-5px);
+  background: #ff3e4e;
+}
 
-  .saves_delete_inactive {
-    background: #ffcbd0;
-  }
+.cancelBtn {
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 11px 28px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  border: none;
+  color: #2c3e50;
+  background: #fcfcfc;
+  transition: all 0.25s ease;
+}
 
-  .saves_open_inactive {
-    color: gray;
-  }
+.cancelBtn {
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  padding: 11px 28px;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  border: none;
+  color: #2c3e50;
+  background: #fcfcfc;
+  transition: all 0.25s ease;
+}
 
-  .saves_save_button {
-    background-color: rgb(196, 255, 202);
-    margin-right: 10px;
-  }
+.cancelBtn:hover {
+  box-shadow: none;
+  transform: none;
+  background: whitesmoke;
+}
 
-  .saves_project_button {
-    background-color: rgb(231, 231, 231);
-    border-radius: 3px;
-    margin-bottom: 5px;
-    margin-left: 5px;
-  }
+.docBtn {
+  margin-top: 10px;
+  cursor: pointer;
+  font-weight: 500;
+  border-radius: 5px;
+  font-size: 1.5rem;
+  border: none;
+  color: #2c3e50;
+  background: #fcfcfc;
+  transition: all 0.25s ease;
+}
 
-  .saves_selected_project {
-    background-color: rgb(203, 203, 203);
-  }
+.TextField {
+  padding: 25px 25px;
+}
 
-  .save_load_header {
-    display:flex;
-    #rename_project{
-      margin-left: 10px;
-      height: 50%;
-      align-self: center;
-    }
+.saves_delete_inactive {
+  background: #ffcbd0;
+}
+
+.saves_open_inactive {
+  color: gray;
+}
+
+.saves_save_button {
+  background-color: rgb(196, 255, 202);
+  margin-right: 10px;
+}
+
+.saves_project_button {
+  background-color: rgb(231, 231, 231);
+  border-radius: 3px;
+  margin-bottom: 5px;
+  margin-left: 5px;
+}
+
+.saves_selected_project {
+  background-color: rgb(203, 203, 203);
+}
+
+.save_load_header {
+  display:flex;
+  #rename_project{
+    margin-left: 10px;
+    height: 50%;
+    align-self: center;
   }
+}
