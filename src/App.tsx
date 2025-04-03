@@ -26,6 +26,7 @@ import './utility/auth_requests.ts';
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
 import { getFontEmbedCSS } from 'html-to-image';
+import { updateParamsAndRerender } from './utility/updateParamsAndRerender.ts';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -76,7 +77,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
     let IDToSet = responseData.uid;
     setUserID(IDToSet);
-    console.log(IDToSet);
     setProjectList(await listUserProjects(IDToSet));
 
     let usernameToSet = responseData.username;
@@ -154,8 +154,13 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             newVal = parameterInput.value;      
         }
         currentParameter.value = newVal;
-        setParameterMap(parameterMap.set(key, currentParameter));
+        parameterMap.set(key, currentParameter)
+        updateParamsAndRerender(parameterMap, setParameterMap);
         parameterInput.value = String(newVal);
+
+        if(currentParameter.name === "sensor_distance" || currentParameter.name === "product_length" || currentParameter.name === "line_speed"){
+          autoCalculateTiming();  
+        }
       }
     });
   }
@@ -212,49 +217,42 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     const stopDelayParam = parameterMap.get("stop_delay");
     const startDelayParam = parameterMap.get("start_delay");
     const sprayDurationParam = parameterMap.get("spray_duration");
-    console.log("function happened")
+
+    const startDelayField = document.getElementById("start_delay_input") as HTMLInputElement;
+    const stopDelayField = document.getElementById("stop_delay_input") as HTMLInputElement;
+    const sprayDurationField = document.getElementById("spray_duration_input") as HTMLInputElement;
 
     if (typeof startDelayParam !== "undefined"){
-      startDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
-      setParameterMap(parameterMap.set("start_delay", startDelayParam));
-      console.log(startDelayParam)
+      const newStartDelay = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
+      startDelayParam.value = newStartDelay;
+      parameterMap.set("start_delay", startDelayParam);
+      startDelayField.value = newStartDelay.toString();
     }
     if (typeof stopDelayParam !== "undefined"){
-      stopDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
-      setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
-      console.log(stopDelayParam)
+      const newStopDelay = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
+      stopDelayParam.value = newStopDelay;
+      parameterMap.set("stop_delay", stopDelayParam);
+      stopDelayField.value = newStopDelay.toString();
     }
     if (typeof SensorDis !== "undefined" && typeof sprayDurationParam !== "undefined"){
-      sprayDurationParam.value = Number(getOrException(parameterMap, "product_length").value) / LineSpeed;
-      setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
-      console.log(sprayDurationParam)
-
+      const newSprayDuration = Number(getOrException(parameterMap, "product_length").value) / LineSpeed;
+      sprayDurationParam.value = newSprayDuration;
+      parameterMap.set("spray_duration", sprayDurationParam);
+      sprayDurationField.value = newSprayDuration.toString();
     }
+
+    setParameterMap(parameterMap);
   }
 
   function updateTimingModeHelper(newTimeMode:string) : void{
-    //start_delay should always be visible, so we don't need to do anything to it
-    const stopDelayDiv = document.getElementById("stop-delay-div");
-    const sprayDurDiv = document.getElementById("spray-duration-div");
-   
-    if(stopDelayDiv !== null && sprayDurDiv !== null){
-        if(newTimeMode === "ft"){
-          stopDelayDiv.classList.add("grayed-timing-mode");
-          sprayDurDiv.classList.remove("grayed-timing-mode");
-        }
-        else if(newTimeMode === "vt"){
-          stopDelayDiv.classList.remove("grayed-timing-mode");
-          sprayDurDiv.classList.add("grayed-timing-mode");
-        }
-
-        setTimingMode(newTimeMode);
-        //console.log(`time mode state is now: ${newTimeMode}`);
+    if(newTimeMode === "auto"){
+      autoCalculateTiming();
     }
-    else{
-      console.error("ERROR: timing mode div not found");
-    }
+    setTimingMode(newTimeMode);
   }
-  //call when App is loaded to preserve across screens
+  
+  //ensure the necessary fields are grayed out 
+  let startDelayGrayed = "";
   let stopDelayGrayed = "";
   let sprayDurationGrayed = "";
   if(timingMode === "vt"){
@@ -262,6 +260,11 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   }
   else if(timingMode === "ft"){
     stopDelayGrayed = "grayed-timing-mode";
+  }
+  else if(timingMode === "auto"){
+    startDelayGrayed = "grayed-timing-mode";
+    stopDelayGrayed = "grayed-timing-mode";
+    sprayDurationGrayed = "grayed-timing-mode";
   }
 
   //calculate projected flowrate
@@ -281,6 +284,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const nozzle_spacing = Number(getOrException(parameterMap, "nozzle_spacing").value);
 
   const overlap = overlapPercentage(spray_height, nozzle_spacing, nozzle_angle, twist_angle);
+
+  const nozzleCount = Number(getOrException(parameterMap, "nozzle_count").value);
 
 // ParameterList Indexes
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
@@ -309,15 +314,15 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             />
           ))}
           </div>
-          <p>NOZZLE OVERLAP PERCENTAGE: {overlap.toFixed(0)}%</p>
-
-          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
-
           <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
             isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
 
           <Parameter key = {25} parameterList= {parameterList} paramUnits = {paraUnits} 
             isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {25} />
+                      
+          <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
+
+          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
         
         </NozzleDrawer>
 
@@ -336,19 +341,21 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming }}
+        <button onClick={() => { setIsControllerDrawerOpen(true) }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
-        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)} timingMode={timingMode} updateTimingModeHelper={updateTimingModeHelper}>
           
           <div>
+            Timing Mode: 
             <select value={timingMode} onChange={updateTimingMode}>
+              <option key="auto" value="auto">Auto Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
             </select>
           </div>
           
-          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center"}}>
+          <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
           {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
@@ -440,4 +447,3 @@ function ProfileButton({userID, setIsSignInOpen, setIsProfileOpen} : pbProps){
       </button>)
   }
 }
-
