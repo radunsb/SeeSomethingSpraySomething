@@ -18,7 +18,7 @@ async function loadDefaultProject(){
   //Default Map is always User with id of 1's first project
   const defaultMap = await createProjectMap(1, 0);
   const projects = await getUserProjectStubs(1);
-
+  document.getElementById("initialLoader")?.remove();
   createRoot(document.getElementById('root')!).render(
     <CustomAppRouting defaultMap={defaultMap} projects={projects}/>
   )
@@ -29,6 +29,7 @@ interface CARprops{
   defaultMap : Map<string, UtilityInterfaces.Parameter>;
   projects : Models.ProjectBase[];
 }
+
 export function CustomAppRouting({defaultMap, projects} : CARprops){
   const uidState = useState(1);
   const projectState = useState(projects);
@@ -40,10 +41,7 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
   const [timingMode, setTimingMode] = useState("ft");
 
   return (
-    // <StrictMode>
-    //   <App />
-    //   <Project userID={1} />
-    // </StrictMode>,
+    <> 
     <BrowserRouter>
     <Routes>
       <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState} timingModeState={[timingMode, setTimingMode]}/>} />
@@ -52,7 +50,7 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
       <Route path="/reset_password" element={< ResetPasswordPostLink isOpen={true} setIsOpen={()=>{}} setUserInfo={()=>{}}/>} />
     </Routes>
   </BrowserRouter>
+  </>
   )
 }
-
 loadDefaultProject();
