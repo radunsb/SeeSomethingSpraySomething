@@ -93,8 +93,9 @@ li {
 }
 
 .parameter_input {
-  flex: 2; 
-  min-width: 150px;
+  flex: 1; 
+  min-width: 115px;
+  max-width: 150px;
 }
 
 /* Hopefully stacks the label and input on smaller screens */
