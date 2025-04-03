@@ -47,6 +47,20 @@
     z-index: 3;
   }
 
+  .loadingdarkBG{
+      background-color: rgba(0, 0, 0, 0.2);
+      width: 99vw;
+      height: 103vh;
+      z-index: 3;
+      top: -5%;
+      position: absolute;
+      z-index: 3;
+  }
+
+  #initialLoader{
+    text-align: center;
+  }
+
   #saves_container{
     overflow-y: auto;
     height: 200px;
