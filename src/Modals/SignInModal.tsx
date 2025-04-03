@@ -49,7 +49,9 @@ import '../styles/Modals.css';
                 </button>
               </div>
                 <div>
-                <button className= "loginBtn" onClick={() => {setUserInfo(login(username, password)); setIsLIOpen(false)}}>
+                <button className= "loginBtn" onClick={() => {
+                  setUserInfo(login(username, password)); 
+                  }}>
                   Login
                 </button>
                 </div>

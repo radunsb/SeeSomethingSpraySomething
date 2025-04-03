@@ -6,6 +6,7 @@ import { nozzleIndex, nozzleSpacing, lineIndex, lineSpacing, controllerIndex, co
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
+import { Loading } from './Modals/LoadingModal.tsx'
 import { Wizard } from './Modals/WizardModal.tsx'
 import { CreateAccount, Profile } from './Modals.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
@@ -27,6 +28,7 @@ import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
 import { getFontEmbedCSS } from 'html-to-image';
 import { updateParamsAndRerender } from './utility/updateParamsAndRerender.ts';
+//import { Console } from 'console';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -50,6 +52,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [username, setUsername] = useState("");
@@ -58,7 +61,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
   const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
-  const [isChecked, setIsChecked] = useState(false);
+  const [isChecked, setIsChecked] = useState(true);
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -73,21 +76,27 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
   //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserInfo(newInfo : Promise<UserInfoResponse>) {
-    const responseData = await newInfo;
-
-    let IDToSet = responseData.uid;
-    setUserID(IDToSet);
-    setProjectList(await listUserProjects(IDToSet));
-
-    let usernameToSet = responseData.username;
-    if(typeof usernameToSet === "string"){
-      setUsername(usernameToSet);
+    setIsSignInOpen(false);
+    setIsLoading(true);
+    try{
+      const responseData = await newInfo;
+      const IDToSet = responseData.uid;
+      setUserID(IDToSet);
+      console.log(IDToSet);
+      setProjectList(await listUserProjects(IDToSet));
+      const usernameToSet = responseData.username;
+      if(typeof usernameToSet === "string"){
+        setUsername(usernameToSet);
+      }
+      const emailToSet = responseData.email;
+      if(typeof emailToSet === "string"){
+        setEmail(emailToSet);
+      }
     }
-
-    let emailToSet = responseData.email;
-    if(typeof emailToSet === "string"){
-      setEmail(emailToSet);
+    catch (error){
+      console.log(error);
     }
+    setIsLoading(false);        
   }
   
   //Funky stuff happens with defaultValue on inputs and React. I don't know why
@@ -118,7 +127,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   //Called when the results button is clicked. Not sure why this needs its own function.
   const navigate = useNavigate();
   async function navigateResults(){
-    await pushRunToDatabase(userID, parameterMap)   
+    await pushRunToDatabase(userID, parameterMap)
     navigate('/results/');
   }
 
@@ -205,13 +214,9 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 
   //this function has to be inside the app component because it needs access to the parametermap
   //possible timing modes are
-  //vt = variable time, ft = fixed time
-  //vd = variable distance, fd = fixed distance
-  function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
-    updateTimingModeHelper(e.target.value);
-  }
+  //vt = variable time, ft = fixed time, auto
 
-  function autoCalculateTiming() : void{
+  function autoCalculateTiming() : void {
     const LineSpeed = Number(getOrException(parameterMap, "line_speed").value) / 5;
     const SensorDis = Number(getOrException(parameterMap, "sensor_distance").value);
     const stopDelayParam = parameterMap.get("stop_delay");
@@ -249,6 +254,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       autoCalculateTiming();
     }
     setTimingMode(newTimeMode);
+  }
+
+  function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
+    updateTimingModeHelper(e.target.value);
   }
   
   //ensure the necessary fields are grayed out 
@@ -296,10 +305,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
 
 // Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
-  return (
+  return (    
     // THIS IS THE PARENT DIV TO CONTAIN EVERYTHING
     <div id='pageContainer'>
-
+      {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={true}/>}     
       {/* THIS DIV IS FOR THE DRAWERS */}
       <div id='drawers'>
         {/* NOZZLE DRAWER */}
@@ -352,22 +361,9 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
               <option key="auto" value="auto">Auto Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
-            </select>
+            </select> 
           </div>
           
-          <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Start Delay"></button></div>
-          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Stop Delay"></button></div>
-          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Spray Duration"></button></div>
-                    
           <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
 
@@ -377,6 +373,23 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           <Parameter key = {0} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {0} />
 
+          <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+
+          <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Start Delay"></button></div>
+
+          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Stop Delay"></button></div>
+
+          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Spray Duration"></button></div>
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>
@@ -420,7 +433,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
       {/* THIS DIV IS FOR THE BUTTON TO SEE THE RESULTS */}
       <div id='results'>
         {/* RESULTS */}
-          <button onClick={navigateResults}> See Results </button>
+          <button onClick={() => {setIsLoading(true);navigateResults();}}> See Results </button>
       </div>      
     </div>
   );
