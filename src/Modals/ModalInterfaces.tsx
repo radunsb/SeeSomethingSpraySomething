@@ -59,3 +59,8 @@ export interface DropdownProps {
   options: Option[];
   onChange: (value: string) => void;
 }
+
+export interface ResultsHelpProps{
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
