@@ -167,7 +167,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         updateParamsAndRerender(parameterMap, setParameterMap);
         parameterInput.value = String(newVal);
 
-        if(currentParameter.name === "sensor_distance" || currentParameter.name === "product_length" || currentParameter.name === "line_speed"){
+        if(timingMode === "auto" && (currentParameter.name === "sensor_distance" || currentParameter.name === "product_length" || currentParameter.name === "line_speed")){
           autoCalculateTiming();  
         }
       }
@@ -363,18 +363,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
               <option key="vt" value="vt">Variable Time</option>
             </select> 
           </div>
-          
-          <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
-          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
-
-          <Parameter key = {31} parameterList= {parameterList} paramUnits = {paraUnits} 
-          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {31} />
-
-          <Parameter key = {0} parameterList= {parameterList} paramUnits = {paraUnits} 
-          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {0} />
-
-          <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
-          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
           {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
@@ -390,6 +378,21 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
+          
+          {/*controller name: */}
+          {/*<Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />*/}
+
+          <Parameter key = {31} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {31} />
+
+          <Parameter key = {0} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {0} />
+
+          <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+
+
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>
