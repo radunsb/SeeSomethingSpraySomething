@@ -117,8 +117,7 @@ export const ControllerDrawer = ({
     aria-labelledby="controller-drawer-title"
     aria-hidden={!isOpen}>
     <div className={classNames}>
-      <h2 id="controller-drawer-title">Controller Settings<Checkbox checked = {isChecked} onChange={setIsChecked}/>
-      </h2>
+      <h2 id="controller-drawer-title">Controller Settings</h2>
       <div className='Close' onClick={onClose} aria-label="Close Line Drawer">
         X
       </div>
