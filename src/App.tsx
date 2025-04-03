@@ -1,17 +1,23 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
+import { Parameter, paraNames, paraUnits, paramDesc} from'./Parameter.tsx';
+import { nozzleIndex, nozzleSpacing, lineIndex, lineSpacing, controllerIndex, controllerSpacing } from './Parameter.tsx';
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
 import { Loading } from './Modals/LoadingModal.tsx'
-import { CreateAccount, Profile} from './Modals.tsx'
+import { Wizard } from './Modals/WizardModal.tsx'
+import { CreateAccount, Profile } from './Modals.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
 import { useState, useEffect, ChangeEvent } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
+import { Dropdown } from "./Modals/ModalUtil.tsx";
+import { Checkbox } from "./Drawers.tsx";
+import { Option } from "./Modals/ModalInterfaces.tsx";
 import { UtilityInterfaces } from "./utility/models";
 import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
 import { ParameterConstraints} from './utility/ParameterConstraints.ts';
@@ -45,9 +51,15 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
+  const [selectedController, setSelectedController] = useState<string>("");
+  const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
+  const [selectedNozzle, setSelectedNozzle] = useState<string>("");
+  const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
+  const [isChecked, setIsChecked] = useState(false);
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -161,6 +173,14 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
       if(value.min!=null && value.max!=null){
+        // If the key is Controller Name or Spray Angle, make it a drop down
+        //if(value.name == "controller_name"){
+        //  console.log("Got to Controller")
+        //parameterList.push(
+        // <Dropdown options={controllerOptions} onChange={(value) => setSelectedController(value)}/>
+         // )
+        //}
+        //else {
         parameterList.push(
           <li id={key + "_list"} key={key}>
             <p>{key.replace("_", " ").replace("_", " ").toUpperCase()}</p>
@@ -168,6 +188,12 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           </li>
         );
       }
+    //}
+    //if(value.name == "spray_angle"){
+    //  parameterList.push(
+    //    <Dropdown options={nozzleOptions} onChange={(value) => setSelectedNozzle(value)}/>
+    //   )
+    //}
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
@@ -267,8 +293,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
 // 6 = Nozzle Height, 7 = Nozzle Spacing, 8 = Owner ID, 9 = Product Height, 10 = Product Length,
 // 11 = Product Width, 12 = Project Desc., 13 = Project ID , 14 = Project Name, 15 = Sensor Distance, 
-// 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Angle, 20 = Flow Rate,
-// 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Twist Angle, 
+// 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Spray Angle, 20 = Flow Rate,
+// 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Alignment, 
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
 
 // Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
@@ -283,44 +309,23 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         aria-expanded={isNozzleDrawerOpen}
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
-          <div style = {{display: "flex", alignItems: "center", gap: "29px"}}>
-          {parameterList[23]} <button className='info-btn' onClick={() => {handleOpenInfo(23)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Name"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "50px"}}>
-          {parameterList[20]} <button className='info-btn' onClick={() => {handleOpenInfo(20)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Flow Rate"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "82px"}}>
-          {parameterList[19]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Angle"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "15px"}}>
-          {parameterList[6]} <button className='info-btn' onClick={() => {handleOpenInfo(6)}}
-                      aria-expanded={isInfoOpen}
-                      aria-controls="Nozzle Height"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "17px"}}>
-          {parameterList[5]} <button className='info-btn' onClick={() => {handleOpenInfo(5)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Spacing"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "8px"}}>
-          {parameterList[7]} <button className='info-btn' onClick={() => {handleOpenInfo(7)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Nozzle Count"></button></div>
-          <p>Nozzle Overlap Percentage: {overlap.toFixed(0)}%</p>
-          <div style = {{display: "flex", alignItems: "center", gap: "15px"}}>
-          {parameterList[1]} <button className='info-btn' onClick={() => {handleOpenInfo(1)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Fluid Pressure"></button></div>
-          <p>Projected Flow Rate: {estimatedFlowrate.toFixed(3)} gal/min</p>
-          <div style = {{display: "flex", alignItems: "center", gap: "35px"}}>
-          {parameterList[25]} <button className='info-btn' onClick={() => {handleOpenInfo(25)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Twist Angle"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "36px"}}>
-          {parameterList[24]} <button className='info-btn' onClick={() => {handleOpenInfo(24)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Spray Shape"></button></div>
+        <div>
+          {nozzleIndex.map((_) => (
+            <Parameter key = {_} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {_} 
+            />
+          ))}
+          </div>
+          <p>NOZZLE OVERLAP PERCENTAGE: {overlap.toFixed(0)}%</p>
+
+          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
+
+          <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
+
+          <Parameter key = {25} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {25} />
+        
         </NozzleDrawer>
 
         {/* LINE DRAWER */}
@@ -328,34 +333,17 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         aria-expanded={isLineDrawerOpen}
         aria-controls="lineDrawer">Line</button>
         <LineDrawer isOpen={isLineDrawerOpen} onClose={() => setIsLineDrawerOpen(false)}>
-        <div style = {{display: "flex", alignItems: "center", gap: "65px"}}>
-          {parameterList[3]} <button className='info-btn' onClick={() => {handleOpenInfo(3)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Line Speed"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "60px"}}>
-          {parameterList[4]} <button className='info-btn' onClick={() => {handleOpenInfo(4)}}
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Line Width"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "14px"}}>
-          {parameterList[9]} <button className='info-btn' onClick={() => {handleOpenInfo(9)}}                   
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Product Height"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "12px"}}>
-          {parameterList[10]} <button className='info-btn' onClick={() => {handleOpenInfo(10)}}                 
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Product Length"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "20px"}}>
-          {parameterList[11]} <button className='info-btn' onClick={() => {handleOpenInfo(11)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Product Width"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "10px"}}>
-          {parameterList[15]} <button className='info-btn' onClick={() => {handleOpenInfo(15)}}                 
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Sensor Distance"></button></div>
+        <div>
+          {lineIndex.map((_) => (
+            <Parameter key = {_} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {_} 
+            />
+          ))}
+          </div>
         </LineDrawer>
 
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => setIsControllerDrawerOpen(true)}
+        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
@@ -367,34 +355,28 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             </select>
           </div>
           
-          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center", gap: "43px"}}>
-          {parameterList[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
-          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center", gap: "48px"}}>
-          {parameterList[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Stop Delay"></button></div>
-          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center", gap: "px"}}>
-          {parameterList[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "37px"}}>
-          {parameterList[27]} <button className='info-btn' onClick={() => {handleOpenInfo(27)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Controller Id"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "11px"}}>
-          {parameterList[28]} <button className='info-btn' onClick={() => {handleOpenInfo(28)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Controller Name"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "20px"}}>
-          {parameterList[31]} <button className='info-btn' onClick={() => {handleOpenInfo(31)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Max Frequency"></button></div>
-          <div style = {{display: "flex", alignItems: "center", gap: "50px"}}>
-          {parameterList[0]} <button className='info-btn' onClick={() => {handleOpenInfo(0)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Duty Cycle"></button></div>
+                    
+          <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
+
+          <Parameter key = {31} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {31} />
+
+          <Parameter key = {0} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {0} />
+
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>

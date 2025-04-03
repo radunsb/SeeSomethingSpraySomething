@@ -89,3 +89,51 @@
 .product-border{
     background-color: black;
 }
+
+.help-button{
+    background-image: url('../assets/icons8-info-50.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    text-decoration: none;
+    overflow: hidden;
+    white-space: nowrap;
+    width: 10px;
+    height: 10px;
+    background-color: transparent;
+    border: transparent;
+    border-radius: 10px;
+    border-width: 10px;
+    text-align: right;
+}
+
+.help-darkBG {
+    background-color: rgba(0, 0, 0, 0.2);
+    width: 100vw;
+    height: 100vh;
+    z-index: 6;
+    position: fixed;
+    transform: translateY(-50%)
+  }
+
+  .help-modal {
+    position: fixed;
+ 
+    transform: translate(20vw, -40vh);    
+
+    width: 60vw;
+    height: 34vw;
+
+    background: white;
+
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+
+    z-index: 8;
+  }
+
+  .help-image{
+    height: 100%;
+    width: 100%;
+  }
