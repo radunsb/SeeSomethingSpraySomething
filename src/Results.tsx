@@ -3,8 +3,9 @@ import { computeSprayPattern, updateParams, getPatternDimensions } from "./utili
 import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
 import * as htmlToImage from "html-to-image";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { getOrException } from "./utility/ProjectUtilities.ts";
+import { ResultsHelp } from "./Modals/ResultsHelpModal.tsx";
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
     timingMode: string
@@ -126,9 +127,14 @@ const Results = ({params, timingMode}:ResultsProps) => {
         const pixelsOffset = PixelsPerInch * inchesOffset;
         nozzleOffsets.push(pixelsOffset);
     }
+    
+//////////////////// Set up the info modal //////////////////////////////////////////////////////
+const [helpIsOpen, setHelpVisibility] = useState(false);
 
 //////////////////// return your html //////////////////////////////////////////////////////////
     return (
+        <>
+        {helpIsOpen ? <div className= "help-darkBG" onClick={() => setHelpVisibility(false)}/> : <div></div>} 
         <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
             <div id="images">    
                 <div id="manifold-image" style={{height:`${productImageHeight*1.2}px`, width:`${productImageWidth*0.02}px`, overflow:"visible"}}>
@@ -166,8 +172,11 @@ const Results = ({params, timingMode}:ResultsProps) => {
                     <button> Back </button>
                 </Link>
                 <button onClick={takeScreenshot}> Export as PDF/Print </button>
+                <button className="help-button" onClick={() => setHelpVisibility(!helpIsOpen)}></button>
             </div>
         </div>
+        <ResultsHelp isOpen={helpIsOpen} setIsOpen={setHelpVisibility}></ResultsHelp>
+        </>
     );
 };
   
