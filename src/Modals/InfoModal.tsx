@@ -7,8 +7,8 @@ import '../styles/Modals.css';
     "Nozzle Count", "Nozzle Height", "Nozzle Spacing", "Owner ID", 
     "Product Height", "Product Length", "Product Width", 
     "Project Description", "Project ID", "Project Name",
-    "Sensor Distance", "Spray Duration", "Start Delay", "Stop Delay", "Angle", "Flow Rate",
-    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Shape", "Allignment",
+    "Sensor Distance", "Spray Duration", "Start Delay", "Stop Delay", "Alignment", "Flow Rate",
+    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Angle", "Spray Shape",
     "Controller Doc Link", "Controller ID", "Controller Name", "Gun Id", "Gun Name", "Max Frequency", "Overlap Distance"
   ]
   
@@ -32,12 +32,12 @@ import '../styles/Modals.css';
     "In seconds, the amount of time liquid flows out of the nozzle",
     "In seconds, the time from when the product is sensed, and when the nozzle starts spraying",
     "In Seconds The time the nozzles remain spraying after the product is no longer detected by the sensor",
-    "In degrees the angle of liquid spray exiting a nozzle",
+    "In degrees the amount of tilt the nozzle head has in comparison to the conveyor belt",
     "In gallons per minutes the amount of liquid exiting a nozzle",
     "A link to the Spraying Systems catalog containing information on this nozzle", 
     "The numerical representation of a nozzle",
     "Text identifier of the nozzle",
-    "The shape in which liquid will spray from the nozzle (ex. Fan, cone, etc)",
+    "In degrees the angle of liquid spray exiting a nozzle",
     "In degrees the amount of tilt the nozzle head has in comparison to the conveyor belt",
     "A link to the Spraying Systems catalog containing information on this controller",
     "The numerical representation of a controller",

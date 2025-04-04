@@ -17,7 +17,13 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
   // Get all of the values from the current model that we need to build the visual
   const line_width: number = ((parameterMap.get('line_width')?.value ?? 0) as number)/SCALING_FACTOR;
   const nozzle_height: number = ((parameterMap.get('nozzle_height')?.value ?? 0) as number)/SCALING_FACTOR;
-  const spray_angle: number = (parameterMap.get('angle')?.value ?? 0) as number;
+  let spray_angle = 110;
+  if(parameterMap.get('spray_angle') === undefined){
+      spray_angle = Number(parameterMap.get("angle")?.value);
+    }
+    else{
+      spray_angle = Number(parameterMap.get("spray_angle")?.value);
+    } 
   const nozzle_count: number = (parameterMap.get('nozzle_count')?.value ?? 0) as number;
   const nozzle_spacing: number = ((parameterMap.get('nozzle_spacing')?.value ?? 0) as number)/SCALING_FACTOR;
   const sensor_distance: number = ((parameterMap.get('sensor_distance')?.value ?? 0) as number)/SCALING_FACTOR;
@@ -25,7 +31,13 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
   const product_length: number = ((parameterMap.get('product_length')?.value ?? 0) as number)/SCALING_FACTOR;
   const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/SCALING_FACTOR;
   // TODO: CHANGE TO ALIGNMENT???
-  const twist_angle: number = ((parameterMap.get('twist_angle')?.value ?? 0) as number);
+  let alignment = 5;
+  if(parameterMap.get('alignment') === undefined){
+      alignment = Number(parameterMap.get("twist_angle")?.value);
+    }
+    else{
+      alignment = Number(parameterMap.get("alignment")?.value);
+    } 
 
   // Setup the slider:
   // The slider goes from -100 to 100 starting at -100
@@ -71,7 +83,7 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
           nozzle_spacing={nozzle_spacing}
           nozzle_height={nozzle_height}
           spray_angle={spray_angle}
-          twist_angle={twist_angle}
+          twist_angle={alignment}
           slider_val={sliderValue}
           product_length={product_length}
           sensor_distance={sensor_distance}
