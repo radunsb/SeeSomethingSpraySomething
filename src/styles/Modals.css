@@ -318,6 +318,10 @@
   background: #ffcbd0;
 }
 
+.saveBtn {
+  margin-top: 10px;
+}
+
 .saves_open_inactive {
   color: gray;
 }
@@ -336,6 +340,10 @@
 
 .saves_selected_project {
   background-color: rgb(203, 203, 203);
+}
+
+.saves_duplicate_button {
+  margin-left: 10px;
 }
 
 .save_load_header {

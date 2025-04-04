@@ -52,6 +52,7 @@ export namespace Models{
         start_delay:number,
         stop_delay:number,
         spray_duration:number,
+        timing_mode:string,
         nozzle:Models.Nozzle,
         controller:Models.Controller,
         gun:Models.Gun,
