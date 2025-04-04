@@ -50,7 +50,7 @@ import '../styles/Modals.css';
               </div>
                 <div>
                 <button className= "loginBtn" onClick={() => {
-                  setUserInfo(login(username, password)); 
+                  setUserInfo(login(encodeHTML(username), encodeHTML(password))); 
                   }}>
                   Login
                 </button>

@@ -10,7 +10,7 @@ import { Loading } from "./LoadingModal";
 import '../styles/Modals.css';
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, setIsWizardOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
     const [projects, setProjects] = projectState;
     const [projectList, setProjectList] = useState(constructProjectList());

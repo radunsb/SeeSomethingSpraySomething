@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { ModalProps, Option } from "../Modals/ModalInterfaces.tsx";
 import axios from "axios";
 import {Models} from './models.ts'
 import {UtilityInterfaces} from './models.ts'
@@ -122,6 +124,18 @@ export async function createControllerArray(): Promise<string[]> {
         console.error(error);
         return [];
     }
+}
+
+export async function loadControllerOptions() {
+    const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
+    try {
+    const controllerNames = await createControllerArray();
+    if (controllerNames.length > 0) {
+        setControllerOptions(controllerNames.map(name => ({ value: name, label: name})))
+    }
+  } catch (error) {
+    console.error("Error Loading Controllers", error)
+  }
 }
 
 //Takes the current parameters and saves it in your projects folder

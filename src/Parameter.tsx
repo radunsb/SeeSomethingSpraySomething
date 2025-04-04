@@ -10,15 +10,20 @@ export const paraNames: string[] = [
     "Product Height", "Product Length", "Product Width", 
     "Project Description", "Project ID", "Project Name",
     "Sensor Distance", "Spray Duration", "Start Delay", "Stop Delay", "Spray Angle", "Flow Rate",
-    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Angle", "Alignment",
-    "Controller Doc Link", "Controller ID", "Controller Name", "Gun Id", "Gun Name", "Max Frequency", "Overlap Distance"
+    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Shape", "Alignment",
+    "Controller Doc Link", "Controller ID", "Controller Name", "Gun Id", "Gun Name", "Max Frequency", "Overlap Distance",
+    "Spray Angle Array", "Controller Array" 
   ]
 
   export const paraUnits: string[] = [
-    " %", " psi", "", " feet/min", " inches", "", " inches", " inches", "",
-    " inches", " inches", " inches", "", "", "", " inches", " seconds",
-    " seconds", " seconds", " degrees", " gal/min", "", "", "", " degrees",
-    " degrees", "", "", "", "", "", " cycles/min", " %"
+    "%", "psi", "", "feet/min", "inches", 
+    "", "inches", "inches", "",
+    "inches", "inches", "inches", 
+    "", "", "", 
+    "inches", "seconds", "seconds", "seconds", "degrees", "gal/min", 
+    "", "", "", "", "degrees", 
+    "", "", "", "", "", "cycles/min", "%", 
+    "degrees", ""
   ]
   
   export const paramDesc: string[] = [
@@ -40,7 +45,7 @@ export const paraNames: string[] = [
     "In inches the distance between the product sensor and the nozzle array",
     "In seconds, the amount of time liquid flows out of the nozzle",
     "In seconds, the time from when the product is sensed, and when the nozzle starts spraying",
-    "In Seconds The time the nozzles remain spraying after the product is no longer detected by the sensor",
+    "In seconds The time the nozzles remain spraying after the product is no longer detected by the sensor",
     "In degrees the angle of liquid spray exiting a nozzle",
     "In gallons per minutes the amount of liquid exiting a nozzle",
     "A link to the Spraying Systems catalog containing information on this nozzle", 
@@ -54,28 +59,17 @@ export const paraNames: string[] = [
     "The numerical representation of a spray gun",
     "Text identifier of the spray gun",
     "In number of cycles per minute, the amount of open and close sequences a nozzle makes",
-    "The percentage of product sprayed with fluid from at least two nozzles"
+    "The percentage of product sprayed with fluid from at least two nozzles",
+    "In degrees the angle of liquid spray exiting a nozzle",
+     "Text identifier of the controller"
   ]
-
-  //const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
-
-  //async function loadControllerOptions() {
-  //  try {
-  // const controllerNames = await createControllerArray();
-  //  if (controllerNames.length > 0) {
-  //    setControllerOptions(controllerNames.map(name => ({ value: name, label: name})))
-  //  }
-  //} catch (error) {
-  //  console.error("Error Loading Controllers", error)
-  //}
-//}
 
   export const nozzleIndex: number[] = [
     24, 5, 6, 7, 20
   ]
 
   export const nozzleSpacing: number[] = [
-    50, 82, 15, 15, 50
+    82, 15, 15, 50
   ]
 
   export const lineIndex: number[] = [
@@ -94,17 +88,33 @@ export const paraNames: string[] = [
     37, 50, 37, 10, 43, 48, 0
   ]
 
-  const commonAnglesA: number[] = [
-    110, 95, 80, 50, 25, 15
-  ]
-  //export const [commonAngles, setCommonAngles] = useState<Option[]>([]);
-    //for (let i = 0; i <= commonAnglesA.length; i++){
-    //  setCommonAngles(name =>({ value: commonAnglesA[i], label: commonAnglesA[i]}))
-    //}
+  let controllers = new Map<number, string>([
+    [0, "E1750+"], [1, "E2150+"]
+  ])
 
-  export const NozzleNumber: number[] = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16
-  ]
+  export const controllersOptions = Array.from(controllers.entries()).map(([value, name]) => ({
+    value: value.toString(),
+    label: name.toString(),
+  }))
+
+  let commonAnglesA = new Map<number, number>([
+    [110, 110], [95, 95], [80, 80], [50, 50], [25, 25], [15, 15]
+  ])
+
+  export const sprayAngleOptions = Array.from(commonAnglesA.entries()).map(([angle, value]) => ({
+    value: angle.toString(),
+    label: value.toString(),
+  }))
+
+  let NozzleNumber = new Map<number, number>([
+    [1, 1], [2, 2], [3, 3], [4, 4], [5, 5], [6, 6], [7, 7], [8, 8], 
+    [9, 9], [10, 10], [11, 11], [12, 12], [13, 13], [14, 14], [15, 15], [16, 16]
+  ])
+
+  export const nozzleNumberOptions = Array.from(NozzleNumber.entries()).map(([num, value]) => ({
+    value: num.toString(),
+    label: value.toString(),
+  }))
 
 interface ParamProps {
     parameterList: string[];

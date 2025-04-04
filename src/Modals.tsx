@@ -116,7 +116,7 @@ interface DropdownProps {
 
 export const TextField = ({ value, onChange }: TextFieldProps) => {
   return (
-    <input value={value} onChange={({ target: { value } }) => onChange(encodeHTML(value))}/>
+    <input value={value} onChange={({ target: { value } }) => onChange(value)}/>
   );
 };
 
