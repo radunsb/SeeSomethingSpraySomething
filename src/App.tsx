@@ -35,13 +35,12 @@ interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
-  timingModeState : [string, React.Dispatch<React.SetStateAction<string>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate, timingModeState}: AppProps) {
+export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -75,7 +74,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
-  const [timingMode, setTimingMode] = timingModeState;
+  const [timingMode, setTimingMode] = useState(parameterMap.get("timing_mode") != undefined ? parameterMap.get("timing_mode")?.value : "auto");
 
   //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserInfo(newInfo : Promise<UserInfoResponse>) {
@@ -101,11 +100,15 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     }
     setIsLoading(false);        
   }
-  
-  //Funky stuff happens with defaultValue on inputs and React. I don't know why
-  //this works. I wouldn't suggest touching it.
   useEffect(() => {
     async function loadMap(){
+      if(parameterMap.get("timing_mode") != undefined){
+        setTimingMode(String(parameterMap.get("timing_mode")?.value));
+      }
+      else{
+        setTimingMode("auto");
+        updateTimingModeHelper("auto");
+      }  
       for(const [key, value] of parameterMap){
         const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
         if(inputElement){
@@ -117,8 +120,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   })
 
   //On loading project, set the parameter map and change all of the parameter input elements
-  function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
-    setParameterMap(params);
+  async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
+    setParameterMap(params); 
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
@@ -272,7 +275,14 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     if(newTimeMode === "auto"){
       autoCalculateTiming();
     }
+    const parameter: UtilityInterfaces.Parameter = {
+      name:"timing_mode",
+      type: UtilityInterfaces.types.STRING,
+      value: newTimeMode
+    }
+    parameterMap.set('timing_mode', parameter);
     setTimingMode(newTimeMode);
+    updateParamsAndRerender(parameterMap, setParameterMap);
   }
 
   function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
@@ -305,9 +315,23 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const product_height = Number(getOrException(parameterMap, "product_height").value);
   const nozzle_height = Number(getOrException(parameterMap, "nozzle_height").value);
   const spray_height = nozzle_height - product_height;
-  
-  const twist_angle = Number(getOrException(parameterMap, "twist_angle").value);
-  const nozzle_angle = Number(getOrException(parameterMap, "angle").value);
+  //Stupid legacy code that is there in case the project has the old names for these.
+  //Should be removed for production
+  //Names SHOULD be "alignment" and "spray_angle"
+  let twist_angle = 5;
+  let nozzle_angle = 110;
+  if(parameterMap.get('alignment') === undefined){
+    twist_angle = Number(getOrException(parameterMap, "twist_angle").value);
+  }
+  else{
+    twist_angle = Number(getOrException(parameterMap, "alignment").value);
+  }
+  if(parameterMap.get('spray_angle') === undefined){
+    nozzle_angle = Number(getOrException(parameterMap, "angle").value);
+  }
+  else{
+    nozzle_angle = Number(getOrException(parameterMap, "spray_angle").value);
+  } 
 
   const nozzle_spacing = Number(getOrException(parameterMap, "nozzle_spacing").value);
 
@@ -351,8 +375,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
             isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
 
-          <Parameter key = {25} parameterList= {parameterList} paramUnits = {paraUnits} 
-            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {25} />
+          <Parameter key = {19} parameterList= {parameterList} paramUnits = {paraUnits} 
+            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {19} />
                       
           <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
 

@@ -65,6 +65,7 @@ namespace GlobalParams{
 
 export function updateParams(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string){
     const new_sensor_distance = parameterMap.get("sensor_distance");
+    timingMode = String(parameterMap.get("timing_mode")?.value);
     if(typeof new_sensor_distance !== "undefined"){
         GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance.value);
     }
@@ -106,8 +107,8 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
     let new_nozzle_spacing = parameterMap.get("nozzle_spacing");
-    let new_spray_angle = parameterMap.get("angle");
-    let new_twist_angle = parameterMap.get("twist_angle");
+    let new_spray_angle = parameterMap.get("spray_angle");
+    let new_twist_angle = parameterMap.get("alignment");
 
     if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof nozzle_flow_rate !== "undefined" && typeof nozzle_pressure !== "undefined"){
         const flowRate = flowRateEstimate(Number(nozzle_flow_rate.value), 40, Number(nozzle_pressure.value))
@@ -125,7 +126,7 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
     let new_start_delay = parameterMap.get("start_delay");
     let new_stop_delay = parameterMap.get("stop_delay");
     let new_spray_duration = parameterMap.get("spray_duration");
-
+    console.log("timing mode: " + timingMode);
     if(typeof new_start_delay !== "undefined"){
         //this is simple, because t=0 is when the sensor is triggered
         GlobalParams.SPRAY_START_TIME = Number(new_start_delay.value);

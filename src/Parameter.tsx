@@ -51,7 +51,7 @@ export const paraNames: string[] = [
     "A link to the Spraying Systems catalog containing information on this nozzle", 
     "The numerical representation of a nozzle",
     "Text identifier of the nozzle",
-    "The shape in which liquid will spray from the nozzle (ex. Fan, cone, etc)",
+    "In degrees the angle of liquid spray exiting a nozzle",
     "In degrees the amount of tilt the nozzle head has in comparison to the conveyor belt",
     "A link to the Spraying Systems catalog containing information on this controller",
     "The numerical representation of a controller",

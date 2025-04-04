@@ -30,6 +30,11 @@ export async function createProjectMap(userID: number, projectID: number){
         parameterMap.delete('controller');
         parameterMap.delete('nozzle');
         parameterMap.delete('gun');
+        if(parameterMap.get("timing_mode") != undefined){
+            const timing_mode = parameterMap.get("timing_mode");
+            parameterMap.delete("timing_mode");
+            parameterMap.set("timing_mode", timing_mode);
+        }
     }
     else{
         //If the user is trying to open a project that doesn't exist, just
@@ -190,14 +195,22 @@ export function getOrException(map: Map<string, UtilityInterfaces.Parameter>, ke
 function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>): Models.Project|undefined{
     try{
     const lmd: Date = new Date(getOrException(project, 'last_modified_date').value)
+    if(project.get('timing_mode') === undefined){
+        const parameter: UtilityInterfaces.Parameter = {
+            name:"timing_mode",
+            type: UtilityInterfaces.types.STRING,
+            value: "auto"
+        }
+        project.set('timing_mode', parameter);
+    }
     const nozzle: Models.Nozzle = {
         nozzle_id: Number(getOrException(project, 'nozzle_id').value),
         nozzle_name: String(getOrException(project, "nozzle_name").value),
         nozzle_doc_link: String(getOrException(project, 'nozzle_doc_link').value),
         flow_rate: Number(getOrException(project, 'flow_rate').value),
-        spray_angle: Number(getOrException(project, 'angle').value),
+        spray_angle: Number(getOrException(project, 'spray_angle').value),
         spray_shape: String(getOrException(project, 'spray_shape').value),
-        alignment: Number(getOrException(project, 'twist_angle').value)
+        alignment: Number(getOrException(project, 'alignment').value)
     }
     const gun: Models.Gun = {
         gun_id: Number(getOrException(project, 'gun_id').value),
@@ -231,7 +244,8 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
         spray_duration: Number(getOrException(project, 'spray_duration').value),
         nozzle: nozzle,
         gun: gun,
-        controller: controller
+        controller: controller,
+        timing_mode: String(project.get('timing_mode')?.value || "auto")
     }
     return newProject;
     } catch(error){
