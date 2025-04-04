@@ -26,7 +26,6 @@ const MainScreenVisual: React.FC<MainScreenVisualProps> = ({parameterMap}) => {
   const product_height: number = ((parameterMap.get('product_height')?.value ?? 0) as number)/SCALING_FACTOR;
   // TODO: CHANGE TO ALIGNMENT???
   const twist_angle: number = ((parameterMap.get('twist_angle')?.value ?? 0) as number);
-  console.log(`Twist Angle Start: ${twist_angle}`);
 
   // Setup the slider:
   // The slider goes from -100 to 100 starting at -100
@@ -255,9 +254,6 @@ const Spray: React.FC<SprayProps> = ({ top_vertex, angle, height, twist_angle, c
   const widthOffsetX = (0.2/2) * Math.sin(twistAngleInRadians);
   const lengthOffsetZ = r * Math.sin(twistAngleInRadians);
   const widthOffsetZ = (0.2/2) * Math.cos(twistAngleInRadians);
-
-  console.log(`Twist Angle Spray: ${twist_angle}`);
-  console.log(`Twist Angle Radians: ${twistAngleInRadians}`);
 
   const vertices = new Float32Array([
     x, y, z,    // Top vertex
