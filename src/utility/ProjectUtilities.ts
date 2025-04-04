@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+import { ModalProps, Option } from "../Modals/ModalInterfaces.tsx";
 import axios from "axios";
 import {Models} from './models.ts'
 import {UtilityInterfaces} from './models.ts'
@@ -119,6 +121,18 @@ export async function createControllerArray(): Promise<string[]> {
     }
 }
 
+export async function loadControllerOptions() {
+    const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
+    try {
+    const controllerNames = await createControllerArray();
+    if (controllerNames.length > 0) {
+        setControllerOptions(controllerNames.map(name => ({ value: name, label: name})))
+    }
+  } catch (error) {
+    console.error("Error Loading Controllers", error)
+  }
+}
+
 //Takes the current parameters and saves it in your projects folder
 //with the first unused ID
 export async function saveProject(userID: number, project: Map<string, UtilityInterfaces.Parameter>|undefined, copy: boolean){
@@ -181,9 +195,9 @@ function createProjectFromMap(project: Map<string, UtilityInterfaces.Parameter>)
         nozzle_name: String(getOrException(project, "nozzle_name").value),
         nozzle_doc_link: String(getOrException(project, 'nozzle_doc_link').value),
         flow_rate: Number(getOrException(project, 'flow_rate').value),
-        angle: Number(getOrException(project, 'angle').value),
+        spray_angle: Number(getOrException(project, 'angle').value),
         spray_shape: String(getOrException(project, 'spray_shape').value),
-        twist_angle: Number(getOrException(project, 'twist_angle').value)
+        alignment: Number(getOrException(project, 'twist_angle').value)
     }
     const gun: Models.Gun = {
         gun_id: Number(getOrException(project, 'gun_id').value),

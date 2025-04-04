@@ -3,6 +3,7 @@ import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { Parameter, paraNames, paraUnits, paramDesc} from'./Parameter.tsx';
 import { nozzleIndex, nozzleSpacing, lineIndex, lineSpacing, controllerIndex, controllerSpacing } from './Parameter.tsx';
+import { sprayAngleOptions, nozzleNumberOptions, controllersOptions } from './Parameter.tsx';
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
@@ -18,7 +19,7 @@ import { Dropdown } from "./Modals/ModalUtil.tsx";
 import { Checkbox } from "./Drawers.tsx";
 import { Option } from "./Modals/ModalInterfaces.tsx";
 import { UtilityInterfaces } from "./utility/models";
-import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
+import { pushRunToDatabase, loadControllerOptions } from './utility/ProjectUtilities.ts';
 import { ParameterConstraints} from './utility/ParameterConstraints.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
@@ -58,6 +59,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
   const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
+  const [selectedNum, setSelectedNum] = useState<string>("");
+  const [numOptions, setNumOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(true);
 
   //Method for transfering info abour selectedId to the Modal
@@ -167,14 +170,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
       if(value.min!=null && value.max!=null){
-        // If the key is Controller Name or Spray Angle, make it a drop down
-        //if(value.name == "controller_name"){
-        //  console.log("Got to Controller")
-        //parameterList.push(
-        // <Dropdown options={controllerOptions} onChange={(value) => setSelectedController(value)}/>
-         // )
-        //}
-        //else {
         parameterList.push(
           <li id={key + "_list"} key={key}>
             <p>{key.replace("_", " ").replace("_", " ").toUpperCase()}</p>
@@ -182,12 +177,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           </li>
         );
       }
-    //}
-    //if(value.name == "spray_angle"){
-    //  parameterList.push(
-    //    <Dropdown options={nozzleOptions} onChange={(value) => setSelectedNozzle(value)}/>
-    //   )
-    //}
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
@@ -197,6 +186,28 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         );
       }
     }
+      // New Parameter for containing the dropdown
+        parameterList.push(
+          <li id={"ANGLEARRAY_list"} key={"ANGLEARRAY"}>
+              <p>{"SPRAY ANGLE"}</p>
+        <Dropdown options={sprayAngleOptions} onChange={(value) => {setSelectedNozzle(value); 
+          const SprayAngleParam = parameterMap.get("angle");
+          if (typeof SprayAngleParam !== "undefined"){
+          SprayAngleParam.value = value;
+          setParameterMap(parameterMap.set("angle", SprayAngleParam))}}}/>
+          </li>)
+
+        parameterList.push(        
+          <li id={"CONTROLLERARRAY_list"} key={"CONTROLLERARRAY"}>
+            <p>{"CONTROLLERS"}</p>
+        <Dropdown options={controllersOptions} onChange={(value) => setSelectedController(value)}/>
+          </li>)
+
+       parameterList.push(
+         <li id={"NOZZLENUM_list"} key={"NOZZLENUM"}>
+           <p>{"NOZZLE COUNT"}</p>
+       <Dropdown options={nozzleNumberOptions} onChange={(value) => setSelectedNum(value)}/>
+         </li>)
   }
 
   //this function has to be inside the app component because it needs access to the parametermap
@@ -289,6 +300,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 // 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Spray Angle, 20 = Flow Rate,
 // 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Alignment, 
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
+// 32 = ANGLE DROPDOWN, 33 = CONTROLLER DROPDOWN
 
 // Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
   return (
@@ -302,6 +314,11 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         aria-expanded={isNozzleDrawerOpen}
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
+
+        <div style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[32]} {paraUnits[33]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Spray Angle"></button></div>
         <div>
           {nozzleIndex.map((_) => (
             <Parameter key = {_} parameterList= {parameterList} paramUnits = {paraUnits} 
@@ -334,13 +351,13 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           ))}
           </div>
         </LineDrawer>
-
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming(); console.log(isChecked) }}
+        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming(); }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
 
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+          
           <div>
             <Checkbox checked = {isChecked} onChange={setIsChecked}/>
             { !isChecked && 
@@ -350,6 +367,12 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             </select> }
           </div>
           
+
+          <div style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[33]} {paraUnits[34]} <button className='info-btn' onClick={() => {handleOpenInfo(28)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Controllers"></button></div>
+
           <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
 

@@ -6,7 +6,7 @@ import { listUserProjects} from "../utility/ProjectUtilities";
 import { createProjectMap} from "../utility/ProjectUtilities";
 import { SaveLoadProps, Option } from "./ModalInterfaces";
 import { TextField, Dropdown } from './ModalUtil.tsx';
-import { NozzleNumber } from "../Parameter.tsx";
+import { sprayAngleOptions, nozzleNumberOptions, controllersOptions } from '../Parameter.tsx';
 import '../styles/Modals.css';
 
   export const Wizard = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
