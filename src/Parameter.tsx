@@ -65,7 +65,7 @@ export const paraNames: string[] = [
   ]
 
   export const nozzleIndex: number[] = [
-    5, 6, 7, 20
+    24, 5, 6, 7, 20
   ]
 
   export const nozzleSpacing: number[] = [
