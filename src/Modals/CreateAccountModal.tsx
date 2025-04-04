@@ -3,6 +3,7 @@ import { RiCloseLine } from "react-icons/ri";
 import { createAccount } from "../utility/auth_requests.ts";
 import { AccountModalProps } from './ModalInterfaces';
 import { TextField } from './ModalUtil.tsx';
+import { encodeHTML } from "../utility/ProjectUtilities";
 import '../styles/Modals.css';
 
 export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }: AccountModalProps) => {
