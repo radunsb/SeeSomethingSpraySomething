@@ -10,15 +10,15 @@ export const paraNames: string[] = [
     "Product Height", "Product Length", "Product Width", 
     "Project Description", "Project ID", "Project Name",
     "Sensor Distance", "Spray Duration", "Start Delay", "Stop Delay", "Spray Angle", "Flow Rate",
-    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Shape", "Alignment",
+    "Nozz Doc Link",  "Nozzle ID", "Nozzle Name", "Spray Angle", "Alignment",
     "Controller Doc Link", "Controller ID", "Controller Name", "Gun Id", "Gun Name", "Max Frequency", "Overlap Distance"
   ]
 
   export const paraUnits: string[] = [
-    "%", "psi", "", "feet/min", "inches", "", "inches", "inches", "",
-    "inches", "inches", "inches", "", "", "", "inches", "seconds",
-    "seconds", "seconds", "degrees", "gal/min", "", "", "", "",
-    "degrees", "", "", "", "", "", "cycles/min", "%"
+    " %", " psi", "", " feet/min", " inches", "", " inches", " inches", "",
+    " inches", " inches", " inches", "", "", "", " inches", " seconds",
+    " seconds", " seconds", " degrees", " gal/min", "", "", "", " degrees",
+    " degrees", "", "", "", "", "", " cycles/min", " %"
   ]
   
   export const paramDesc: string[] = [
@@ -46,7 +46,7 @@ export const paraNames: string[] = [
     "A link to the Spraying Systems catalog containing information on this nozzle", 
     "The numerical representation of a nozzle",
     "Text identifier of the nozzle",
-    "The shape in which liquid will spray from the nozzle (ex. Fan, cone, etc)",
+    "In degrees the angle of liquid spray exiting a nozzle",
     "In degrees the amount of tilt the nozzle head has in comparison to the conveyor belt",
     "A link to the Spraying Systems catalog containing information on this controller",
     "The numerical representation of a controller",
@@ -71,7 +71,7 @@ export const paraNames: string[] = [
 //}
 
   export const nozzleIndex: number[] = [
-    19, 5, 6, 7, 20
+    24, 5, 6, 7, 20
   ]
 
   export const nozzleSpacing: number[] = [
