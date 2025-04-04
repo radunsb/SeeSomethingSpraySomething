@@ -213,13 +213,21 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         parameterList.push(        
           <li id={"CONTROLLERARRAY_list"} key={"CONTROLLERARRAY"}>
             <p>{"CONTROLLERS"}</p>
-        <Dropdown options={controllersOptions} onChange={(value) => setSelectedController(value)}/>
+        <Dropdown options={controllersOptions} onChange={(value) => { setSelectedController(value);
+          const controllerParam = parameterMap.get("controller_name");
+          if (typeof controllerParam !== "undefined"){
+          controllerParam.value = value;
+          setParameterMap(parameterMap.set("angle", controllerParam))}}}/>
           </li>)
 
        parameterList.push(
          <li id={"NOZZLENUM_list"} key={"NOZZLENUM"}>
            <p>{"NOZZLE COUNT"}</p>
-       <Dropdown options={nozzleNumberOptions} onChange={(value) => setSelectedNum(value)}/>
+       <Dropdown options={nozzleNumberOptions} onChange={(value) => { setSelectedNum(value);
+          const nozzleNumParam = parameterMap.get("nozzle_count");
+          if (typeof nozzleNumParam !== "undefined"){
+          nozzleNumParam.value = value;
+          setParameterMap(parameterMap.set("angle", nozzleNumParam))}}}/>
          </li>)
   }
 
