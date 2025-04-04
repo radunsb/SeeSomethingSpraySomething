@@ -129,7 +129,8 @@ const NozzleApparatus: React.FC<NozzleApparatusProps> = ({
   const nozzles = Array.from({ length: num_nozzles }).map((_, index) => {
     const xPosition = index * nozzle_spacing - (nozzle_spacing * (num_nozzles - 1)) / 2;
     const location: [number, number, number] = [xPosition, nozzle_height, 0];
-    return <Nozzle key={`${index}_${location}_${spray_angle}_${slider_val}_${product_width}_${product_height}`} location={location} spray_angle={spray_angle} twist_angle={twist_angle} slider_val={slider_val} product_length={product_length} sensor_distance={sensor_distance} product_height={product_height} product_width={product_width} nozzle_spacing={nozzle_spacing}/>;
+    // This mess of a key is because components re-render on key change; so this ensures that the spray re-renders whenever any of these parameters change
+    return <Nozzle key={`${index}_${location}_${spray_angle}_${slider_val}_${product_width}_${product_height}_${twist_angle}`} location={location} spray_angle={spray_angle} twist_angle={twist_angle} slider_val={slider_val} product_length={product_length} sensor_distance={sensor_distance} product_height={product_height} product_width={product_width} nozzle_spacing={nozzle_spacing}/>;
   });
 
   return <group position={position}>{nozzles}</group>;
@@ -154,8 +155,6 @@ type NozzleProps = {
 const Nozzle: React.FC<NozzleProps> = ({location, spray_angle, twist_angle, slider_val ,product_length, sensor_distance, product_height, product_width}) => {
   const GUN_SIZE:[number, number, number] = [.2, .2, .2];
   const TIP_SIZE:[number, number, number] = [.1, .1, .05];
-
-  console.log(location);
 
   // This math is not very difficult, just trigonometry, but it is very confusing
   // Basically this block of 7 lines determines if the spray pattern needs adjusted when the product is slide underneath it to remove weird looks in the visual
