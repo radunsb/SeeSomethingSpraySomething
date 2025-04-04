@@ -42,6 +42,8 @@
 
 .nozzle-rect{
     background-color: black;
+
+    border: 3px solid gray;
 }
 
 .spray-column{

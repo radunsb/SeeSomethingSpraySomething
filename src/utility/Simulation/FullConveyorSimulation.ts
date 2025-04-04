@@ -1,5 +1,5 @@
 import {UtilityInterfaces} from "../models.ts"
-import { toRadians, distance } from "./MathFunctions.ts";
+import { toRadians, distance, flowRateEstimate } from "./MathFunctions.ts";
 /* A NOTE ON UNITS AND COORDINATES
 
 all lengths are stored in inches, all times in seconds, and all angles in degrees
@@ -100,19 +100,22 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
         GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height.value);
     }
 
-    const new_flow_rate = parameterMap.get("flow_rate");
-    
+    const nozzle_flow_rate = parameterMap.get("flow_rate");
+    const nozzle_pressure = parameterMap.get("fluid_pressure");
+
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
     let new_nozzle_spacing = parameterMap.get("nozzle_spacing");
     let new_spray_angle = parameterMap.get("angle");
     let new_twist_angle = parameterMap.get("twist_angle");
 
-    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof new_flow_rate !== "undefined"){
+    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof nozzle_flow_rate !== "undefined" && typeof nozzle_pressure !== "undefined"){
+        const flowRate = flowRateEstimate(Number(nozzle_flow_rate.value), 40, Number(nozzle_pressure.value))
+        
         GlobalParams.NOZZLE_LIST = [];
         for (let i = 0; i < Number(new_nozzle_count.value); i++){
             const this_pos = 0.5 * GlobalParams.LINE_WIDTH + Number(new_nozzle_spacing.value) * (0.5 - 0.5*Number(new_nozzle_count.value) + i);
-            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),GlobalParams.WIDTH_ANGLE,Number(new_twist_angle.value),Number(new_flow_rate.value),this_pos);//read and replace parameters
+            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),GlobalParams.WIDTH_ANGLE,Number(new_twist_angle.value),flowRate,this_pos);//read and replace parameters
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
     }

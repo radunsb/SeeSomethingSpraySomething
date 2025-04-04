@@ -6,6 +6,7 @@ import * as htmlToImage from "html-to-image";
 import { useRef, useState } from "react";
 import { getOrException } from "./utility/ProjectUtilities.ts";
 import { ResultsHelp } from "./Modals/ResultsHelpModal.tsx";
+
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
     timingMode: string

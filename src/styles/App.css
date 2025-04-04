@@ -65,3 +65,10 @@
 #productSlider {
   width: 100%;
 }
+
+/*Remove the arrows from the input fields*/
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
