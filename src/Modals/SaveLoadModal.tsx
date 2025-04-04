@@ -10,7 +10,7 @@ import { Loading } from "./LoadingModal";
 import '../styles/Modals.css';
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, setIsWizardOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
     const [projects, setProjects] = projectState;
     const [projectList, setProjectList] = useState(constructProjectList());
@@ -143,7 +143,7 @@ import '../styles/Modals.css';
             <div id="save_modal_content" className= "modalContent">              
             <button id = "saves_save_button_save" className = "saves_save_button" onClick={() => save(false)}>Save Project</button>
             <button id = "saves_save_button_copy" className = "saves_save_button" onClick={() => save(true)}>Save as Copy</button>
-            <button id = "saves_save_button_new" className = "saves_save_button">Create New Project</button>
+            <button id = "saves_save_button_new" className = "saves_save_button" onClick={() => setIsWizardOpen(true)}>Create New Project</button>
             <p id = "saves_sign_in_message" hidden>Please Sign in to Save Projects!</p>
               <div id = 'saves_container'>
                 <h3>My Saved Projects:</h3>
