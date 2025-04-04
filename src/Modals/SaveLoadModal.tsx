@@ -18,14 +18,13 @@ import '../styles/Modals.css';
     const [userID] = userIDstate;
 
     useEffect(() => {
-      if(parameterMap.get("project_id")?.value == 0){
-        document.getElementById("saves_save_button_save")?.setAttribute("disabled", "active");
-      }
       if(userID == 1){
         for(const e of document.getElementsByClassName("saves_save_button")){
           e.setAttribute("hidden", "active");
         }
+        document.getElementById("saves_save_button_copy")?.setAttribute("hidden", "active");
         document.getElementById("saves_sign_in_message")?.removeAttribute("hidden");
+        document.getElementById("delete_project_button")?.setAttribute("hidden", "active");
       }
       const projectButtons = document.getElementsByClassName("saves_project_button");
       for(const button of projectButtons){
@@ -123,7 +122,7 @@ import '../styles/Modals.css';
       document.getElementById("open_project_button")?.classList.remove("saves_open_inactive");
       document.getElementById("delete_project_button")?.removeAttribute("disabled");
       document.getElementById("delete_project_button")?.classList.remove("saves_delete_inactive");
-      document.getElementById("saves_save_project_copy")?.removeAttribute("disabled");
+      document.getElementById("saves_save_button_copy")?.removeAttribute("disabled");
       document.getElementById("saves_save_button_copy")?.classList.remove("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
@@ -141,7 +140,7 @@ import '../styles/Modals.css';
         document.getElementById("open_project_button")?.classList.add("saves_open_inactive");
         document.getElementById("delete_project_button")?.setAttribute("disabled", "active");
         document.getElementById("delete_project_button")?.classList.add("saves_delete_inactive");
-        document.getElementById("saves_save_project_copy")?.setAttribute("disabled", "active");
+        document.getElementById("saves_save_button_copy")?.setAttribute("disabled", "active");
         document.getElementById("saves_save_button_copy")?.classList.add("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
@@ -196,7 +195,7 @@ import '../styles/Modals.css';
                 <button id="open_project_button" className= "saveBtn saves_open_inactive" onClick={() => loadProject()}>
                   Open
                 </button>
-                <button id = "saves_save_button_copy" className = "saves_save_button" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
+                <button id = "saves_save_button_copy" className = "saves_duplicate_button saves_open_inactive" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
               </div>
             </div>
           </div>
