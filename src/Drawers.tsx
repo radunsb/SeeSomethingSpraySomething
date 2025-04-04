@@ -1,7 +1,5 @@
 import React from 'react';
 import "./styles/Drawer.css";
-import autoCalculateTiming from "./App.tsx";
-
 
 export enum DrawerDirection {
   Left = 'Left',
@@ -96,20 +94,30 @@ export const LineDrawer = ({
   );
 };
 
+interface ControllerDrawerProps extends Props{
+  timingMode : string;
+  updateTimingModeHelper : (newTM:string)=>void;
+}
+
 export const ControllerDrawer = ({
-  isOpen,
+  timingMode, 
+  updateTimingModeHelper, 
+  isOpen, 
   children,
   direction = DrawerDirection.Left,
   onClose
-}: Props) => {
+}:ControllerDrawerProps)  => {
   const classNames = `Drawer ${direction} ${
     isOpen ? 'Open' : ''
   }`;
-  const [isChecked, setIsChecked] = React.useState(false);
-  if (isChecked){
-    console.log("checked")
-    autoCalculateTiming
-  }
+  const [isChecked, setIsChecked] = React.useState(true);
+  // if (isChecked && timingMode != "auto"){
+  //   //console.log("checked")
+  //   updateTimingModeHelper("auto");
+  // }
+  // else if(timingMode === "auto"){
+  //   updateTimingModeHelper("vt");
+  // }
 
   return (
     <aside
@@ -117,11 +125,9 @@ export const ControllerDrawer = ({
     aria-labelledby="controller-drawer-title"
     aria-hidden={!isOpen}>
     <div className={classNames}>
-      <h2 id="controller-drawer-title">Controller Settings<Checkbox checked = {isChecked} onChange={setIsChecked}/>
+      <h2 id="controller-drawer-title">Controller Settings{/*<Checkbox checked = {isChecked} onChange={setIsChecked}/>*/}
       </h2>
-      <div className='Close' onClick={onClose} aria-label="Close Line Drawer">
-        X
-      </div>
+       <div className='Close' onClick={onClose} aria-label="Close Line Drawer">X</div>
         <div style ={{padding: "0px"}}>
         </div>
         <div className = 'scrollable-container'>
