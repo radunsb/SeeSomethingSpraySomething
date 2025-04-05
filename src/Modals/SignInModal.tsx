@@ -40,7 +40,7 @@ import '../styles/Modals.css';
               </div>
               <div>
                   <p>Password</p>
-                  <TextField value={password} onChange={ handlePwChange} ></TextField>
+                  <input type="password" value={password} onChange={(e)=>{handlePwChange(e.target.value)}} ></input>
               </div>
               &nbsp;
               <div>

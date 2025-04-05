@@ -245,8 +245,8 @@ export const CreateAccount = ({ isOpen, setIsLIOpen, setIsCAOpen, setUserInfo }:
               </div>
               <div>
                   <p>Password</p>
-                  <TextField value={password} onChange={ handlePwChange} ></TextField>
               </div>
+                  <input type="password" value={password} onChange={(e)=>{handlePwChange(e.target.value)}} ></input>
               &nbsp;
               <div>
                 <button className= "forgetBtn" onClick={() => setIsFPOpen(true)}>
