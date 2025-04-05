@@ -139,3 +139,23 @@
     height: 100%;
     width: 100%;
   }
+
+  .results_button{
+    left: 0;
+    margin: 10px;
+    background-color:whitesmoke;
+    border: 1px solid darkgray;
+    text-decoration: none;
+    box-shadow: 0;
+    -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  z-index: 3;
+}
+.results_button:hover{
+    background-color: rgb(242, 242, 242);
+    border: 1px solid slategray;
+    box-shadow: 0 8px 10px 0 rgba(0,0,0,0.12),0 12px 50px 0 rgba(0,0,0,0.06);
+    -webkit-transition-duration: 0.4s; /* Safari */
+    transition-duration: 0.4s;
+    z-index: 3;
+}
