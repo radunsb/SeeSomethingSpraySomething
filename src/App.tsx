@@ -401,7 +401,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <button onClick={() => { setIsControllerDrawerOpen(true) }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
-        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)} timingMode={timingMode} updateTimingModeHelper={updateTimingModeHelper}>
+        <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
           
           <div>
             Timing Mode: 

@@ -94,30 +94,15 @@ export const LineDrawer = ({
   );
 };
 
-interface ControllerDrawerProps extends Props{
-  timingMode : string;
-  updateTimingModeHelper : (newTM:string)=>void;
-}
-
 export const ControllerDrawer = ({
-  timingMode, 
-  updateTimingModeHelper, 
   isOpen, 
   children,
   direction = DrawerDirection.Left,
   onClose
-}:ControllerDrawerProps)  => {
+}:Props)  => {
   const classNames = `Drawer ${direction} ${
     isOpen ? 'Open' : ''
   }`;
-  const [isChecked, setIsChecked] = React.useState(true);
-  // if (isChecked && timingMode != "auto"){
-  //   //console.log("checked")
-  //   updateTimingModeHelper("auto");
-  // }
-  // else if(timingMode === "auto"){
-  //   updateTimingModeHelper("vt");
-  // }
 
   return (
     <aside
