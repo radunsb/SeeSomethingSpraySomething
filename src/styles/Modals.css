@@ -24,7 +24,7 @@
   margin-right: -50%;
   transform: translate(-50%, -50%);
   text-align:center;
-  z-index:4;
+  z-index:7;
 }
 
 .infocentered {
@@ -62,10 +62,9 @@
     background-color: rgba(0, 0, 0, 0.2);
     width: 99vw;
     height: 103vh;
-    z-index: 3;
+    z-index: 6;
     top: -5%;
     position: absolute;
-    z-index: 3;
 }
 
 #initialLoader{
@@ -100,6 +99,12 @@
   border-radius: 8px;
   box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
   z-index: 4;
+}
+
+.auth-message-modal{
+  width: 30vw;
+  height: 25vh; 
+  text-align: center; 
 }
 
 @media (max-width: 1000px) {
@@ -363,6 +368,7 @@
   width: 120px;
   height: 120px;
   animation: spin 2s linear infinite;
+  z-index: 8;
 }
 
 @keyframes spin {
