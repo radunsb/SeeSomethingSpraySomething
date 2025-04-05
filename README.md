@@ -14,7 +14,7 @@ From the main folder,
 - npm install @react-three/drei
 - npm i jsonwebtoken
 - pip install jwt
-- npm install html-to-image
+- npm install html2canvas
 - npm i react-router
 
 Run server:
