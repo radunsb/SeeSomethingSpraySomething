@@ -134,7 +134,7 @@ export function updateParams(parameterMap:Map<string, UtilityInterfaces.Paramete
     let new_start_delay = parameterMap.get("start_delay");
     let new_stop_delay = parameterMap.get("stop_delay");
     let new_spray_duration = parameterMap.get("spray_duration");
-    console.log("timing mode: " + timingMode);
+
     if(typeof new_start_delay !== "undefined"){
         //this is simple, because t=0 is when the sensor is triggered
         GlobalParams.SPRAY_START_TIME = Number(new_start_delay.value);
@@ -528,6 +528,8 @@ export function computeSprayPattern(numLengthElements:number, numWidthElements:n
     if( !GlobalParams.VALID ){
         return new SprayPattern(productASPRAY, 0);
     }
+
+    console.log("Spray parameters are valid")
 
     //find array of all nozzle functions
     let productNozzleFunctions : NozzleFunction[] = [];

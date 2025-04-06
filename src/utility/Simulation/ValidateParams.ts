@@ -3,9 +3,11 @@ import { getOrException } from "../ProjectUtilities";
 
 export function validateParams(parameterMap:Map<string, UtilityInterfaces.Parameter>) : boolean {
     const nozzleHeight = Number(getOrException(parameterMap, "nozzle_height").value);
-    const product_height = Number(getOrException(parameterMap, "product_height"));
+    const productHeight = Number(getOrException(parameterMap, "product_height").value);
 
-    if(nozzleHeight <= product_height) return false;
+    console.log(`validating parameters:\n\tnozzle height: ${nozzleHeight}\n\tproduct height: ${productHeight}`)
+
+    if(nozzleHeight <= productHeight) return false;
 
     return true;
 }
