@@ -1,5 +1,6 @@
 import {UtilityInterfaces} from "../models.ts"
 import { toRadians, distance, flowRateEstimate } from "./MathFunctions.ts";
+import { validateParams } from "./ValidateParams.ts";
 /* A NOTE ON UNITS AND COORDINATES
 
 all lengths are stored in inches, all times in seconds, and all angles in degrees
@@ -15,6 +16,7 @@ t=0 at the instant the product reaches the sensor
 */
 
 namespace GlobalParams{
+    export let VALID = true; 
     //once this is integrated into the application, these will be acquired from the drawer
     //THESE VALUES SHOULD NOT BE CHANGED OUTSIDE OF THE SETGLOBALPARAMS METHOD
     export let SENSOR_DISTANCE = 18;
@@ -63,7 +65,13 @@ namespace GlobalParams{
                                             new Nozzle(100, 3, 5, 2, 11)];
 }
 
-export function updateParams(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string){
+export function updateParams(parameterMap:Map<string, UtilityInterfaces.Parameter>, timingMode:string){
+    GlobalParams.VALID = validateParams(parameterMap);
+
+    if( !GlobalParams.VALID ){
+        return
+    }
+    
     const new_sensor_distance = parameterMap.get("sensor_distance");
     timingMode = String(parameterMap.get("timing_mode")?.value);
     if(typeof new_sensor_distance !== "undefined"){
@@ -516,6 +524,13 @@ export function computeSprayPattern(numLengthElements:number, numWidthElements:n
 
     //create line array
     let productASPRAY = InitializeConveyorArray();
+
+    if( !GlobalParams.VALID ){
+        console.log("Spray parameters are invalid");
+        return new SprayPattern(productASPRAY, 0);
+    }
+
+    console.log("Spray parameters are valid")
 
     //find array of all nozzle functions
     let productNozzleFunctions : NozzleFunction[] = [];

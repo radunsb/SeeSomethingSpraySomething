@@ -170,8 +170,8 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
                                 key={rowIndex}
                                 >
                                     <div className="tooltiptext">
-                                        <p className="tooltipP">{(128 * element.getElementSprayDensity()).toFixed(5)}</p>
-                                        <p className="tooltipP">oz per square inch</p>
+                                        <p className="tooltipP">{!Number.isNaN(element.getElementSprayDensity()) ? (128 * element.getElementSprayDensity()).toFixed(5) : "Invalid Parameters"}</p>
+                                        <p className="tooltipP">{!Number.isNaN(element.getElementSprayDensity()) ? "oz per square inch" : "No Spray Applied"}</p>
                                     </div>
                                 </div>)}
                         </div>)
