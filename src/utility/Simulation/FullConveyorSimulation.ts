@@ -526,6 +526,7 @@ export function computeSprayPattern(numLengthElements:number, numWidthElements:n
     let productASPRAY = InitializeConveyorArray();
 
     if( !GlobalParams.VALID ){
+        console.log("Spray parameters are invalid");
         return new SprayPattern(productASPRAY, 0);
     }
 
