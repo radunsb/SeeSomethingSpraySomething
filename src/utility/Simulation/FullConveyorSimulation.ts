@@ -154,11 +154,11 @@ export function updateParams(parameterMap:Map<string, UtilityInterfaces.Paramete
 
     //if there was an error receiving or setting timing modes, default to automatic timing
     if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
-        console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
+        //console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
         GlobalParams.SPRAY_START_TIME = GlobalParams.SENSOR_DISTANCE / GlobalParams.LINE_SPEED - 0.01; //start just before the product arrives
         GlobalParams.SPRAY_DURATION = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION + 0.02;
-        console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
+        //console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
     }
 
     GlobalParams.VIRTUAL_LINE_LENGTH = 1.2 * GlobalParams.LINE_SPEED * GlobalParams.SPRAY_DURATION;
