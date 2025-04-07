@@ -1,5 +1,6 @@
 import {UtilityInterfaces} from "../models.ts"
-import { toRadians, distance } from "./MathFunctions.ts";
+import { toRadians, distance, flowRateEstimate } from "./MathFunctions.ts";
+import { validateParams } from "./ValidateParams.ts";
 /* A NOTE ON UNITS AND COORDINATES
 
 all lengths are stored in inches, all times in seconds, and all angles in degrees
@@ -15,6 +16,7 @@ t=0 at the instant the product reaches the sensor
 */
 
 namespace GlobalParams{
+    export let VALID = true; 
     //once this is integrated into the application, these will be acquired from the drawer
     //THESE VALUES SHOULD NOT BE CHANGED OUTSIDE OF THE SETGLOBALPARAMS METHOD
     export let SENSOR_DISTANCE = 18;
@@ -63,8 +65,15 @@ namespace GlobalParams{
                                             new Nozzle(100, 3, 5, 2, 11)];
 }
 
-export function updateParams(parameterMap:Map<String, UtilityInterfaces.Parameter>, timingMode:string){
+export function updateParams(parameterMap:Map<string, UtilityInterfaces.Parameter>, timingMode:string){
+    GlobalParams.VALID = validateParams(parameterMap);
+
+    if( !GlobalParams.VALID ){
+        return
+    }
+    
     const new_sensor_distance = parameterMap.get("sensor_distance");
+    timingMode = String(parameterMap.get("timing_mode")?.value);
     if(typeof new_sensor_distance !== "undefined"){
         GlobalParams.SENSOR_DISTANCE = Number(new_sensor_distance.value);
     }
@@ -100,19 +109,22 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
         GlobalParams.NOZZLE_HEIGHT = Number(new_nozzle_height.value);
     }
 
-    const new_flow_rate = parameterMap.get("flow_rate");
-    
+    const nozzle_flow_rate = parameterMap.get("flow_rate");
+    const nozzle_pressure = parameterMap.get("fluid_pressure");
+
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
     let new_nozzle_spacing = parameterMap.get("nozzle_spacing");
-    let new_spray_angle = parameterMap.get("angle");
-    let new_twist_angle = parameterMap.get("twist_angle");
+    let new_spray_angle = parameterMap.get("spray_angle");
+    let new_twist_angle = parameterMap.get("alignment");
 
-    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof new_flow_rate !== "undefined"){
+    if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof nozzle_flow_rate !== "undefined" && typeof nozzle_pressure !== "undefined"){
+        const flowRate = flowRateEstimate(Number(nozzle_flow_rate.value), 40, Number(nozzle_pressure.value))
+        
         GlobalParams.NOZZLE_LIST = [];
         for (let i = 0; i < Number(new_nozzle_count.value); i++){
             const this_pos = 0.5 * GlobalParams.LINE_WIDTH + Number(new_nozzle_spacing.value) * (0.5 - 0.5*Number(new_nozzle_count.value) + i);
-            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),GlobalParams.WIDTH_ANGLE,Number(new_twist_angle.value),Number(new_flow_rate.value),this_pos);//read and replace parameters
+            const new_nozzle = new GlobalParams.Nozzle(Number(new_spray_angle.value),GlobalParams.WIDTH_ANGLE,Number(new_twist_angle.value),flowRate,this_pos);//read and replace parameters
             GlobalParams.NOZZLE_LIST.push(new_nozzle);
         }
     }
@@ -142,11 +154,11 @@ export function updateParams(parameterMap:Map<String, UtilityInterfaces.Paramete
 
     //if there was an error receiving or setting timing modes, default to automatic timing
     if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
-        console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
+        //console.error(`TIMING MODE ENTRY ERROR - given values don't match:\nstart time: ${GlobalParams.SPRAY_START_TIME}\nend time: ${GlobalParams.SPRAY_END_TIME}\nduration: ${GlobalParams.SPRAY_DURATION}\n\ndefaulting to automatic timing.`)
         GlobalParams.SPRAY_START_TIME = GlobalParams.SENSOR_DISTANCE / GlobalParams.LINE_SPEED - 0.01; //start just before the product arrives
         GlobalParams.SPRAY_DURATION = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
         GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION + 0.02;
-        console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
+        //console.log(`Auto starting at ${GlobalParams.SPRAY_START_TIME}\nAuto-ending at ${GlobalParams.SPRAY_END_TIME}`); //end just after the product passes
     }
 
     GlobalParams.VIRTUAL_LINE_LENGTH = 1.2 * GlobalParams.LINE_SPEED * GlobalParams.SPRAY_DURATION;
@@ -512,6 +524,13 @@ export function computeSprayPattern(numLengthElements:number, numWidthElements:n
 
     //create line array
     let productASPRAY = InitializeConveyorArray();
+
+    if( !GlobalParams.VALID ){
+        console.log("Spray parameters are invalid");
+        return new SprayPattern(productASPRAY, 0);
+    }
+
+    console.log("Spray parameters are valid")
 
     //find array of all nozzle functions
     let productNozzleFunctions : NozzleFunction[] = [];

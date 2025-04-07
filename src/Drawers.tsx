@@ -1,7 +1,5 @@
 import React from 'react';
 import "./styles/Drawer.css";
-import autoCalculateTiming from "./App.tsx";
-
 
 export enum DrawerDirection {
   Left = 'Left',
@@ -97,19 +95,14 @@ export const LineDrawer = ({
 };
 
 export const ControllerDrawer = ({
-  isOpen,
+  isOpen, 
   children,
   direction = DrawerDirection.Left,
   onClose
-}: Props) => {
+}:Props)  => {
   const classNames = `Drawer ${direction} ${
     isOpen ? 'Open' : ''
   }`;
-  const [isChecked, setIsChecked] = React.useState(false);
-  if (isChecked){
-    console.log("checked")
-    autoCalculateTiming
-  }
 
   return (
     <aside
@@ -117,10 +110,9 @@ export const ControllerDrawer = ({
     aria-labelledby="controller-drawer-title"
     aria-hidden={!isOpen}>
     <div className={classNames}>
-      <h2 id="controller-drawer-title">Controller Settings</h2>
-      <div className='Close' onClick={onClose} aria-label="Close Line Drawer">
-        X
-      </div>
+      <h2 id="controller-drawer-title">Controller Settings{/*<Checkbox checked = {isChecked} onChange={setIsChecked}/>*/}
+      </h2>
+       <div className='Close' onClick={onClose} aria-label="Close Line Drawer">X</div>
         <div style ={{padding: "0px"}}>
         </div>
         <div className = 'scrollable-container'>

@@ -2,10 +2,12 @@ import { Link, useNavigate} from "react-router";
 import { computeSprayPattern, updateParams, getPatternDimensions } from "./utility/Simulation/FullConveyorSimulation.ts";
 import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
-import * as htmlToImage from "html-to-image";
 import { useRef, useState } from "react";
 import { getOrException } from "./utility/ProjectUtilities.ts";
 import { ResultsHelp } from "./Modals/ResultsHelpModal.tsx";
+import { Loading } from "./Modals/LoadingModal.tsx";
+import html2canvas from "html2canvas";
+
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
     timingMode: string
@@ -18,6 +20,7 @@ const IMAGE_SCREEN_FRACTION = 0.6;
 
 const Results = ({params, timingMode}:ResultsProps) => {
     const [parameterMap] = params;
+    const [isLoading, setIsLoading] = useState(false);
 
     //pass the parametermap to the simulation
     updateParams(parameterMap, timingMode);
@@ -48,20 +51,21 @@ const Results = ({params, timingMode}:ResultsProps) => {
     //find the most dense part of the spray pattern
     let maxSpray = 0;
 
-    let totalSprayGallons = 0;
-    const patternArea = patternLength * patternWidth;
-    const pixelAreaInches = patternArea / (widthElements * lengthElements)
+    //graveyard code for calculating total volume applied
+    //let totalSprayGallons = 0;
+    //const patternArea = patternLength * patternWidth;
+    //const pixelAreaInches = patternArea / (widthElements * lengthElements)
 
-    for (let col of productAspray){
-        for(let element of col){
+    for (const col of productAspray){
+        for(const element of col){
             const thisDensity = element.getElementSprayDensity();
-            totalSprayGallons = totalSprayGallons + (thisDensity * pixelAreaInches);
+            //totalSprayGallons = totalSprayGallons + (thisDensity * pixelAreaInches);
             if (thisDensity > maxSpray){
                 maxSpray = thisDensity;
             }
         }
     }
-    console.log(`total volume applied was ${totalSprayGallons}`);
+    //console.log(`total volume applied was ${totalSprayGallons}`);
 
     //detect product edges
     for(let colI = 1; colI < productAspray.length-1; colI++ ){
@@ -80,23 +84,29 @@ const Results = ({params, timingMode}:ResultsProps) => {
 
 
     const screenshotArea = useRef(null);
+
     async function takeScreenshot(){
         if(!screenshotArea.current) return;
-        htmlToImage.toPng(screenshotArea.current, {cacheBust: true})
-            .then((dataUrl) => {
-                navigatePrint(dataUrl);
-            })
+        setIsLoading(true);
+        html2canvas(screenshotArea.current, {
+            scale:0.8
+        }).then(function(canvas){
+            navigatePrint(canvas);
+        });
     }
 
     const navigate = useNavigate();
-    function navigatePrint(dataURL: string){
-        //const img = new Image();
-        //img.src = dataURL;
-        //navigate('/print/', {state:{img:dataURL}});
-        const link = document.createElement('a')
-        link.download = 'my-image-name.png'
-        link.href = dataURL;
-        link.click()
+    function navigatePrint(canvas: HTMLCanvasElement){
+        canvas.toBlob((blob) => {
+            if(blob != null){
+                const url = URL.createObjectURL(blob);
+                setIsLoading(false);
+                navigate('/print/', {state:{img:url}});
+            }
+        },
+        "image/jpeg",
+        0.8,
+    )       
     }
 
 //////////////////// prepare to draw the spray manifold ///////////////////////////////////////////
@@ -134,6 +144,7 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
 //////////////////// return your html //////////////////////////////////////////////////////////
     return (
         <>
+        {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={true}/>} 
         {helpIsOpen ? <div className= "help-darkBG" onClick={() => setHelpVisibility(false)}/> : <div></div>} 
         <div id="results-container" className="centered" role="region" aria-description="A gradient representing the spray density on the product's surface" aria-label="spray pattern">
             <div id="images">    
@@ -159,8 +170,8 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
                                 key={rowIndex}
                                 >
                                     <div className="tooltiptext">
-                                        <p className="tooltipP">{(128 * element.getElementSprayDensity()).toFixed(5)}</p>
-                                        <p className="tooltipP">oz per square inch</p>
+                                        <p className="tooltipP">{!Number.isNaN(element.getElementSprayDensity()) ? (128 * element.getElementSprayDensity()).toFixed(5) : "Invalid Parameters"}</p>
+                                        <p className="tooltipP">{!Number.isNaN(element.getElementSprayDensity()) ? "oz per square inch" : "No Spray Applied"}</p>
                                     </div>
                                 </div>)}
                         </div>)
@@ -169,9 +180,9 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
             </div>
             <div>
                 <Link to={"/"}>
-                    <button> Back </button>
+                    <button className="results_button"> Back </button>
                 </Link>
-                <button onClick={takeScreenshot}> Export as PDF/Print </button>
+                <button className="results_button" onClick={takeScreenshot}> Export as PDF/Print </button>
                 <button className="help-button" onClick={() => setHelpVisibility(!helpIsOpen)}></button>
             </div>
         </div>

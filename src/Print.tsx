@@ -22,15 +22,16 @@ export default function Print({parameters}: printProps){
     });
     return(
         <div>
+            <Link className="back_button" to={"/results/"}>
+            <button className='hide_on_print back_button'> Back </button>
+            </Link>
         <div>
             <h2>Parameters</h2>
             {parameterList}
+            <div className="page-break"></div>
             <h2>Results</h2>
             <img src={String(img)}></img>
         </div>      
-        <Link to={"/results/"}>
-            <button> Back </button>
-        </Link>
         </div>
     );
 }

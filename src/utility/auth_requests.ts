@@ -1,4 +1,5 @@
 import axios from "axios";
+import { encodeHTML } from "../utility/ProjectUtilities";
 
 export interface UserInfoResponse{
     uid:number;
@@ -10,18 +11,19 @@ export interface UserInfoResponse{
 //otherwise, return 1
 export async function createAccount(username:string, password:string, email:string) : Promise<UserInfoResponse>{
     //console.log(`username: ${username}\npassword: ${password}\nemail: ${email}`);
+    try{
+        const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/create/`,{
+            "username": encodeHTML(username),
+            "password": encodeHTML(password),
+            "email": encodeHTML(email)
+        });
 
-    const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/create/`,{
-        "username":username,
-        "password":password,
-        "email":email
-    });
-
-    if( axiosResponse.status == 200){
-        if (typeof(axiosResponse.data.uid) != "undefined"){
-            return axiosResponse.data
+        if( axiosResponse.status == 200){
+            if (typeof(axiosResponse.data.uid) != "undefined"){
+                return axiosResponse.data
+            }
         }
-    }
+    }catch(error){}
     
     return {uid:1, username:undefined, email:undefined};
 }
@@ -29,18 +31,21 @@ export async function createAccount(username:string, password:string, email:stri
 //if login was successful, return the userID
 //otherwise, return 1
 export async function login(username:string, password:string) : Promise<UserInfoResponse>{
+  try{  
     const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/login/`,{
-        "username":username,
-        "password":password
+        "username": encodeHTML(username),
+        "password": encodeHTML(password)        
     });
-
+   
+    //If the request is good, return the data
     if( axiosResponse.status == 200){
         if (typeof(axiosResponse.data.uid) != "undefined"){
             return axiosResponse.data
         }
-    }
-    
-    return {uid:1, username:undefined, email:undefined};
+    } 
+  }catch(error){}
+
+  return {uid:1, username:undefined, email:undefined};    
 }
 
 export async function logout() : Promise<UserInfoResponse>{

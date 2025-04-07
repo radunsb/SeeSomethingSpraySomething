@@ -114,8 +114,8 @@ export function updateGlobalParams(parameterMap:Map<String, UtilityInterfaces.Pa
     //Nozzles!
     let new_nozzle_count = parameterMap.get("nozzle_count");
     let new_nozzle_spacing = parameterMap.get("nozzle_spacing");
-    let new_spray_angle = parameterMap.get("angle");
-    let new_twist_angle = parameterMap.get("twist_angle");
+    let new_spray_angle = parameterMap.get("spray_angle");
+    let new_twist_angle = parameterMap.get("alignment");
 
     if(typeof new_nozzle_count !== "undefined" && typeof new_nozzle_spacing !== "undefined" && typeof new_spray_angle !== "undefined" && typeof new_twist_angle !== "undefined" && typeof new_flow_rate !== "undefined"){
         GlobalParams.NOZZLE_LIST = [];

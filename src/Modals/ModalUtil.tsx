@@ -5,7 +5,7 @@ import { encodeHTML } from "../utility/ProjectUtilities";
 
 export const TextField = ({ value, onChange }: TextFieldProps) => {
   return (
-    <input value={value} onChange={({ target: { value } }) => onChange(encodeHTML(value))}/>
+    <input value={value} onChange={({ target: { value } }) => onChange(value)}/>
   );
 };
 
@@ -21,7 +21,6 @@ const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
   const value = event.target.value;
   setSelectedValue(value);
   onChange(value);
-  console.log(`changing dropdown value to: ${value}`);
 };
 
 return (

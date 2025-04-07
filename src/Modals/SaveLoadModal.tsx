@@ -10,7 +10,7 @@ import { Loading } from "./LoadingModal";
 import '../styles/Modals.css';
 
 
-  export const SaveLoad = ({ isOpen, setIsOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
+  export const SaveLoad = ({ isOpen, setIsOpen, setIsWizardOpen, projectState, parameterMap, onLoad, userIDstate}: SaveLoadProps) => {
     const [selectedButton, setSelectedButton] = useState(-1);
     const [projects, setProjects] = projectState;
     const [projectList, setProjectList] = useState(constructProjectList());
@@ -18,22 +18,51 @@ import '../styles/Modals.css';
     const [userID] = userIDstate;
 
     useEffect(() => {
-      if(parameterMap.get("project_id")?.value == 0){
-        document.getElementById("saves_save_button_save")?.setAttribute("disabled", "active");
-      }
       if(userID == 1){
         for(const e of document.getElementsByClassName("saves_save_button")){
           e.setAttribute("hidden", "active");
         }
+        document.getElementById("saves_save_button_copy")?.setAttribute("hidden", "active");
         document.getElementById("saves_sign_in_message")?.removeAttribute("hidden");
+        document.getElementById("delete_project_button")?.setAttribute("hidden", "active");
       }
       const projectButtons = document.getElementsByClassName("saves_project_button");
       for(const button of projectButtons){
         button.addEventListener("blur", deselectProjectButton);
       }
-    });      
+    });
     
-    async function save(copy:boolean){
+    async function duplicateAndOpen(){
+      setIsLoading(true);
+      if(selectedButton === -1){
+        setIsLoading(false);
+        return;
+      }
+      parameterMap = await createProjectMap(userID, selectedButton);
+      const nameParam: UtilityInterfaces.Parameter = {
+        name: "project_name",
+        type: UtilityInterfaces.types.STRING,
+        value: "Copy of " + parameterMap.get("project_name")?.value
+      }
+      parameterMap.set("project_name", nameParam);
+      await saveProject(userID, parameterMap, true); 
+      const id = await getLatestProjectID(userID);
+        if(id){
+          const parameter: UtilityInterfaces.Parameter = {
+            name:"id",
+            type: UtilityInterfaces.types.INT,
+            value: id
+        }
+          parameterMap.set("project_id", parameter);
+        }       
+      setProjects(await listUserProjects(userID));
+      setProjectList(constructProjectList());
+      loadProject(Number(parameterMap.get("project_id")?.value));
+      setIsLoading(false);
+      setIsOpen(false);   
+    }
+    
+    async function save(){
       setIsLoading(true);
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
       if(renameProjectInput && renameProjectInput.value != ""){
@@ -43,12 +72,16 @@ import '../styles/Modals.css';
           value: renameProjectInput.value
         }
         parameterMap.set("project_name", nameParam)
+      }
+      let copy = false;
+      if(parameterMap.get("project_id")?.value == 0){
+        copy = true;
       }     
       await saveProject(userID, parameterMap, copy);
       console.log("Finished Saving Project");
       setProjects(await listUserProjects(userID));
       setProjectList(constructProjectList()); 
-      if(parameterMap.get("project_id")?.value == 0 || copy){
+      if(copy){
         const id = await getLatestProjectID(userID);
         if(id){
           const parameter: UtilityInterfaces.Parameter = {
@@ -62,13 +95,13 @@ import '../styles/Modals.css';
       setIsLoading(false);
       setIsOpen(false);   
     }
-    async function loadProject(){
+    async function loadProject(id=selectedButton){
       if(selectedButton === -1){
         return;
       }
       setIsLoading(true);
-      console.log("Loading Project " + selectedButton);
-      parameterMap = await createProjectMap(userID, selectedButton);
+      console.log("Loading Project " + id);
+      parameterMap = await createProjectMap(userID, id);
       console.log(parameterMap);
       onLoad(parameterMap);
       setIsLoading(false);
@@ -89,6 +122,8 @@ import '../styles/Modals.css';
       document.getElementById("open_project_button")?.classList.remove("saves_open_inactive");
       document.getElementById("delete_project_button")?.removeAttribute("disabled");
       document.getElementById("delete_project_button")?.classList.remove("saves_delete_inactive");
+      document.getElementById("saves_save_button_copy")?.removeAttribute("disabled");
+      document.getElementById("saves_save_button_copy")?.classList.remove("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
       }
@@ -99,11 +134,14 @@ import '../styles/Modals.css';
     function deselectProjectButton(event: MouseEvent){
       const button = document.getElementById("open_project_button");
       const button2 = document.getElementById("delete_project_button");
-      if(event.relatedTarget !== button && event.relatedTarget !== button2){
+      const button3 = document.getElementById("saves_save_button_copy");
+      if(event.relatedTarget !== button && event.relatedTarget !== button2 && event.relatedTarget !== button3){
         document.getElementById("open_project_button")?.setAttribute("disabled", "active");
         document.getElementById("open_project_button")?.classList.add("saves_open_inactive");
         document.getElementById("delete_project_button")?.setAttribute("disabled", "active");
         document.getElementById("delete_project_button")?.classList.add("saves_delete_inactive");
+        document.getElementById("saves_save_button_copy")?.setAttribute("disabled", "active");
+        document.getElementById("saves_save_button_copy")?.classList.add("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
       }
@@ -141,9 +179,9 @@ import '../styles/Modals.css';
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>    
             <div id="save_modal_content" className= "modalContent">              
-            <button id = "saves_save_button_save" className = "saves_save_button" onClick={() => save(false)}>Save Project</button>
-            <button id = "saves_save_button_copy" className = "saves_save_button" onClick={() => save(true)}>Save as Copy</button>
-            <button id = "saves_save_button_new" className = "saves_save_button">Create New Project</button>
+            <button id = "saves_save_button_save" className = "saves_save_button" onClick={() => save()}>Save Project</button>
+            <button id = "saves_save_button_copy" className = "saves_save_button" onClick={() => save()}>Save as Copy</button>
+            <button id = "saves_save_button_new" className = "saves_save_button" onClick={() => setIsWizardOpen(true)}>Create New Project</button>
             <p id = "saves_sign_in_message" hidden>Please Sign in to Save Projects!</p>
               <div id = 'saves_container'>
                 <h3>My Saved Projects:</h3>
@@ -158,6 +196,7 @@ import '../styles/Modals.css';
                 <button id="open_project_button" className= "saveBtn saves_open_inactive" onClick={() => loadProject()}>
                   Open
                 </button>
+                <button id = "saves_save_button_copy" className = "saves_duplicate_button saves_open_inactive" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
               </div>
             </div>
           </div>

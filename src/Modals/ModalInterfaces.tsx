@@ -25,6 +25,7 @@ export interface PasswordModalProps extends ModalProps{
 export interface SaveLoadProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
+  setIsWizardOpen: (arg0: boolean) => void;
   projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
   parameterMap: Map<string, UtilityInterfaces.Parameter>;
   onLoad: (arg0: Map<string, UtilityInterfaces.Parameter>) => void;
@@ -37,6 +38,7 @@ export interface AccountModalProps{
   setIsCAOpen: (arg0: boolean) => void;
   setIsFPOpen: (arg0: boolean) => void;
   setUserInfo: (arg: Promise<UserInfoResponse>) => void;
+  setFailedOpen: (open:boolean)=>void;
 }
 
 export interface InfoModalProps{
@@ -69,4 +71,8 @@ export interface DropdownProps {
 export interface ResultsHelpProps{
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
+}
+
+export interface AuthFailedProps extends ModalProps{
+  setParentOpen: (open: boolean) => void;
 }

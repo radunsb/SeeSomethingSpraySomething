@@ -10,7 +10,7 @@ export namespace Models{
         nozzle_name:string,
         nozzle_doc_link:string,
         flow_rate:number,
-        spray_ngle:number,
+        spray_angle:number,
         spray_shape:string,
         alignment:number
     }
@@ -52,6 +52,7 @@ export namespace Models{
         start_delay:number,
         stop_delay:number,
         spray_duration:number,
+        timing_mode:string,
         nozzle:Models.Nozzle,
         controller:Models.Controller,
         gun:Models.Gun,

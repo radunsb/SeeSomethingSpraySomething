@@ -3,12 +3,13 @@ import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
 import { Parameter, paraNames, paraUnits, paramDesc} from'./Parameter.tsx';
 import { nozzleIndex, nozzleSpacing, lineIndex, lineSpacing, controllerIndex, controllerSpacing } from './Parameter.tsx';
+import { sprayAngleOptions, nozzleNumberOptions, controllersOptions } from './Parameter.tsx';
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
 import { Loading } from './Modals/LoadingModal.tsx'
 import { Wizard } from './Modals/WizardModal.tsx'
-import { CreateAccount, Profile } from './Modals.tsx'
+import { Profile } from './Modals.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
@@ -19,7 +20,7 @@ import { Dropdown } from "./Modals/ModalUtil.tsx";
 import { Checkbox } from "./Drawers.tsx";
 import { Option } from "./Modals/ModalInterfaces.tsx";
 import { UtilityInterfaces } from "./utility/models";
-import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
+import { pushRunToDatabase, loadControllerOptions } from './utility/ProjectUtilities.ts';
 import { ParameterConstraints} from './utility/ParameterConstraints.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
@@ -27,19 +28,22 @@ import './utility/auth_requests.ts';
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
 import { getFontEmbedCSS } from 'html-to-image';
-import { Console } from 'console';
+import { updateParamsAndRerender } from './utility/updateParamsAndRerender.ts';
+import { LoginFailed } from './Modals/FailedLoginModal.tsx';
+import { CreateAccount } from './Modals/CreateAccountModal.tsx';
+import { AccountCreationFailed } from './Modals/FailedCreationModal.tsx';
+//import { Console } from 'console';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
-  timingModeState : [string, React.Dispatch<React.SetStateAction<string>>]
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate, timingModeState}: AppProps) {
+export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -49,6 +53,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [isResetPasswordOpen, setIsResetPasswordOpen] = useState(false);
   const [isForgetSuccessOpen, setIsForgetSuccessOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isLoginFailedOpen, setLoginFailedOpen] = useState(false);
+  const [isCreationFailedOpen, setCreationFailedOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -60,6 +66,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
   const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
+  const [selectedNum, setSelectedNum] = useState<string>("");
+  const [numOptions, setNumOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(true);
 
   //Method for transfering info abour selectedId to the Modal
@@ -71,7 +79,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
-  const [timingMode, setTimingMode] = timingModeState;
+  const [timingMode, setTimingMode] = useState(parameterMap.get("timing_mode") != undefined ? parameterMap.get("timing_mode")?.value : "auto");
 
   //When someone logs in, set the userID state and reload the project list
   async function awaitAndSetUserInfo(newInfo : Promise<UserInfoResponse>) {
@@ -97,11 +105,15 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     }
     setIsLoading(false);        
   }
-  
-  //Funky stuff happens with defaultValue on inputs and React. I don't know why
-  //this works. I wouldn't suggest touching it.
   useEffect(() => {
     async function loadMap(){
+      if(parameterMap.get("timing_mode") != undefined){
+        setTimingMode(String(parameterMap.get("timing_mode")?.value));
+      }
+      else{
+        setTimingMode("auto");
+        updateTimingModeHelper("auto");
+      }  
       for(const [key, value] of parameterMap){
         const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
         if(inputElement){
@@ -113,8 +125,8 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   })
 
   //On loading project, set the parameter map and change all of the parameter input elements
-  function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
-    setParameterMap(params);
+  async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
+    setParameterMap(params); 
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
@@ -162,8 +174,13 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             newVal = parameterInput.value;      
         }
         currentParameter.value = newVal;
-        setParameterMap(parameterMap.set(key, currentParameter));
+        parameterMap.set(key, currentParameter)
+        updateParamsAndRerender(parameterMap, setParameterMap);
         parameterInput.value = String(newVal);
+
+        if(timingMode === "auto" && (currentParameter.name === "sensor_distance" || currentParameter.name === "product_length" || currentParameter.name === "line_speed")){
+          autoCalculateTiming();  
+        }
       }
     });
   }
@@ -174,14 +191,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
     for(const [key, value] of parameterMap){
       //Make a text input field for string parameters
       if(value.min!=null && value.max!=null){
-        // If the key is Controller Name or Spray Angle, make it a drop down
-        //if(value.name == "controller_name"){
-        //  console.log("Got to Controller")
-        //parameterList.push(
-        // <Dropdown options={controllerOptions} onChange={(value) => setSelectedController(value)}/>
-         // )
-        //}
-        //else {
         parameterList.push(
           <li id={key + "_list"} key={key}>
             <p>{key.replace("_", " ").replace("_", " ").toUpperCase()}</p>
@@ -189,12 +198,6 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           </li>
         );
       }
-    //}
-    //if(value.name == "spray_angle"){
-    //  parameterList.push(
-    //    <Dropdown options={nozzleOptions} onChange={(value) => setSelectedNozzle(value)}/>
-    //   )
-    //}
       else{
         parameterList.push(
           <li id={key + "_list"} key={key}>
@@ -204,64 +207,95 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         );
       }
     }
+      // New Parameter for containing the dropdown
+        parameterList.push(
+          <li id={"ANGLEARRAY_list"} key={"ANGLEARRAY"}>
+              <p>{"SPRAY ANGLE"}</p>
+        <Dropdown options={sprayAngleOptions} onChange={(value) => {setSelectedNozzle(value); 
+          const SprayAngleParam = parameterMap.get("spray_angle");
+          if (typeof SprayAngleParam !== "undefined"){
+          SprayAngleParam.value = value;
+          setParameterMap(parameterMap.set("spray_angle", SprayAngleParam))}}}/>
+          </li>)
+
+        parameterList.push(        
+          <li id={"CONTROLLERARRAY_list"} key={"CONTROLLERARRAY"}>
+            <p>{"CONTROLLERS"}</p>
+        <Dropdown options={controllersOptions} onChange={(value) => { setSelectedController(value);
+          const controllerParam = parameterMap.get("controller_name");
+          if (typeof controllerParam !== "undefined"){
+          controllerParam.value = value;
+          setParameterMap(parameterMap.set("angle", controllerParam))}}}/>
+          </li>)
+
+       parameterList.push(
+         <li id={"NOZZLENUM_list"} key={"NOZZLENUM"}>
+           <p>{"NOZZLE COUNT"}</p>
+       <Dropdown options={nozzleNumberOptions} onChange={(value) => { setSelectedNum(value);
+          const nozzleNumParam = parameterMap.get("nozzle_count");
+          if (typeof nozzleNumParam !== "undefined"){
+          nozzleNumParam.value = value;
+          setParameterMap(parameterMap.set("angle", nozzleNumParam))}}}/>
+         </li>)
   }
 
   //this function has to be inside the app component because it needs access to the parametermap
   //possible timing modes are
-  //vt = variable time, ft = fixed time
-  //vd = variable distance, fd = fixed distance
-  function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
-    updateTimingModeHelper(e.target.value);
-  }
+  //vt = variable time, ft = fixed time, auto
 
-  function autoCalculateTiming() : void{
+  function autoCalculateTiming() : void {
     const LineSpeed = Number(getOrException(parameterMap, "line_speed").value) / 5;
     const SensorDis = Number(getOrException(parameterMap, "sensor_distance").value);
     const stopDelayParam = parameterMap.get("stop_delay");
     const startDelayParam = parameterMap.get("start_delay");
     const sprayDurationParam = parameterMap.get("spray_duration");
 
-    if (isChecked){
-      console.log(typeof startDelayParam)
+    const startDelayField = document.getElementById("start_delay_input") as HTMLInputElement;
+    const stopDelayField = document.getElementById("stop_delay_input") as HTMLInputElement;
+    const sprayDurationField = document.getElementById("spray_duration_input") as HTMLInputElement;
+
     if (typeof startDelayParam !== "undefined"){
-      startDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
-      setParameterMap(parameterMap.set("start_delay", startDelayParam));
+      const newStartDelay = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
+      startDelayParam.value = newStartDelay;
+      parameterMap.set("start_delay", startDelayParam);
+      startDelayField.value = newStartDelay.toString();
     }
     if (typeof stopDelayParam !== "undefined"){
-      stopDelayParam.value = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
-      setParameterMap(parameterMap.set("stop_delay", stopDelayParam));
+      const newStopDelay = Number(getOrException(parameterMap, "sensor_distance").value) / LineSpeed;
+      stopDelayParam.value = newStopDelay;
+      parameterMap.set("stop_delay", stopDelayParam);
+      stopDelayField.value = newStopDelay.toString();
     }
     if (typeof SensorDis !== "undefined" && typeof sprayDurationParam !== "undefined"){
-      sprayDurationParam.value = Number(getOrException(parameterMap, "product_length").value) / LineSpeed;
-      setParameterMap(parameterMap.set("spray_duration", sprayDurationParam));
+      const newSprayDuration = Number(getOrException(parameterMap, "product_length").value) / LineSpeed;
+      sprayDurationParam.value = newSprayDuration;
+      parameterMap.set("spray_duration", sprayDurationParam);
+      sprayDurationField.value = newSprayDuration.toString();
     }
-    }
-    else{}
+
+    setParameterMap(parameterMap);
   }
 
   function updateTimingModeHelper(newTimeMode:string) : void{
-    //start_delay should always be visible, so we don't need to do anything to it
-    const stopDelayDiv = document.getElementById("stop-delay-div");
-    const sprayDurDiv = document.getElementById("spray-duration-div");
-   
-    if(stopDelayDiv !== null && sprayDurDiv !== null){
-        if(newTimeMode === "ft"){
-          stopDelayDiv.classList.add("grayed-timing-mode");
-          sprayDurDiv.classList.remove("grayed-timing-mode");
-        }
-        else if(newTimeMode === "vt"){
-          stopDelayDiv.classList.remove("grayed-timing-mode");
-          sprayDurDiv.classList.add("grayed-timing-mode");
-        }
-
-        setTimingMode(newTimeMode);
-        //console.log(`time mode state is now: ${newTimeMode}`);
+    if(newTimeMode === "auto"){
+      autoCalculateTiming();
     }
-    else{
-      console.error("ERROR: timing mode div not found");
+    const parameter: UtilityInterfaces.Parameter = {
+      name:"timing_mode",
+      type: UtilityInterfaces.types.STRING,
+      value: newTimeMode
     }
+    parameterMap.set('timing_mode', parameter);
+    setTimingMode(newTimeMode);
+    updateParamsAndRerender(parameterMap, setParameterMap);
   }
-  //call when App is loaded to preserve across screens
+
+  function updateTimingMode(e:ChangeEvent<HTMLSelectElement>) : void{
+    updateTimingModeHelper(e.target.value);
+  }
+  
+  //ensure the necessary fields are grayed out 
+  let startDelayGrayed = "";
   let stopDelayGrayed = "";
   let sprayDurationGrayed = "";
   if(timingMode === "vt"){
@@ -269,6 +303,11 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   }
   else if(timingMode === "ft"){
     stopDelayGrayed = "grayed-timing-mode";
+  }
+  else if(timingMode === "auto"){
+    startDelayGrayed = "grayed-timing-mode";
+    stopDelayGrayed = "grayed-timing-mode";
+    sprayDurationGrayed = "grayed-timing-mode";
   }
 
   //calculate projected flowrate
@@ -281,13 +320,29 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
   const product_height = Number(getOrException(parameterMap, "product_height").value);
   const nozzle_height = Number(getOrException(parameterMap, "nozzle_height").value);
   const spray_height = nozzle_height - product_height;
-  
-  const twist_angle = Number(getOrException(parameterMap, "twist_angle").value);
-  const nozzle_angle = Number(getOrException(parameterMap, "angle").value);
+  //Stupid legacy code that is there in case the project has the old names for these.
+  //Should be removed for production
+  //Names SHOULD be "alignment" and "spray_angle"
+  let twist_angle = 5;
+  let nozzle_angle = 110;
+  if(parameterMap.get('alignment') === undefined){
+    twist_angle = Number(getOrException(parameterMap, "twist_angle").value);
+  }
+  else{
+    twist_angle = Number(getOrException(parameterMap, "alignment").value);
+  }
+  if(parameterMap.get('spray_angle') === undefined){
+    nozzle_angle = Number(getOrException(parameterMap, "angle").value);
+  }
+  else{
+    nozzle_angle = Number(getOrException(parameterMap, "spray_angle").value);
+  } 
 
   const nozzle_spacing = Number(getOrException(parameterMap, "nozzle_spacing").value);
 
   const overlap = overlapPercentage(spray_height, nozzle_spacing, nozzle_angle, twist_angle);
+
+  const nozzleCount = Number(getOrException(parameterMap, "nozzle_count").value);
 
 // ParameterList Indexes
 // 0 = Duty Cycle, 1 = Fluid Pressure , 2 = Last Date Modified, 3= Line Speed, 4= Line Width, 5= Nozzle Count, 
@@ -296,6 +351,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
 // 16 = Spray Duration, 17 = Start Delay, 18 = Stop Delay, 19 = Spray Angle, 20 = Flow Rate,
 // 21 = Nozz Doc Link, 22 = Nozzle ID, 23 = Nozzle Name, 24 = Spray Shape, 25 = Alignment, 
 // 26 = Controller Doc Link, 27 = Controller ID, 28 = Controller Name, 29 = Gun ID, 30 = Gun Name , 31 = Max Frequency
+// 32 = ANGLE DROPDOWN, 33 = CONTROLLER DROPDOWN
 
 // Reset Password Modal and Forget Password Modal are for testing purposes only, and will be removed once links work correctly
   return (    
@@ -309,6 +365,11 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         aria-expanded={isNozzleDrawerOpen}
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
+
+        <div style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[33]} {paraUnits[33]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Spray Angle"></button></div>
         <div>
           {nozzleIndex.map((_) => (
             <Parameter key = {_} parameterList= {parameterList} paramUnits = {paraUnits} 
@@ -316,15 +377,10 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
             />
           ))}
           </div>
-          <p>NOZZLE OVERLAP PERCENTAGE: {overlap.toFixed(0)}%</p>
+                      
+          <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
 
           <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
-
-          <Parameter key = {25} parameterList= {parameterList} paramUnits = {paraUnits} 
-            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {25} />
-
-          <Parameter key = {1} parameterList= {parameterList} paramUnits = {paraUnits} 
-            isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {1} />
         
         </NozzleDrawer>
 
@@ -341,24 +397,39 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           ))}
           </div>
         </LineDrawer>
-
         {/* CONTROLLER DRAWER */}
-        <button onClick={() => { setIsControllerDrawerOpen(true); autoCalculateTiming(); console.log(isChecked) }}
+        <button onClick={() => { setIsControllerDrawerOpen(true) }}
         aria-expanded={isControllerDrawerOpen}
         aria-controls="controllerDrawer">Controller</button>
-
         <ControllerDrawer isOpen={isControllerDrawerOpen} onClose={() => setIsControllerDrawerOpen(false)}>
+          
           <div>
-            <Checkbox checked = {isChecked} onChange={setIsChecked}/>
-            { !isChecked && 
+            Timing Mode: 
             <select value={timingMode} onChange={updateTimingMode}>
+              <option key="auto" value="auto">Auto Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
-            </select> }
+            </select> 
           </div>
+
+          <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Start Delay"></button></div>
+
+          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Stop Delay"></button></div>
+
+          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+                    aria-expanded={isInfoOpen}
+                    aria-controls="Spray Duration"></button></div>
           
-          <Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
-          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />
+          {/*controller name: */}
+          {/*<Parameter key = {28} parameterList= {parameterList} paramUnits = {paraUnits} 
+          isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {28} />*/}
 
           <Parameter key = {31} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {31} />
@@ -369,24 +440,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
           <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
 
-          { !isChecked && 
-          <div id="start-delay-div" className="visible-timing-mode" style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Start Delay"></button></div>
-          }
-          { !isChecked && 
-          <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Stop Delay"></button></div>
-          }
-          { !isChecked && 
-          <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
-                    aria-expanded={isInfoOpen}
-                    aria-controls="Spray Duration"></button></div>
-          }
+
         </ControllerDrawer>
         {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
       </div>
@@ -396,11 +450,14 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         {/* SIGN IN / PROFILE */}
 
         <ProfileButton userID={userID} setIsProfileOpen={setIsProfileOpen} setIsSignInOpen={setIsSignInOpen}/>
-        {isSignInOpen && <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo}/>}
-        {isCreateAccountOpen && <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo}/>}
-        {isResetPasswordOpen && <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>}
-        {isForgetSuccessOpen && <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>}
-        {isProfileOpen && <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>}
+        <SignIn isOpen = {isSignInOpen} setIsLIOpen={setIsSignInOpen} setIsCAOpen={setIsCreateAccountOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setLoginFailedOpen}/>
+        <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setCreationFailedOpen}/>
+        <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
+        <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
+        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>
+
+        <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
+        <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
 
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
@@ -416,7 +473,7 @@ export default function App({parameters, projectState, userIDstate, timingModeSt
         aria-controls="SaveLoadModal">
           Save Load
         </button>
-        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
+        {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} setIsWizardOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
@@ -457,4 +514,3 @@ function ProfileButton({userID, setIsSignInOpen, setIsProfileOpen} : pbProps){
       </button>)
   }
 }
-

@@ -15,6 +15,8 @@ import '../styles/Modals.css';
       const baseUrl = "https://portal.spray.com/en-us/products/"
       if (selectedNozzle) {
         window.open(`${baseUrl}${selectedNozzle.replace("/", "-")}`, "_blank")
+      } else {
+        window.open("https://portal.spray.com/en-us/categories/flat-spray-nozzles")
       }
     }
 
@@ -23,6 +25,8 @@ import '../styles/Modals.css';
       const endUrl = "-spray-controller"
       if (selectedController) {
         window.open(`${baseUrl}${selectedController.replace("E", "").replace("+", "")}${endUrl}`, "_blank")
+      } else {
+        window.open("https://www.spray.com/products/spray-control-options")
       }
     }
 

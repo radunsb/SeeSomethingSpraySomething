@@ -38,13 +38,13 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
   //I know adding more and more parameters here is bad.
   //this needs to get folded into project state or project map,
   //but there isn't time before the deadline to get that done and tested
-  const [timingMode, setTimingMode] = useState("ft");
+  const [timingMode, setTimingMode] = useState("auto");
 
   return (
     <> 
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState} timingModeState={[timingMode, setTimingMode]}/>} />
+      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState}/>} />
       <Route path="/results/" element={<Results params={projectMap} timingMode={timingMode}/>} />
       <Route path="/print" element={<Print parameters={projectMap} />} />
       <Route path="/reset_password" element={< ResetPasswordPostLink isOpen={true} setIsOpen={()=>{}} setUserInfo={()=>{}}/>} />

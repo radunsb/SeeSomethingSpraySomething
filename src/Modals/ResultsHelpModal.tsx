@@ -1,6 +1,6 @@
 import { RiCloseLine } from "react-icons/ri";
 import { ResultsHelpProps } from "./ModalInterfaces";
-import helpImage from "../assets/ResultsInfo.png";
+import helpImage from "../assets/ResultsInfo.png"
 
   export const ResultsHelp = ({isOpen, setIsOpen}: ResultsHelpProps) => {
   if (!isOpen){ return null}
