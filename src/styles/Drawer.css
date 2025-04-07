@@ -106,8 +106,8 @@ li {
 
 .parameter_input {
   flex: 1; 
-  min-width: 115px;
-  max-width: 145px;
+  min-width: 50px;
+  max-width: 100px;
 }
 
 .units {
