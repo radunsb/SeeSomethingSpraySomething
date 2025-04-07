@@ -33,6 +33,10 @@ import { LoginFailed } from './Modals/FailedLoginModal.tsx';
 import { CreateAccount } from './Modals/CreateAccountModal.tsx';
 import { AccountCreationFailed } from './Modals/FailedCreationModal.tsx';
 //import { Console } from 'console';
+import overlapInfo from "./assets/Overlap Info.png";
+import estimatedFlowrateInfo from "./assets/EstimatedFlowrateInfo.png";
+import timingModeHelp from "./assets/TimingModeInfo.png";
+import { ImageModal } from './Modals/ImageModal.tsx';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -57,6 +61,9 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isCreationFailedOpen, setCreationFailedOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [isOverlapOpen, setIsOverlapOpen] = useState(false);
+  const [isFlowRateOpen, setIsFlowRateOpen] = useState(false);
+  const [isTimingModeOpen, setIsTimingModeOpen] = useState(true);  
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -299,10 +306,10 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   let stopDelayGrayed = "";
   let sprayDurationGrayed = "";
   if(timingMode === "vt"){
-    sprayDurationGrayed = "grayed-timing-mode";
+    sprayDurationGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "ft"){
-    stopDelayGrayed = "grayed-timing-mode";
+    stopDelayGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "auto"){
     startDelayGrayed = "grayed-timing-mode";
@@ -378,9 +385,15 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           ))}
           </div>
                       
-          <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
+          <p>
+            NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}
+            <button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/>
+          </p>
 
-          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
+          <p>
+            PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min
+            <button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/>
+          </p>
         
         </NozzleDrawer>
 
@@ -406,10 +419,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           <div>
             Timing Mode: 
             <select value={timingMode} onChange={updateTimingMode}>
-              <option key="auto" value="auto">Auto Calculate</option> 
+              <option key="auto" value="auto">Auto-Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
             </select> 
+            <button className='info-btn' onClick={() => {setIsTimingModeOpen(true);}}/>
           </div>
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
@@ -458,7 +472,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
-
+    
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
         aria-expanded={isDocumentationOpen}
@@ -488,7 +502,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       <div id='results'>
         {/* RESULTS */}
           <button onClick={() => {setIsLoading(true);navigateResults();}}> See Results </button>
-      </div>      
+      </div>  
+
+      <ImageModal isOpen={isOverlapOpen} setIsOpen={setIsOverlapOpen} imagePath={overlapInfo}/>
+      <ImageModal isOpen={isTimingModeOpen} setIsOpen={setIsTimingModeOpen} imagePath={timingModeHelp}/>
+      <ImageModal isOpen={isFlowRateOpen} setIsOpen={setIsFlowRateOpen} imagePath={estimatedFlowrateInfo}/>  
     </div>
   );
 }

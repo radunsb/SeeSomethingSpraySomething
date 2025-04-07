@@ -4,9 +4,10 @@ import {UtilityInterfaces} from "./utility/models.ts"
 import "./styles/Results.css"
 import { useRef, useState } from "react";
 import { getOrException } from "./utility/ProjectUtilities.ts";
-import { ResultsHelp } from "./Modals/ResultsHelpModal.tsx";
+import { ImageModal } from "./Modals/ImageModal.tsx";
 import { Loading } from "./Modals/LoadingModal.tsx";
 import html2canvas from "html2canvas";
+import helpImage from "./assets/ResultsInfo.png"
 
 interface ResultsProps{
     params: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -186,7 +187,7 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
                 <button className="help-button" onClick={() => setHelpVisibility(!helpIsOpen)}></button>
             </div>
         </div>
-        <ResultsHelp isOpen={helpIsOpen} setIsOpen={setHelpVisibility}></ResultsHelp>
+        <ImageModal isOpen={helpIsOpen} setIsOpen={setHelpVisibility} imagePath={helpImage}/>
         </>
     );
 };
