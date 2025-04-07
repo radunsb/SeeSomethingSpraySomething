@@ -112,21 +112,6 @@
     width: 70vw;
     height: 70vh;
   }
-
-  .profileModal {
-    font-size: 16px;
-  }
-
-  .results-help {
-    height: 80vh;
-    width: 80vw;
-  }
-
-  .sign-in {
-    font-size: 16px;
-    height: 80vh;
-    width: 80vw;
-  }
 }
 
 .createSwitchBtn {
