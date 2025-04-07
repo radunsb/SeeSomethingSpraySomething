@@ -374,7 +374,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
 
         <div className="" style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[33]} <span className="units">{paraUnits[33]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+          {parameterList[33]} <span className="units">{paraUnits[33]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(24)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Angle"></button></div>
         <div>
