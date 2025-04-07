@@ -373,8 +373,8 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
 
-        <div style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[33]} {paraUnits[33]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+        <div className="" style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[33]} <span className="units">{paraUnits[33]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Angle"></button></div>
         <div>
@@ -427,17 +427,17 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           </div>
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+          {parameterList[17]} <span className="units">{paraUnits[17]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
 
           <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+          {parameterList[18]} <span className="units">{paraUnits[18]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Stop Delay"></button></div>
 
           <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+          {parameterList[16]} <span className="units">{paraUnits[16]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
           
