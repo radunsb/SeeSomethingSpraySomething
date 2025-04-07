@@ -111,20 +111,22 @@
   .saveLoad {
     width: 70vw;
     height: 70vh;
-    background: white;
-    color: black;
-
-    border-radius: 8px;
-    box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
-    z-index: 4;
   }
-}
 
-/* TODO: MAKE THE CREATE ACCOUNT MODAL SCROLLABLE */
-/* THIS DOESN'T WORK FOR SOME REASON */
-.createAccount {
-  height: 70%;
-  overflow-y: auto;
+  .profileModal {
+    font-size: 16px;
+  }
+
+  .results-help {
+    height: 80vh;
+    width: 80vw;
+  }
+
+  .sign-in {
+    font-size: 16px;
+    height: 80vh;
+    width: 80vw;
+  }
 }
 
 .createSwitchBtn {

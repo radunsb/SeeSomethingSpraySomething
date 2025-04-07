@@ -32,7 +32,7 @@ export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFaile
     <>
       <div className= "darkBG" onClick={() => setIsLIOpen(false)} />
       <div className= "centered">
-        <div className= "modal">
+        <div className= "modal sign-in">
           <button className= "closeBtn" onClick={() => setIsLIOpen(false)}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>

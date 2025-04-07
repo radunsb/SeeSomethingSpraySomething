@@ -22,7 +22,7 @@ import '../styles/Modals.css';
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
         <div className= "centered">
-          <div className= "modal">
+          <div className= "modal profileModal">
               <h5>Profile</h5>
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
