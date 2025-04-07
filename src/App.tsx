@@ -63,7 +63,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
   const [isOverlapOpen, setIsOverlapOpen] = useState(false);
   const [isFlowRateOpen, setIsFlowRateOpen] = useState(false);
-  const [isTimingModeOpen, setIsTimingModeOpen] = useState(true);  
+  const [isTimingModeOpen, setIsTimingModeOpen] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -453,10 +453,13 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
 
           <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+        
+        
 
 
         </ControllerDrawer>
-        {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
+        <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>
+
       </div>
 
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
