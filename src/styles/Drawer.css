@@ -145,7 +145,15 @@ li {
 }
 
 .grayed-timing-mode{
-  filter:brightness(0.45);
+  filter:brightness(0.75);
   background-color: gray;
   pointer-events: none;
+}
+
+.hidden-timing-mode{
+  visibility: hidden;
+  max-height: 0;
+  border: none;
+  padding:none;
+  margin:none;
 }

@@ -68,9 +68,8 @@ export interface DropdownProps {
   onChange: (value: string) => void;
 }
 
-export interface ResultsHelpProps{
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+export interface ImageModalProps extends ModalProps{
+  imagePath : string;
 }
 
 export interface AuthFailedProps extends ModalProps{

@@ -118,7 +118,7 @@
     transform: translateY(-50%)
   }
 
-  .help-modal {
+  .help-image-modal {
     position: fixed;
  
     transform: translate(20vw, -40vh);    

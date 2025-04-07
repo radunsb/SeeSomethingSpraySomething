@@ -1,12 +1,11 @@
 .darkBG {
   background-color: rgba(0, 0, 0, 0.2);
   width: 100vw;
-  height: 103vh;
+  height: 100vh;
   z-index: 3;
-  top: 0%;
-  left: 50%;
-  transform: translate(-94%, -5%);
-  position: absolute;
+  top: 0;
+  left: 0;
+  position: fixed;
 }
   
 .centered {
@@ -38,12 +37,11 @@
 .infodarkBG {
   background-color: rgba(0, 0, 0, 0.2);
   width: 30vw;
-  height: 99vh;
+  height: 100vh;
   z-index: 3;
-  top: -5%;
-  position: absolute;
-  z-index: 3;
-  left: -1vw;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 #saves_container{
@@ -60,11 +58,12 @@
 
 .loadingdarkBG{
     background-color: rgba(0, 0, 0, 0.2);
-    width: 99vw;
-    height: 103vh;
+    width: 100vw;
+    height: 100vh;
     z-index: 6;
-    top: -5%;
-    position: absolute;
+    top: 0;
+    left: 0;
+    position: fixed;
 }
 
 #initialLoader{
@@ -394,4 +393,37 @@
 @keyframes spin {
   0% { transform: rotate(0deg); }
   100% { transform: rotate(360deg); }
+}
+
+
+.help-image-modal {
+  position: fixed;
+
+  transform: translate(20vw, -40vh);    
+
+  width: 60vw;
+  height: 34vw;
+
+  background: white;
+
+  border-radius: 8px;
+  padding: 20px;
+  box-shadow: 0 5px 20px 0 rgba(0, 0, 0, 0.04);
+
+  z-index: 8;
+}
+
+.help-image{
+  height: 100%;
+  width: 100%;
+}
+
+.help-image-darkBG{
+  background-color: rgba(0, 0, 0, 0.2);
+  width: 100vw;
+  height: 100vh;
+  z-index: 7;
+  position: fixed;
+  top: 0;
+  left: 0;
 }
