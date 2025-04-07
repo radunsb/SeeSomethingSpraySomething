@@ -8,6 +8,13 @@
   transition: transform 0.5s ease-out;
 }
 
+/* Make the Drawers a bit bigger on Mobile/smaller screens */
+@media (max-width: 1000px) {
+  .Drawer {
+    width: 35%;
+  }
+}
+
 .Drawer.Left {
   left: 0px;
   transform: translateX(-100%);
@@ -38,6 +45,12 @@
 /* ------------------------------------------ */
 /* ADDED BY ALEX */
 /* Removes the bullets and adjusts spacing */
+.individual_input_container {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
 .Drawer .Content {
   list-style-type: none;
   margin: 0px;
@@ -75,7 +88,6 @@
   border: transparent;
   border-radius: 10px;
   border-width: 10px;
-  text-align: right;
 }
 
 /* Hopefully allows for proper wrapping of label and input on small screens */
@@ -98,6 +110,11 @@ li {
   max-width: 145px;
 }
 
+.units {
+  padding-left: 8px;
+  flex: 2;
+}
+
 /* Hopefully stacks the label and input on smaller screens */
 @media (max-width: 1000px) {
   li {
@@ -109,11 +126,15 @@ li {
   }
   .parameter_input {
     flex: 2; 
-    min-width: 100px;
+    min-width: 50px;
+    font-size: 16px;
   }
   .scrollable-container {
     height: 80%;
     overflow-y: auto;
+  }
+  .units {
+    flex: 2;
   }
 }
 /* ------------------------------------------ */

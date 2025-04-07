@@ -117,8 +117,8 @@ interface ParamProps {
  export const Parameter: React.FC<ParamProps> = ({ parameterList, paramUnits, isInfoOpen, handleOpenInfo, index }) => {
    return (
      <>
-        <div style = {{display: "flex", alignItems: "center"}}>
-            {parameterList[index]} {paramUnits[index]} 
+        <div className="individual_input_container">
+            {parameterList[index]} <span className="units">{paramUnits[index]}</span>
                 <button className = 'info-btn' onClick={() => {handleOpenInfo(index)}}
              aria-expanded={isInfoOpen}
              aria-controls={paraNames[index]}></button>
