@@ -254,21 +254,19 @@
 .deleteBtn {
   margin-top: 10px;
   cursor: pointer;
-  font-weight: 500;
   padding: 11px 28px;
   border-radius: 8px;
-  font-size: 0.8rem;
   margin-right: 10px;
   border: none;
   color: #fff;
   background: #ff3e4e;
   transition: all 0.25s ease;
+  border: 1px solid black;
 }
 
 .deleteBtn:hover {
   box-shadow: 0 10px 20px -10px rgba(255, 62, 78, 0.6);
   transform: translateY(-5px);
-  background: #ff3e4e;
 }
 
 .cancelBtn {
@@ -321,19 +319,50 @@
 
 .saves_delete_inactive {
   background: #ffcbd0;
+  cursor: not-allowed;
+  border: 1px solid transparent;
 }
 
 .saveBtn {
   margin-top: 10px;
+  border: 1px solid black;
+  cursor: pointer;
+  padding: 11px 28px;
+  border-radius: 8px;
+  border: none;
+  color: #000000;
+  background: gray;
+  transition: all 0.25s ease;
+  border: 1px solid black;
+}
+
+.saveBtn:hover{
+  box-shadow: 0 10px 20px -10px rgba(63, 63, 63, 0.6);
+  transform: translateY(-5px);
 }
 
 .saves_open_inactive {
-  color: gray;
+  background: lightgray;
+  color: darkgray;
+  cursor: not-allowed;
+  border: 1px solid transparent;
+}
+
+.saves_open_inactive:focus,
+.saves_open_inactive:focus-visible{
+    outline: none !important;
 }
 
 .saves_save_button {
   background-color: rgb(196, 255, 202);
   margin-right: 10px;
+  transition: all 0.25s ease;
+  border: 1px solid black;
+}
+
+.saves_save_button:hover{
+  box-shadow: 0 10px 20px -10px rgba(40, 59, 43, 0.6);
+  transform: translateY(-5px);
 }
 
 .saves_project_button {
@@ -358,6 +387,10 @@
     height: 50%;
     align-self: center;
   }
+}
+
+.save_actions_container{
+  margin-top: 20px;
 }
 
 .loader {
