@@ -36,7 +36,8 @@ import '../styles/Modals.css';
     async function wizardSave(){
       setIsLoading(true);
       const parameterMap = await createProjectMap(1,0)
-      const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
+      const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project_wizard");
+      console.log(renameProjectInput?.value);
       if(renameProjectInput && renameProjectInput.value != ""){
         const nameParam: UtilityInterfaces.Parameter = {
           name: "project_name",
@@ -44,6 +45,7 @@ import '../styles/Modals.css';
           value: renameProjectInput.value
         }
         parameterMap.set("project_name", nameParam)
+      }
       const NOZZLENUM: UtilityInterfaces.Parameter = {
         name: "nozzle_count",
         type: UtilityInterfaces.types.INT,
@@ -60,7 +62,6 @@ import '../styles/Modals.css';
       setProjects(await listUserProjects(userID));
       setIsLoading(false);
       setIsOpen(false);
-    }
   }
     
     if (!isOpen){ return null}
@@ -81,7 +82,7 @@ import '../styles/Modals.css';
                   <RiCloseLine style={{ marginBottom: "-3px" }} />
                 </button>
               <div id="save_modal_content" className= "modalContent">
-                  <input id="rename_project" type="text" placeholder={projectName}></input>
+                  <input id="rename_project_wizard" type="text" placeholder={projectName}></input>
                     <button onClick={wizardSave}>Open project</button>
               </div>
                 <div className= "modalActions">
