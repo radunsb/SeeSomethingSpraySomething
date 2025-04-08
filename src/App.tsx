@@ -496,7 +496,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
           Save Load
         </button>
         {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} setIsWizardOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
-        {isWizardOpen && <Wizard isOpen = {isWizardOpen} setIsOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} userIDstate={[userID, setUserID]}/>}
+        {isWizardOpen && <Wizard isOpen = {isWizardOpen} setIsOpen={setIsWizardOpen} setIsSaveLoadOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} updateMap = {setParameterMap} parameterMap={parameterMap} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
