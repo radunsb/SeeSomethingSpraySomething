@@ -7,6 +7,7 @@ import { createProjectMap} from "../utility/ProjectUtilities";
 import { SaveLoadProps } from "./ModalInterfaces";
 import { getLatestProjectID } from "../utility/ProjectUtilities";
 import { Loading } from "./LoadingModal";
+import { TextBox } from "./TextBoxModal";
 import '../styles/Modals.css';
 
 
@@ -16,6 +17,8 @@ import '../styles/Modals.css';
     const [projectList, setProjectList] = useState(constructProjectList());
     const [isLoading, setIsLoading] = useState(false);
     const [userID] = userIDstate;
+    const [isTextBoxOpen, setTextBoxOpen] = useState(false);
+    const [isDescriptionTextBoxOpen, setDescriptionTextBoxOpen] = useState(false);
 
     useEffect(() => {
       if(userID == 1){
@@ -25,6 +28,7 @@ import '../styles/Modals.css';
         document.getElementById("saves_save_button_copy")?.setAttribute("hidden", "active");
         document.getElementById("saves_sign_in_message")?.removeAttribute("hidden");
         document.getElementById("delete_project_button")?.setAttribute("hidden", "active");
+        document.getElementById("saves_save_button_description")?.setAttribute("hidden", "active");
       }
       const projectButtons = document.getElementsByClassName("saves_project_button");
       for(const button of projectButtons){
@@ -71,15 +75,6 @@ import '../styles/Modals.css';
     
     async function save(){
       setIsLoading(true);
-      const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
-      if(renameProjectInput && renameProjectInput.value != "" && renameProjectInput.value != "[Change This To Rename]"){
-        const nameParam: UtilityInterfaces.Parameter = {
-          name: "project_name",
-          type: UtilityInterfaces.types.STRING,
-          value: renameProjectInput.value
-        }
-        parameterMap.set("project_name", nameParam)
-      }
       let copy = false;
       if(parameterMap.get("project_id")?.value == 0){
         copy = true;
@@ -131,6 +126,8 @@ import '../styles/Modals.css';
       document.getElementById("delete_project_button")?.classList.remove("saves_delete_inactive");
       document.getElementById("saves_save_button_copy")?.removeAttribute("disabled");
       document.getElementById("saves_save_button_copy")?.classList.remove("saves_open_inactive");
+      document.getElementById("saves_save_button_description")?.removeAttribute("disabled");
+      document.getElementById("saves_save_button_description")?.classList.remove("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
       }
@@ -142,18 +139,27 @@ import '../styles/Modals.css';
       const button = document.getElementById("open_project_button");
       const button2 = document.getElementById("delete_project_button");
       const button3 = document.getElementById("saves_save_button_copy");
-      if(event.relatedTarget !== button && event.relatedTarget !== button2 && event.relatedTarget !== button3){
+      const button4 = document.getElementById("saves_save_button_description");
+      if(event.relatedTarget !== button && event.relatedTarget !== button2 && event.relatedTarget !== button3 && event.relatedTarget !== button4){
         document.getElementById("open_project_button")?.setAttribute("disabled", "active");
         document.getElementById("open_project_button")?.classList.add("saves_open_inactive");
         document.getElementById("delete_project_button")?.setAttribute("disabled", "active");
         document.getElementById("delete_project_button")?.classList.add("saves_delete_inactive");
         document.getElementById("saves_save_button_copy")?.setAttribute("disabled", "active");
         document.getElementById("saves_save_button_copy")?.classList.add("saves_open_inactive");
+        document.getElementById("saves_save_button_description")?.setAttribute("disabled", "active");
+        document.getElementById("saves_save_button_description")?.classList.add("saves_open_inactive");
       for(const e of document.getElementsByClassName("saves_project_button")){
         e.classList.remove("saves_selected_project");
       }
       setSelectedButton(-1);
       }   
+    }
+
+    function tryChangeDescription(){
+      if(selectedButton != -1){
+        setDescriptionTextBoxOpen(true)
+      }
     }
 
     function constructProjectList(){
@@ -166,12 +172,29 @@ import '../styles/Modals.css';
       return projectList;
     }
     
-    if (!isOpen){ return null}
     let projectName = parameterMap.get("project_name")?.value;
     if(typeof(projectName) != "string"){
       projectName = "Default Name";
     }
+
+    if(isTextBoxOpen){
+      const currentName = String(parameterMap.get("project_name")?.value);
+      return(
+        <div className="textbox">
+          <TextBox isOpen={isTextBoxOpen} setIsOpen={setTextBoxOpen} title={"rename"} current={currentName} setIsParentOpen={setIsOpen} parameterMap={parameterMap} userID={userID} selectedButton={selectedButton}/>
+        </div>
+      );
+    }
+    else if(isDescriptionTextBoxOpen){
+      return(
+        <div className="textbox">
+          <TextBox isOpen={isDescriptionTextBoxOpen} setIsOpen={setDescriptionTextBoxOpen} title={"description"} current = {"Default Description"}setIsParentOpen={setIsOpen} parameterMap={parameterMap} userID={userID} selectedButton={selectedButton}/>
+        </div>
+      );
+    }
+
     
+    else if(!isOpen){ return null}
     return (
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
@@ -180,7 +203,7 @@ import '../styles/Modals.css';
           {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
             <div className= "save_load_header">
               <h2 className= "heading">Currently Open: {projectName}</h2>
-              <input id="rename_project" type="text" placeholder="[Change This To Rename]"></input>
+              <button id="rename_project" className="saves_save_button" onClick={() => {setTextBoxOpen(true)}}>Rename</button>
             </div>
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
@@ -203,6 +226,7 @@ import '../styles/Modals.css';
                   Open
                 </button>
                 <button id = "saves_save_button_copy" className = "saveBtn saves_duplicate_button saves_open_inactive" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
+                <button id = "saves_save_button_description" className = "saveBtn saves_open_inactive" onClick={() => {tryChangeDescription()}}>View Description</button>
               </div>
             </div>
           </div>
