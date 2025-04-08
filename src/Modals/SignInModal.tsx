@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { RiCloseLine } from "react-icons/ri";
 import { login, UserInfoResponse } from "../utility/auth_requests";
-import { encodeHTML } from "../utility/ProjectUtilities";
 import { AccountModalProps } from "./ModalInterfaces";
 import { TextField } from "./ModalUtil";
 import '../styles/Modals.css';
@@ -9,7 +8,7 @@ import '../styles/Modals.css';
 async function makeLoginRequest(username:string, password:string, setUserInfo:(response:Promise<UserInfoResponse>)=>void, setFailedOpen:(open:boolean)=>void){
   console.log("making login request")
   
-  const response = login( encodeHTML(username), encodeHTML(password) );
+  const response = login(username, password);
   setUserInfo(response);
 
   //show the error message if the login fails

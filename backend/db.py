@@ -134,7 +134,18 @@ def delete_project(user_id, project_id):
         user = db.Users.find_one({'_id': user_id}, {'pass_hash':0})
         return user
     except Exception as e:
-        return e   
+        return e
+    
+def perm_delete_user(user_id):
+    try:
+        if(user_id == 1):
+            return None
+        db.Users.delete_one(
+            {"_id": user_id}
+        )
+        return db.Users
+    except Exception as e:
+        return e
 
 def push_recent_project(user_id, project_id, projectJSON):
     try:
