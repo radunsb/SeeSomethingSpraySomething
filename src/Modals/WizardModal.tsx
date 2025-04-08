@@ -36,7 +36,7 @@ import '../styles/Modals.css';
     async function wizardSave(){
       setIsLoading(true);
       const parameterMap = await createProjectMap(1,0)
-      const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
+      const renameProjectInput: HTMLInputElement|null = document.querySelector("#name_new_proj");
       if(renameProjectInput && renameProjectInput.value != ""){
         const nameParam: UtilityInterfaces.Parameter = {
           name: "project_name",
@@ -81,8 +81,8 @@ import '../styles/Modals.css';
                   <RiCloseLine style={{ marginBottom: "-3px" }} />
                 </button>
               <div id="save_modal_content" className= "modalContent">
-                  <input id="rename_project" type="text" placeholder={projectName}></input>
-                    <button onClick={wizardSave}>Open project</button>
+                  <input id="name_new_proj" type="text" placeholder={projectName}></input>
+                    <button onClick={() => wizardSave() }>Open project</button>
               </div>
                 <div className= "modalActions">
                   <div className= "actionsContainer">
