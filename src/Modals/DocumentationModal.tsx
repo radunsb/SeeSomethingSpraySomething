@@ -30,6 +30,10 @@ import '../styles/Modals.css';
       }
     }
 
+    async function baseURL(){
+      window.open('https://www.spray.com/products/product-overview')
+    }
+
     async function loadNozzleOptions() {
       try {
       const nozzleNames = await createNozzleArray();
@@ -70,15 +74,14 @@ import '../styles/Modals.css';
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
               <div>
-              <Dropdown options={nozzleOptions} onChange={(value) => setSelectedNozzle(value)}/>
-                <button className= "CancelBtn" onClick={handleNozzleClick}>
-                →
-                </button>
+              You are about to exit the Spraying Systems Spray Simulator App.
               </div>
               <div>
-              <Dropdown options={controllerOptions} onChange={(value) => setSelectedController(value)}/>
-                <button className= "CancelBtn" onClick={handleControllerClick}>
-                →
+              You will be taken to the Spraying Systems general catalog website
+              </div>
+              <div>
+                <button className= "CancelBtn" onClick={ baseURL }>
+                GO
                 </button>
               </div>
           </div>

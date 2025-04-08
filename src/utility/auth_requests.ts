@@ -1,5 +1,4 @@
 import axios from "axios";
-import { encodeHTML } from "../utility/ProjectUtilities";
 
 export interface UserInfoResponse{
     uid:number;
@@ -13,9 +12,9 @@ export async function createAccount(username:string, password:string, email:stri
     //console.log(`username: ${username}\npassword: ${password}\nemail: ${email}`);
     try{
         const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/create/`,{
-            "username": encodeHTML(username),
-            "password": encodeHTML(password),
-            "email": encodeHTML(email)
+            "username": username,
+            "password": password,
+            "email": email
         });
 
         if( axiosResponse.status == 200){
@@ -33,8 +32,8 @@ export async function createAccount(username:string, password:string, email:stri
 export async function login(username:string, password:string) : Promise<UserInfoResponse>{
   try{  
     const axiosResponse = await axios.post(`${__BACKEND_URL__}/auth/v1/login/`,{
-        "username": encodeHTML(username),
-        "password": encodeHTML(password)        
+        "username": username,
+        "password": password     
     });
    
     //If the request is good, return the data
