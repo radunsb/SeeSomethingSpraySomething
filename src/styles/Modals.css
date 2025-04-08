@@ -127,6 +127,9 @@
   .save_actions_container{
     bottom: 5px;
     padding-top: 30px;
+    
+  .save_load_header {
+    margin-top: -30px;
   }
 }
 
@@ -400,7 +403,6 @@
 
 .save_load_header {
   display:flex;
-  margin-top: -30px;
   top: 0px;
   padding-top: 0px;
   #rename_project{
