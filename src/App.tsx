@@ -13,7 +13,7 @@ import { Profile } from './Modals.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { Dropdown } from "./Modals/ModalUtil.tsx";
@@ -67,8 +67,6 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [selectedController, setSelectedController] = useState<string>("");
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
@@ -76,6 +74,10 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [selectedNum, setSelectedNum] = useState<string>("");
   const [numOptions, setNumOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(true);
+
+  //store email and username in a way that will persist across renders
+  let username = useRef("");
+  let email = useRef("");
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -100,11 +102,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       setProjectList(await listUserProjects(IDToSet));
       const usernameToSet = responseData.username;
       if(typeof usernameToSet === "string"){
-        setUsername(usernameToSet);
+        username.current = usernameToSet;
       }
       const emailToSet = responseData.email;
       if(typeof emailToSet === "string"){
-        setEmail(emailToSet);
+        email.current = emailToSet;
       }
     }
     catch (error){
@@ -471,7 +473,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setCreationFailedOpen}/>
         <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
         <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
-        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>
+        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username.current} email={email.current}/>
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
