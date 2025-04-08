@@ -9,7 +9,8 @@ export const AccountCreationFailed = ({isOpen, setIsOpen, setParentOpen}: AuthFa
             <button className= "closeBtn" onClick={() => {setIsOpen(false); setParentOpen(true)}}>
                 <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
-            <h1>Account Creation Failed</h1>
+            <h2>Account Creation Failed</h2>
+            <p>That user already exists</p>
         </div>
     </div>
   );  

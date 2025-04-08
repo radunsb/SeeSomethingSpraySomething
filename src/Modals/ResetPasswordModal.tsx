@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { RiCloseLine } from "react-icons/ri";
-import { UserInfoResponse, login } from "../utility/auth_requests";
-import { resetPassword, encodeHTML } from "../utility/ProjectUtilities";
+import { login } from "../utility/auth_requests";
+import { resetPassword} from "../utility/ProjectUtilities";
 import { ModalProps, ResetPasswordModalProps, PasswordModalProps } from "./ModalInterfaces";
 import { TextField } from "./ModalUtil.tsx";
 import '../styles/Modals.css';

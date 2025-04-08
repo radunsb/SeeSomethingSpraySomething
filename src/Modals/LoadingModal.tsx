@@ -10,7 +10,7 @@ export const Loading = ({isOpen, setIsOpen, setBG}: LoadingProps) => {
         }
             <div className="loadingCentered centered">
                 <div className="loader"></div>
-                <h4>Loading....</h4>
+                <h4>Spraying....</h4>
             </div>
         </>
     );
