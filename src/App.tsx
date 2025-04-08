@@ -13,7 +13,7 @@ import { Profile } from './Modals/ProfileModal.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { Dropdown } from "./Modals/ModalUtil.tsx";
@@ -41,13 +41,16 @@ import { ImageModal } from './Modals/ImageModal.tsx';
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
-  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
+  userState : {idState:[number, React.Dispatch<React.SetStateAction<number>>],
+    unState:[string, React.Dispatch<React.SetStateAction<string>>],
+    emailState:[string, React.Dispatch<React.SetStateAction<string>>]
+  }
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userState}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -67,8 +70,6 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [selectedController, setSelectedController] = useState<string>("");
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
@@ -77,13 +78,17 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [numOptions, setNumOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(true);
 
+  //store email and username in a way that will persist across renders
+  const [userID, setUserID] = userState.idState;
+  const [username, setUsername] = userState.unState;
+  const [email, setEmail] = userState.emailState;
+
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
     setSelectedId(id);
     setIsInfoOpen(true);
   }
   //These are states that were passed down from main
-  const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
   const [timingMode, setTimingMode] = useState(parameterMap.get("timing_mode") != undefined ? parameterMap.get("timing_mode")?.value : "auto");
@@ -472,6 +477,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
         <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
         <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email} userID={userID}/>
+
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
