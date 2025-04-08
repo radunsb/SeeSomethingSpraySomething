@@ -119,6 +119,10 @@ li {
 .right-align {
   position: fixed;
   right: 0px;
+  margin-top: 0px;
+}
+
+.special-align {
   margin-top: -5px;
 }
 
@@ -143,7 +147,7 @@ li {
   .right-align {
     position: relative;
     right: 0px;
-    margin-top: -5px;
+    margin-top: 0px;
   }
 }
 /* ------------------------------------------ */

@@ -392,12 +392,12 @@ export default function App({parameters, projectState, userState}: AppProps) {
                       
           <p>
             NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}
-            <span className="right-align"><button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/></span>
+            <span className="right-align special-align"><button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/></span>
           </p>
 
           <p>
             PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min
-            <span className="right-align"><button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/></span>
+            <span className="right-align special-align"><button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/></span>
           </p>
         
         </NozzleDrawer>
@@ -428,7 +428,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
             </select> 
-            <button className='info-btn' onClick={() => {setIsTimingModeOpen(true);}}/>
+            <button className='info-btn right-align' onClick={() => {setIsTimingModeOpen(true);}}/>
           </div>
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
