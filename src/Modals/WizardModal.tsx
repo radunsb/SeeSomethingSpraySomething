@@ -6,12 +6,14 @@ import { listUserProjects} from "../utility/ProjectUtilities";
 import { createProjectMap} from "../utility/ProjectUtilities";
 import { WizardProps } from "./ModalInterfaces";
 import { Dropdown } from './ModalUtil.tsx';
+import { Loading } from "./LoadingModal";
 import { sprayAngleOptions, nozzleNumberOptions } from '../Parameter.tsx';
 import '../styles/Modals.css';
+import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
 
-  export const Wizard = ({ isOpen, setIsOpen, projectState, parameterMap, userIDstate}: WizardProps) => {
-    const [selectedNozzleNum, setSelectedNozzleNum] = useState<string>("");
-    const [selectedSprayAngle, setSelectedSprayAngle] = useState<string>("");
+  export const Wizard = ({ isOpen, setIsOpen, setIsSaveLoadOpen, updateMap, projectState, parameterMap, userIDstate}: WizardProps) => {
+    const [selectedNozzleNum, setSelectedNozzleNum] = useState<string>("1");
+    const [selectedSprayAngle, setSelectedSprayAngle] = useState<string>("110");
     const [projName, setProjectName] = useState<string>("");
     const [projects, setProjects] = projectState;
     const [isLoading, setIsLoading] = useState(false);
@@ -35,6 +37,7 @@ import '../styles/Modals.css';
 
     async function wizardSave(){
       setIsLoading(true);
+      setIsSaveLoadOpen(false);
       const parameterMap = await createProjectMap(1,0)
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#name_new_proj");
       if(renameProjectInput && renameProjectInput.value != ""){
@@ -59,6 +62,7 @@ import '../styles/Modals.css';
       parameterMap.set("spray_angle", SPRAYANGLE);
       await saveProject(userID, parameterMap, true); 
       setProjects(await listUserProjects(userID));
+      updateParamsAndRerender(parameterMap, updateMap)
       setIsLoading(false);
       setIsOpen(false);
   }
@@ -74,6 +78,7 @@ import '../styles/Modals.css';
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
           <div className= "centered">
             <div className= "modal">
+            {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
               <div className= "modalHeader">
                 <h2 className= "heading">Project Template</h2>
               </div>

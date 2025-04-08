@@ -16,11 +16,11 @@ export const Dropdown: React.FC<DropdownProps> = ({ options, onChange}) => {
     }
   }, [options])
 
-const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
-  const value = event.target.value;
-  setSelectedValue(value);
-  onChange(value);
-};
+  const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const value = event.target.value;
+    setSelectedValue(value);
+    onChange(value);
+  };
 
 return (
   <select value={selectedValue} onChange={handleChange}>
