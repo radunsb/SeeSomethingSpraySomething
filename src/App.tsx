@@ -41,13 +41,16 @@ import { ImageModal } from './Modals/ImageModal.tsx';
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
-  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
+  userState : {idState:[number, React.Dispatch<React.SetStateAction<number>>],
+    unState:[string, React.Dispatch<React.SetStateAction<string>>],
+    emailState:[string, React.Dispatch<React.SetStateAction<string>>]
+  }
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userState}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -76,8 +79,9 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isChecked, setIsChecked] = useState(true);
 
   //store email and username in a way that will persist across renders
-  let username = useRef("");
-  let email = useRef("");
+  const [userID, setUserID] = userState.idState;
+  const [username, setUsername] = userState.unState;
+  const [email, setEmail] = userState.emailState;
 
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
@@ -85,7 +89,6 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
     setIsInfoOpen(true);
   }
   //These are states that were passed down from main
-  const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
   const [timingMode, setTimingMode] = useState(parameterMap.get("timing_mode") != undefined ? parameterMap.get("timing_mode")?.value : "auto");
@@ -102,11 +105,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       setProjectList(await listUserProjects(IDToSet));
       const usernameToSet = responseData.username;
       if(typeof usernameToSet === "string"){
-        username.current = usernameToSet;
+        setUsername(usernameToSet);
       }
       const emailToSet = responseData.email;
       if(typeof emailToSet === "string"){
-        email.current = emailToSet;
+        setEmail(emailToSet);
       }
     }
     catch (error){
@@ -473,7 +476,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setCreationFailedOpen}/>
         <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
         <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
-        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username.current} email={email.current} userID={userID}/>
+        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email} userID={userID}/>
 
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
