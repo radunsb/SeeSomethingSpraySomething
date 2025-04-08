@@ -111,7 +111,10 @@
 @media (max-width: 1000px) {
   .saveLoad {
     width: 70vw;
-    height: 70vh;
+    height: 80vh;
+  }
+  .modalActions {
+    margin-top: -40px;
   }
 }
 
@@ -301,6 +304,17 @@
   transition: all 0.25s ease;
 }
 
+@media (max-width: 1000px) {
+  .create-account{
+    height: 80vh;
+    width: 100vh;
+  }
+  .sign-in {
+    height: 80vh;
+    width: 100vh;
+  }
+}
+
 .TextField {
   padding: 25px 25px;
 }
@@ -370,8 +384,13 @@
   margin-left: 10px;
 }
 
+
+
 .save_load_header {
   display:flex;
+  margin-top: -30px;
+  top: 0px;
+  padding-top: 0px;
   #rename_project{
     margin-left: 10px;
     height: 50%;
