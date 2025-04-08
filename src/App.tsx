@@ -131,6 +131,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
           inputElement.defaultValue = String(value.value);
         }   
       }
+      setSelectedNozzle(String(parameterMap.get("spray_angle")?.value));
     }
     loadMap();
   })
@@ -222,7 +223,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
         parameterList.push(
           <li id={"ANGLEARRAY_list"} key={"ANGLEARRAY"}>
               <p>{"SPRAY ANGLE"}</p>
-        <Dropdown options={sprayAngleOptions} onChange={(value) => {setSelectedNozzle(value); 
+        <Dropdown options={sprayAngleOptions} currentSelected={Number(selectedNozzle)} onChange={(value) => {setSelectedNozzle(value); 
           const SprayAngleParam = parameterMap.get("spray_angle");
           if (typeof SprayAngleParam !== "undefined"){
           SprayAngleParam.value = value;
@@ -242,7 +243,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
        parameterList.push(
          <li id={"NOZZLENUM_list"} key={"NOZZLENUM"}>
            <p>{"NOZZLE COUNT"}</p>
-       <Dropdown options={nozzleNumberOptions} onChange={(value) => { setSelectedNum(value);
+       <Dropdown options={nozzleNumberOptions} currentSelected={selectedNozzle} onChange={(value) => { setSelectedNum(value);
           const nozzleNumParam = parameterMap.get("nozzle_count");
           if (typeof nozzleNumParam !== "undefined"){
           nozzleNumParam.value = value;
