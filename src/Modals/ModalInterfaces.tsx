@@ -36,6 +36,8 @@ export interface SaveLoadProps{
 export interface WizardProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
+  setIsSaveLoadOpen: (arg0: boolean) => void;
+  updateMap: React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>;
   projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
   parameterMap: Map<string, UtilityInterfaces.Parameter>;
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
