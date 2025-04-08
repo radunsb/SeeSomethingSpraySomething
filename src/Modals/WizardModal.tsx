@@ -44,6 +44,7 @@ import '../styles/Modals.css';
           value: renameProjectInput.value
         }
         parameterMap.set("project_name", nameParam)
+      }
       const NOZZLENUM: UtilityInterfaces.Parameter = {
         name: "nozzle_count",
         type: UtilityInterfaces.types.INT,
@@ -60,7 +61,6 @@ import '../styles/Modals.css';
       setProjects(await listUserProjects(userID));
       setIsLoading(false);
       setIsOpen(false);
-    }
   }
     
     if (!isOpen){ return null}
