@@ -14,13 +14,14 @@ export const TextBox = ({isOpen, setIsOpen, title, setIsParentOpen, parameterMap
         if(title==="description"){
             doDescriptionStuff();
         }
-        setPlaceholder(String(pMap.get("project_description")?.value));
     }, []);
 
     async function doDescriptionStuff(){
         setIsLoading(true);
-        setPMap(await createProjectMap(userID, selectedButton));
-        setPlaceholder(String(pMap.get("project_description")?.value));  
+        const newMap = await createProjectMap(userID, selectedButton);
+        console.log(selectedButton);
+        setPMap(newMap);
+        setPlaceholder(String(newMap.get("project_description")?.value));  
         setIsLoading(false);
     }
   if (!isOpen){ return null}

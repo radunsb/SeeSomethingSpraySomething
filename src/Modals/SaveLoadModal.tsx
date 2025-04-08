@@ -186,10 +186,9 @@ import '../styles/Modals.css';
       );
     }
     else if(isDescriptionTextBoxOpen){
-      const currentDesc = String(parameterMap.get("project_description")?.value);
       return(
         <div className="textbox">
-          <TextBox isOpen={isDescriptionTextBoxOpen} setIsOpen={setDescriptionTextBoxOpen} title={"description"} current = {currentDesc}setIsParentOpen={setIsOpen} parameterMap={parameterMap} userID={userID} selectedButton={selectedButton}/>
+          <TextBox isOpen={isDescriptionTextBoxOpen} setIsOpen={setDescriptionTextBoxOpen} title={"description"} current = {"Default Description"}setIsParentOpen={setIsOpen} parameterMap={parameterMap} userID={userID} selectedButton={selectedButton}/>
         </div>
       );
     }
