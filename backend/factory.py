@@ -13,7 +13,7 @@ from flask_mail import Mail, Message
 
 def create_app():
     app = Flask(__name__)
-    CORS(app, origins=[config['PROD']['BACKEND_URL'],config['PROD']['FRONTEND_URL']], methods=['GET', 'POST'])
+    
 
     app = Flask(__name__)
     app.config['MAIL_SERVER'] = 'smtp.gmail.com'
@@ -26,7 +26,7 @@ def create_app():
     app.register_blueprint(api_v1)
     app.register_blueprint(auth_v1)
     app.config['MONGO_URI'] = config['PROD']['CLIENT_URI']
-
+    CORS(app, origins=[config['PROD']['BACKEND_URL'],config['PROD']['FRONTEND_URL']], methods=['GET', 'POST'])
     session_key_file = open("./authentication/session_key.txt", "r")
     app.config['SECRET_KEY'] = session_key_file.read()
     session_key_file.close()
