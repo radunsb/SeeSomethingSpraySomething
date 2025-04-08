@@ -223,32 +223,13 @@ export default function App({parameters, projectState, userState}: AppProps) {
         parameterList.push(
           <li id={"ANGLEARRAY_list"} key={"ANGLEARRAY"}>
               <p>{"SPRAY ANGLE"}</p>
-        <Dropdown options={sprayAngleOptions} currentSelected={Number(selectedNozzle)} onChange={(value) => {setSelectedNozzle(value); 
+        <Dropdown options={sprayAngleOptions} currentSelected={selectedNozzle} onChange={(value) => {setSelectedNozzle(value); 
           const SprayAngleParam = parameterMap.get("spray_angle");
           if (typeof SprayAngleParam !== "undefined"){
           SprayAngleParam.value = value;
           setParameterMap(parameterMap.set("spray_angle", SprayAngleParam))}}}/>
           </li>)
 
-        parameterList.push(        
-          <li id={"CONTROLLERARRAY_list"} key={"CONTROLLERARRAY"}>
-            <p>{"CONTROLLERS"}</p>
-        <Dropdown options={controllersOptions} onChange={(value) => { setSelectedController(value);
-          const controllerParam = parameterMap.get("controller_name");
-          if (typeof controllerParam !== "undefined"){
-          controllerParam.value = value;
-          setParameterMap(parameterMap.set("angle", controllerParam))}}}/>
-          </li>)
-
-       parameterList.push(
-         <li id={"NOZZLENUM_list"} key={"NOZZLENUM"}>
-           <p>{"NOZZLE COUNT"}</p>
-       <Dropdown options={nozzleNumberOptions} currentSelected={selectedNozzle} onChange={(value) => { setSelectedNum(value);
-          const nozzleNumParam = parameterMap.get("nozzle_count");
-          if (typeof nozzleNumParam !== "undefined"){
-          nozzleNumParam.value = value;
-          setParameterMap(parameterMap.set("angle", nozzleNumParam))}}}/>
-         </li>)
   }
 
   //this function has to be inside the app component because it needs access to the parametermap
@@ -497,7 +478,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
           Save Load
         </button>
         {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} setIsWizardOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
-        {isWizardOpen && <Wizard isOpen = {isWizardOpen} setIsOpen={setIsWizardOpen} setIsSaveLoadOpen={setIsSaveLoadOpen} projectState={[projectList, setProjectList]} updateMap = {setParameterMap} parameterMap={parameterMap} userIDstate={[userID, setUserID]}/>}
+        {isWizardOpen && <Wizard isOpen = {isWizardOpen} setIsOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
