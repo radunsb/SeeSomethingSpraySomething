@@ -387,12 +387,12 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
                       
           <p>
             NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}
-            <button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/>
+            <span className="right-align"><button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/></span>
           </p>
 
           <p>
             PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min
-            <button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/>
+            <span className="right-align"><button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/></span>
           </p>
         
         </NozzleDrawer>
