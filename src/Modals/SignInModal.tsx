@@ -16,7 +16,14 @@ async function makeLoginRequest(username:string, password:string, setUserInfo:(r
   setFailedOpen(responseData.uid === 1);
 }
 
+
 export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFailedOpen, setUserInfo }: AccountModalProps) => {
+  function closeModal(){
+    setIsLIOpen(false);
+    setUserName("");
+    setPassword("");
+  }
+  
   const [username, setUserName] = useState('');
   const [password, setPassword] = useState('');
 
@@ -29,17 +36,17 @@ export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFaile
   if (!isOpen){ return null}
   return (
     <>
-      <div className= "darkBG" onClick={() => setIsLIOpen(false)} />
+      <div className= "darkBG" onClick={closeModal} />
       <div className= "centered">
         <div className= "modal sign-in">
-          <button className= "closeBtn" onClick={() => setIsLIOpen(false)}>
+          <button className= "closeBtn" onClick={closeModal}>
             <RiCloseLine style={{ marginBottom: "-3px" }} />
           </button>
           <div className="button-container">
           <button className= "onLoginSwitchBtn">
                 Log In
           </button>
-          <button className= "createSwitchBtn" onClick={() => {setIsLIOpen(false); setIsCAOpen(true)}}>
+          <button className= "createSwitchBtn" onClick={() => {closeModal(); setIsCAOpen(true)}}>
                 Create Account
           </button>
           </div>
@@ -54,12 +61,12 @@ export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFaile
             </div>
             &nbsp;
             <div>
-              <button className= "forgetBtn" onClick={() => setIsFPOpen(true)}>
+              <button className= "forgetBtn" onClick={() => {setIsFPOpen(true);closeModal();}}>
                 Forgot Password
               </button>
             </div>
               <div>
-              <button className= "loginBtn" onClick={() => {makeLoginRequest(username, password, setUserInfo, setFailedOpen)}}>
+              <button className= "loginBtn" onClick={() => {makeLoginRequest(username, password, setUserInfo, setFailedOpen); closeModal();}}>
                 Login
               </button>
               </div>
