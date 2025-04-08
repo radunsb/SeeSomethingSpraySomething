@@ -53,6 +53,9 @@ export const TextBox = ({isOpen, setIsOpen, title, setIsParentOpen, parameterMap
                   value: renameProjectInput.value
                 }
                 pMap.set("project_description", descriptionParam)
+                if(pMap.get("project_id")?.value === parameterMap.get("project_id")?.value){
+                    parameterMap.set("project_description", descriptionParam);
+                }
                 await saveProject(userID, pMap, false);
                 setIsLoading(false);
               }
