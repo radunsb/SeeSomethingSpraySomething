@@ -9,7 +9,7 @@ export const LoginFailed = ({isOpen, setIsOpen, setParentOpen}: AuthFailedProps)
             <button className= "closeBtn" onClick={() => {setIsOpen(false); setParentOpen(true);}}>
                 <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>
-            <h1>Login Failed</h1>
+            <h2>Login Failed</h2>
             <p>Invalid username and password combination</p>
         </div>
     </div>

@@ -17,7 +17,7 @@ export const paraNames: string[] = [
 
   export const paraUnits: string[] = [
     "%", "psi", "", "feet/min", "inches", 
-    "", "inches", "inches", "",
+    "nozzles", "inches", "inches", "",
     "inches", "inches", "inches", 
     "", "", "", 
     "inches", "seconds", "seconds", "seconds", "degrees", "gal/min", 

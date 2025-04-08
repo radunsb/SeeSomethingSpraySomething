@@ -68,9 +68,9 @@ const Results = ({params, timingMode}:ResultsProps) => {
     }
     //console.log(`total volume applied was ${totalSprayGallons}`);
 
-    //detect product edges
+    //detect project edges
     for(let colI = 1; colI < productAspray.length-1; colI++ ){
-        for(let rowI = 1; rowI < productAspray[colI].length; rowI++){
+        for(let rowI = 1; rowI < productAspray[colI].length-1; rowI++){
             for(let colOffset = -1; colOffset < 2; colOffset+=2){
                 for(let rowOffset = -1; rowOffset < 2; rowOffset+=2){
                     if( productAspray[colI][rowI].isProduct && !productAspray[colI+colOffset][rowI+rowOffset].isProduct){
@@ -81,6 +81,7 @@ const Results = ({params, timingMode}:ResultsProps) => {
         }
     }
 
+
 //////////// code to export a screenshot ////////////////////////////////////////////////////////////////
 
 
@@ -88,7 +89,6 @@ const Results = ({params, timingMode}:ResultsProps) => {
 
     async function takeScreenshot(){
         if(!screenshotArea.current) return;
-        setIsLoading(true);
         html2canvas(screenshotArea.current, {
             scale:0.8
         }).then(function(canvas){
@@ -183,7 +183,7 @@ const [helpIsOpen, setHelpVisibility] = useState(false);
                 <Link to={"/"}>
                     <button className="results_button"> Back </button>
                 </Link>
-                <button className="results_button" onClick={takeScreenshot}> Export as PDF/Print </button>
+                <button className="results_button" onClick={() => {setIsLoading(true); takeScreenshot();}}> Export as PDF/Print </button>
                 <button className="help-button" onClick={() => setHelpVisibility(!helpIsOpen)}></button>
             </div>
         </div>
