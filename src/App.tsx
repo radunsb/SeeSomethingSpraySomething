@@ -9,7 +9,7 @@ import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
 import { Loading } from './Modals/LoadingModal.tsx'
 import { Wizard } from './Modals/WizardModal.tsx'
-import { Profile } from './Modals.tsx'
+import { Profile } from './Modals/ProfileModal.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
@@ -471,7 +471,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setCreationFailedOpen}/>
         <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
         <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
-        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>
+        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email} userID={userID}/>
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>

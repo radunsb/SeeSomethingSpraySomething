@@ -64,6 +64,7 @@ interface ProfileModalProps extends ModalProps{
   setUserInfo: (arg: Promise<UserInfoResponse>) => void;
   username: string;
   email: string;
+  userID: number;
 }
 
 interface ResetPasswordModalProps extends ModalProps{
