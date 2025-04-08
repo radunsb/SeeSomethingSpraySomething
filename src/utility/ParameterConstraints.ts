@@ -21,7 +21,8 @@ export class ParameterConstraints{
         this.constraintMap.set("spray_duration", [0, 64]);
         this.constraintMap.set("flow_rate", [0, 1]);
         this.constraintMap.set("angle", [1, 179]);
-        this.constraintMap.set("twist_angle", [0, 90]);
+        this.constraintMap.set("alignment", [0, 89]);
+        this.constraintMap.set("max_frequency", [0,5000]);
     }
     public static get Instance()
     {

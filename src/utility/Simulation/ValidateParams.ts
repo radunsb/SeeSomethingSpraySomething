@@ -8,11 +8,13 @@ export function validateParams(parameterMap:Map<string, UtilityInterfaces.Parame
     const productWidth = Number(getOrException(parameterMap, "product_width").value);
     const lineWidth = Number(getOrException(parameterMap, "line_width").value);
 
+    const alignment = Number(getOrException(parameterMap, "alignment").value);
+
     if(nozzleHeight <= productHeight) return false;
 
-    console.log(`product width is: ${productWidth} and line is is: ${lineWidth}`)
+    if(lineWidth < productWidth) return false;
 
-    if(lineWidth <= productWidth) return false;
+    if(alignment >= 90) return false;
 
     return true;
 }

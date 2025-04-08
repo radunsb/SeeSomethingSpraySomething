@@ -1,6 +1,5 @@
 import { TextFieldProps, DropdownProps } from "./ModalInterfaces.tsx";
 import React, { useState, useEffect } from "react";
-import { encodeHTML } from "../utility/ProjectUtilities";
 
 
 export const TextField = ({ value, onChange }: TextFieldProps) => {

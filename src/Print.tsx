@@ -22,7 +22,7 @@ export default function Print({parameters}: printProps){
     });
     return(
         <div>
-            <Link className="back_button" to={"/results/"}>
+            <Link className="back_button" to={"/"}>
             <button className='hide_on_print back_button'> Back </button>
             </Link>
         <div>
