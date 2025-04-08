@@ -33,6 +33,14 @@ export interface SaveLoadProps{
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
 }
 
+export interface WizardProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
+}
+
 export interface AccountModalProps{
   isOpen: boolean;
   setIsLIOpen: (arg0: boolean) => void;
@@ -55,6 +63,18 @@ export interface ConfirmProps{
   setIsParentOpen: (open: boolean) => void;
   userID: number;
   setUserInfo: (arg: Promise<UserInfoResponse>) => void;
+  
+}
+
+export interface TextBoxProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  title: string;
+  setIsParentOpen: (open: boolean) => void;
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+  current:string;
+  userID: number;
+  selectedButton: number;
 }
 
 export interface LoadingProps{
