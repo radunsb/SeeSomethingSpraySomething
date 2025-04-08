@@ -55,6 +55,18 @@ export interface ConfirmProps{
   setIsParentOpen: (open: boolean) => void;
   userID: number;
   setUserInfo: (arg: Promise<UserInfoResponse>) => void;
+  
+}
+
+export interface TextBoxProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  title: string;
+  setIsParentOpen: (open: boolean) => void;
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+  current:string;
+  userID: number;
+  selectedButton: number;
 }
 
 export interface LoadingProps{
