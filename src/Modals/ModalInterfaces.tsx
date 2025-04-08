@@ -32,6 +32,14 @@ export interface SaveLoadProps{
   userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
 }
 
+export interface WizardProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  projectState : [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>];
+  parameterMap: Map<string, UtilityInterfaces.Parameter>;
+  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>];
+}
+
 export interface AccountModalProps{
   isOpen: boolean;
   setIsLIOpen: (arg0: boolean) => void;

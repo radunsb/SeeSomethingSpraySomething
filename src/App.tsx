@@ -89,7 +89,6 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       const responseData = await newInfo;
       const IDToSet = responseData.uid;
       setUserID(IDToSet);
-      console.log(IDToSet);
       setProjectList(await listUserProjects(IDToSet));
       const usernameToSet = responseData.username;
       if(typeof usernameToSet === "string"){
@@ -474,6 +473,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           Save Load
         </button>
         {isSaveLoadOpen && <SaveLoad isOpen = {isSaveLoadOpen} setIsOpen={setIsSaveLoadOpen} setIsWizardOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} onLoad={loadProject} userIDstate={[userID, setUserID]}/>}
+        {isWizardOpen && <Wizard isOpen = {isWizardOpen} setIsOpen={setIsWizardOpen} projectState={[projectList, setProjectList]} parameterMap={parameterMap} userIDstate={[userID, setUserID]}/>}
       </div>
 
       {/* THIS DIV IS FOR THE SIMULATION */}
