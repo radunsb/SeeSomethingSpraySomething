@@ -30,7 +30,14 @@ import '../styles/Modals.css';
       for(const button of projectButtons){
         button.addEventListener("blur", deselectProjectButton);
       }
-    });
+      const currentElement = "pb_" + parameterMap.get("project_id")?.value;
+      const curProjButton = document.getElementById(currentElement);
+      if(curProjButton != null){
+        const currentProjectButton = curProjButton;
+        currentProjectButton.textContent = currentProjectButton.textContent + " (Currently Open)";
+        currentProjectButton.style.backgroundColor ="rgb(233, 236, 222)";
+      }     
+    }, []);
     
     async function duplicateAndOpen(){
       setIsLoading(true);
@@ -65,7 +72,7 @@ import '../styles/Modals.css';
     async function save(){
       setIsLoading(true);
       const renameProjectInput: HTMLInputElement|null = document.querySelector("#rename_project");
-      if(renameProjectInput && renameProjectInput.value != ""){
+      if(renameProjectInput && renameProjectInput.value != "" && renameProjectInput.value != "[Change This To Rename]"){
         const nameParam: UtilityInterfaces.Parameter = {
           name: "project_name",
           type: UtilityInterfaces.types.STRING,
@@ -169,18 +176,17 @@ import '../styles/Modals.css';
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
         <div className= "centered">
-          <div className= "modal">
+          <div className= "modal saveLoad">
           {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
             <div className= "save_load_header">
-              <h2 className= "heading">Currently Editing: </h2>
-              <input id="rename_project" type="text" placeholder={projectName}></input>
+              <h2 className= "heading">Currently Open: {projectName}</h2>
+              <input id="rename_project" type="text" placeholder="[Change This To Rename]"></input>
             </div>
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
             </button>    
             <div id="save_modal_content" className= "modalContent">              
-            <button id = "saves_save_button_save" className = "saves_save_button" onClick={() => save()}>Save Project</button>
-            <button id = "saves_save_button_copy" className = "saves_save_button" onClick={() => save()}>Save as Copy</button>
+            <button id = "saves_save_button_save" className = "saves_save_button" onClick={() => save()}>Save Current Project</button>
             <button id = "saves_save_button_new" className = "saves_save_button" onClick={() => setIsWizardOpen(true)}>Create New Project</button>
             <p id = "saves_sign_in_message" hidden>Please Sign in to Save Projects!</p>
               <div id = 'saves_container'>
@@ -189,14 +195,14 @@ import '../styles/Modals.css';
               </div>
             </div>
             <div className= "modalActions">
-              <div className= "actionsContainer">
+              <div className= "actionsContainer save_actions_container">
                 <button id="delete_project_button" className= "deleteBtn saves_delete_inactive" onClick={() => {tryToDelete()}}>
                   Delete
                 </button>
                 <button id="open_project_button" className= "saveBtn saves_open_inactive" onClick={() => loadProject()}>
                   Open
                 </button>
-                <button id = "saves_save_button_copy" className = "saves_duplicate_button saves_open_inactive" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
+                <button id = "saves_save_button_copy" className = "saveBtn saves_duplicate_button saves_open_inactive" onClick={() => duplicateAndOpen()}>Duplicate and Open</button>
               </div>
             </div>
           </div>

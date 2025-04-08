@@ -10,6 +10,7 @@ export interface ProfileModalProps extends ModalProps{
   setUserInfo: (arg: Promise<UserInfoResponse>) => void;
   username: string;
   email: string;
+  userID: number;
 }
 
 export interface ResetPasswordModalProps extends ModalProps{
@@ -55,6 +56,15 @@ export interface InfoModalProps{
   selectedId: number | null;
 }
 
+export interface ConfirmProps{
+  isOpen: boolean;
+  setIsOpen: (arg0: boolean) => void;
+  item: string;
+  setIsParentOpen: (open: boolean) => void;
+  userID: number;
+  setUserInfo: (arg: Promise<UserInfoResponse>) => void;
+}
+
 export interface LoadingProps{
   isOpen: boolean;
   setIsOpen: (arg0: boolean) => void;
@@ -76,9 +86,8 @@ export interface DropdownProps {
   onChange: (value: string) => void;
 }
 
-export interface ResultsHelpProps{
-  isOpen: boolean;
-  setIsOpen: (open: boolean) => void;
+export interface ImageModalProps extends ModalProps{
+  imagePath : string;
 }
 
 export interface AuthFailedProps extends ModalProps{

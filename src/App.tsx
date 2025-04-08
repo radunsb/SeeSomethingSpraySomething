@@ -9,11 +9,11 @@ import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
 import { Loading } from './Modals/LoadingModal.tsx'
 import { Wizard } from './Modals/WizardModal.tsx'
-import { Profile } from './Modals.tsx'
+import { Profile } from './Modals/ProfileModal.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, ChangeEvent, useRef } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { Dropdown } from "./Modals/ModalUtil.tsx";
@@ -33,17 +33,24 @@ import { LoginFailed } from './Modals/FailedLoginModal.tsx';
 import { CreateAccount } from './Modals/CreateAccountModal.tsx';
 import { AccountCreationFailed } from './Modals/FailedCreationModal.tsx';
 //import { Console } from 'console';
+import overlapInfo from "./assets/Overlap Info.png";
+import estimatedFlowrateInfo from "./assets/EstimatedFlowrateInfo.png";
+import timingModeHelp from "./assets/TimingModeInfo.png";
+import { ImageModal } from './Modals/ImageModal.tsx';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
   projectState: [Models.ProjectBase[], React.Dispatch<React.SetStateAction<Models.ProjectBase[]>>]
-  userIDstate : [number, React.Dispatch<React.SetStateAction<number>>]
+  userState : {idState:[number, React.Dispatch<React.SetStateAction<number>>],
+    unState:[string, React.Dispatch<React.SetStateAction<string>>],
+    emailState:[string, React.Dispatch<React.SetStateAction<string>>]
+  }
 }
 
 //Props: Render the app with a specific set of parameters that are determined beforehand
 //This keeps it from resetting them when navigating react router, and it will
 //be easier to work in loading saved projects
-export default function App({parameters, projectState, userIDstate}: AppProps) {
+export default function App({parameters, projectState, userState}: AppProps) {
   const [isNozzleDrawerOpen, setIsNozzleDrawerOpen] = useState(false);
   const [isControllerDrawerOpen, setIsControllerDrawerOpen] = useState(false);
   const [isLineDrawerOpen, setIsLineDrawerOpen] = useState(false);
@@ -57,11 +64,12 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isCreationFailedOpen, setCreationFailedOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [isOverlapOpen, setIsOverlapOpen] = useState(false);
+  const [isFlowRateOpen, setIsFlowRateOpen] = useState(false);
+  const [isTimingModeOpen, setIsTimingModeOpen] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
   const [selectedController, setSelectedController] = useState<string>("");
   const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
@@ -70,13 +78,17 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [numOptions, setNumOptions] = useState<Option[]>([]);
   const [isChecked, setIsChecked] = useState(true);
 
+  //store email and username in a way that will persist across renders
+  const [userID, setUserID] = userState.idState;
+  const [username, setUsername] = userState.unState;
+  const [email, setEmail] = userState.emailState;
+
   //Method for transfering info abour selectedId to the Modal
   const handleOpenInfo = (id: number) => {
     setSelectedId(id);
     setIsInfoOpen(true);
   }
   //These are states that were passed down from main
-  const [userID, setUserID] = userIDstate;
   const [projectList, setProjectList] = projectState;
   const [parameterMap, setParameterMap] = parameters;
   const [timingMode, setTimingMode] = useState(parameterMap.get("timing_mode") != undefined ? parameterMap.get("timing_mode")?.value : "auto");
@@ -298,10 +310,10 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   let stopDelayGrayed = "";
   let sprayDurationGrayed = "";
   if(timingMode === "vt"){
-    sprayDurationGrayed = "grayed-timing-mode";
+    sprayDurationGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "ft"){
-    stopDelayGrayed = "grayed-timing-mode";
+    stopDelayGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "auto"){
     startDelayGrayed = "grayed-timing-mode";
@@ -365,8 +377,8 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
 
-        <div style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[33]} {paraUnits[33]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+        <div className="" style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[33]} <span className="units">{paraUnits[33]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(24)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Angle"></button></div>
         <div>
@@ -377,9 +389,15 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           ))}
           </div>
                       
-          <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
+          <p>
+            NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}
+            <span className="right-align"><button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/></span>
+          </p>
 
-          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
+          <p>
+            PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min
+            <span className="right-align"><button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/></span>
+          </p>
         
         </NozzleDrawer>
 
@@ -405,24 +423,25 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           <div>
             Timing Mode: 
             <select value={timingMode} onChange={updateTimingMode}>
-              <option key="auto" value="auto">Auto Calculate</option> 
+              <option key="auto" value="auto">Auto-Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
             </select> 
+            <button className='info-btn' onClick={() => {setIsTimingModeOpen(true);}}/>
           </div>
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+          {parameterList[17]} <span className="units">{paraUnits[17]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
 
           <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+          {parameterList[18]} <span className="units">{paraUnits[18]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Stop Delay"></button></div>
 
           <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+          {parameterList[16]} <span className="units">{paraUnits[16]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
           
@@ -438,10 +457,13 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
 
           <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+        
+        
 
 
         </ControllerDrawer>
-        {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
+        <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>
+
       </div>
 
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
@@ -453,11 +475,12 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         <CreateAccount isOpen = {isCreateAccountOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen} setIsFPOpen={setIsResetPasswordOpen} setUserInfo={awaitAndSetUserInfo} setFailedOpen={setCreationFailedOpen}/>
         <ResetPassword isOpen={isResetPasswordOpen} setIsOpen={setIsResetPasswordOpen} setIsFSOpen={setIsForgetSuccessOpen} setIsCAOpen={setIsCreateAccountOpen} setIsLIOpen={setIsSignInOpen}/>
         <ResetPasswordConfirm isOpen={isForgetSuccessOpen} setIsOpen={setIsForgetSuccessOpen}/>
-        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email}/>
+        <Profile isOpen={isProfileOpen} setIsOpen={setIsProfileOpen} setUserInfo={awaitAndSetUserInfo} username={username} email={email} userID={userID}/>
+
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
-
+    
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
         aria-expanded={isDocumentationOpen}
@@ -488,7 +511,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       <div id='results'>
         {/* RESULTS */}
           <button onClick={() => {setIsLoading(true);navigateResults();}}> See Results </button>
-      </div>      
+      </div>  
+
+      <ImageModal isOpen={isOverlapOpen} setIsOpen={setIsOverlapOpen} imagePath={overlapInfo}/>
+      <ImageModal isOpen={isTimingModeOpen} setIsOpen={setIsTimingModeOpen} imagePath={timingModeHelp}/>
+      <ImageModal isOpen={isFlowRateOpen} setIsOpen={setIsFlowRateOpen} imagePath={estimatedFlowrateInfo}/>  
     </div>
   );
 }

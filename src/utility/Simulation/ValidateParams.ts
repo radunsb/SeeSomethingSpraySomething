@@ -5,9 +5,16 @@ export function validateParams(parameterMap:Map<string, UtilityInterfaces.Parame
     const nozzleHeight = Number(getOrException(parameterMap, "nozzle_height").value);
     const productHeight = Number(getOrException(parameterMap, "product_height").value);
 
-    console.log(`validating parameters:\n\tnozzle height: ${nozzleHeight}\n\tproduct height: ${productHeight}`)
+    const productWidth = Number(getOrException(parameterMap, "product_width").value);
+    const lineWidth = Number(getOrException(parameterMap, "line_width").value);
+
+    const alignment = Number(getOrException(parameterMap, "alignment").value);
 
     if(nozzleHeight <= productHeight) return false;
+
+    if(lineWidth < productWidth) return false;
+
+    if(alignment >= 90) return false;
 
     return true;
 }

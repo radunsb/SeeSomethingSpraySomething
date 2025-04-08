@@ -118,7 +118,7 @@ export const ControllerDrawer = ({
         <div className = 'scrollable-container'>
           <div className ='Content'>
             {children}
-            </div>
+          </div>
         </div>
     </div>
     </aside>

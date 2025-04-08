@@ -32,6 +32,10 @@ interface CARprops{
 
 export function CustomAppRouting({defaultMap, projects} : CARprops){
   const uidState = useState(1);
+  const usernameState = useState("");
+  const emailState = useState("");
+  const userState = {idState:uidState, unState:usernameState, emailState:emailState};
+
   const projectState = useState(projects);
   const projectMap = useState(defaultMap);
 
@@ -44,7 +48,7 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
     <> 
     <BrowserRouter>
     <Routes>
-      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userIDstate={uidState}/>} />
+      <Route path="/" element={<App parameters={projectMap} projectState={projectState} userState={userState}/>} />
       <Route path="/results/" element={<Results params={projectMap} timingMode={timingMode}/>} />
       <Route path="/print" element={<Print parameters={projectMap} />} />
       <Route path="/reset_password" element={< ResetPasswordPostLink isOpen={true} setIsOpen={()=>{}} setUserInfo={()=>{}}/>} />
