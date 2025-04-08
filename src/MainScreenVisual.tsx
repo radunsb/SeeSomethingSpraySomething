@@ -3,6 +3,7 @@ import { Canvas, useFrame } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import * as THREE from 'three';
 import { useRef, useState } from "react";
+import React from 'react';
 
 //------------------------------------------------------------------------------------------------------
 // Component for the simulation model
@@ -222,9 +223,9 @@ const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
   return (
     <group position={position}>
       {Array.from({ length: num_pieces }).map((_, index) => (
-        <>
+        <React.Fragment key={`piece-${index}`}>
           <Box
-            key={`big-${index}_${position}`}
+            key={`big-${index}`}
             position={[0, 0, index * (BIG_PIECE_LENGTH + SMALL_PIECE_LENGTH) * -1]}
             size={[width, pieceHeight, BIG_PIECE_LENGTH]}
             color="gray"
@@ -232,13 +233,13 @@ const Conveyor: React.FC<ConveyorProps> = ({ position, width, length }) => {
           {/* Smaller pieces */}
           {index < num_pieces - 1 && (
             <Box
-              key={`small-${index}_${position}`}
+              key={`small-${index}`}
               position={[0, 0, (index * (BIG_PIECE_LENGTH + SMALL_PIECE_LENGTH) - 0.875) * -1]}
               size={[width, pieceHeight / 2, SMALL_PIECE_LENGTH]}
               color="darkgray"
             />
           )}
-        </>
+        </React.Fragment>
       ))}
     </group>
   );
