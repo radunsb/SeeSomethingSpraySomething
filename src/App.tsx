@@ -33,6 +33,10 @@ import { LoginFailed } from './Modals/FailedLoginModal.tsx';
 import { CreateAccount } from './Modals/CreateAccountModal.tsx';
 import { AccountCreationFailed } from './Modals/FailedCreationModal.tsx';
 //import { Console } from 'console';
+import overlapInfo from "./assets/Overlap Info.png";
+import estimatedFlowrateInfo from "./assets/EstimatedFlowrateInfo.png";
+import timingModeHelp from "./assets/TimingModeInfo.png";
+import { ImageModal } from './Modals/ImageModal.tsx';
 
 interface AppProps{
   parameters: [Map<string, UtilityInterfaces.Parameter>, React.Dispatch<React.SetStateAction<Map<string, UtilityInterfaces.Parameter>>>];
@@ -57,6 +61,9 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   const [isCreationFailedOpen, setCreationFailedOpen] = useState(false);
   const [isDocumentationOpen, setIsDocumentationOpen] = useState(false);
   const [isSaveLoadOpen, setIsSaveLoadOpen] = useState(false);
+  const [isOverlapOpen, setIsOverlapOpen] = useState(false);
+  const [isFlowRateOpen, setIsFlowRateOpen] = useState(false);
+  const [isTimingModeOpen, setIsTimingModeOpen] = useState(false);  
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
@@ -299,10 +306,10 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
   let stopDelayGrayed = "";
   let sprayDurationGrayed = "";
   if(timingMode === "vt"){
-    sprayDurationGrayed = "grayed-timing-mode";
+    sprayDurationGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "ft"){
-    stopDelayGrayed = "grayed-timing-mode";
+    stopDelayGrayed = "hidden-timing-mode";
   }
   else if(timingMode === "auto"){
     startDelayGrayed = "grayed-timing-mode";
@@ -366,8 +373,8 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
         aria-controls="nozzleDrawer">Nozzle</button>
         <NozzleDrawer isOpen={isNozzleDrawerOpen} onClose={() => setIsNozzleDrawerOpen(false)}>
 
-        <div style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[33]} {paraUnits[33]} <button className='info-btn' onClick={() => {handleOpenInfo(19)}}                    
+        <div className="" style = {{display: "flex", alignItems: "center"}}>
+          {parameterList[33]} <span className="units">{paraUnits[33]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(24)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Angle"></button></div>
         <div>
@@ -378,9 +385,15 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           ))}
           </div>
                       
-          <p>NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}</p>
+          <p>
+            NOZZLE OVERLAP PERCENTAGE: {(nozzleCount > 1) ? `${overlap.toFixed(0)}%` : "N/A"}
+            <button className='info-btn' onClick={() => {setIsOverlapOpen(true)}}/>
+          </p>
 
-          <p>PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min</p>
+          <p>
+            PROJECTED FLOW RATE: {estimatedFlowrate.toFixed(3)} gal/min
+            <button className='info-btn' onClick={() => {setIsFlowRateOpen(true)}}/>
+          </p>
         
         </NozzleDrawer>
 
@@ -406,24 +419,25 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
           <div>
             Timing Mode: 
             <select value={timingMode} onChange={updateTimingMode}>
-              <option key="auto" value="auto">Auto Calculate</option> 
+              <option key="auto" value="auto">Auto-Calculate</option> 
               <option key="ft" value="ft">Fixed Time</option>
               <option key="vt" value="vt">Variable Time</option>
             </select> 
+            <button className='info-btn' onClick={() => {setIsTimingModeOpen(true);}}/>
           </div>
 
           <div id="start-delay-div" className={`visible-timing-mode ${startDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[17]} {paraUnits[17]} <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
+          {parameterList[17]} <span className="units">{paraUnits[17]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(17)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Start Delay"></button></div>
 
           <div id="stop-delay-div" className={`visible-timing-mode ${stopDelayGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[18]} {paraUnits[18]} <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
+          {parameterList[18]} <span className="units">{paraUnits[18]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(18)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Stop Delay"></button></div>
 
           <div id="spray-duration-div" className= {`visible-timing-mode ${sprayDurationGrayed}`} style = {{display: "flex", alignItems: "center"}}>
-          {parameterList[16]} {paraUnits[16]} <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
+          {parameterList[16]} <span className="units">{paraUnits[16]}</span> <button className='info-btn' onClick={() => {handleOpenInfo(16)}}                    
                     aria-expanded={isInfoOpen}
                     aria-controls="Spray Duration"></button></div>
           
@@ -439,10 +453,13 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
 
           <Parameter key = {15} parameterList= {parameterList} paramUnits = {paraUnits} 
           isInfoOpen = {isInfoOpen} handleOpenInfo = {handleOpenInfo} index = {15} />
+        
+        
 
 
         </ControllerDrawer>
-        {isInfoOpen && <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>}
+        <Info isOpen = {isInfoOpen} setIsOpen={setIsInfoOpen} selectedId={selectedId}/>
+
       </div>
 
       {/* THIS DIV IS FOR THE MODALS ON THE RIGHT SIDE */}
@@ -458,7 +475,7 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
 
         <LoginFailed isOpen={isLoginFailedOpen} setIsOpen={setLoginFailedOpen} setParentOpen={setIsSignInOpen}/>
         <AccountCreationFailed isOpen={isCreationFailedOpen} setIsOpen={setCreationFailedOpen} setParentOpen={setIsCreateAccountOpen}/>
-
+    
         {/* DOCUMENTATION */}
         <button className= "primaryBtn" onClick={() => setIsDocumentationOpen(true)}
         aria-expanded={isDocumentationOpen}
@@ -488,7 +505,11 @@ export default function App({parameters, projectState, userIDstate}: AppProps) {
       <div id='results'>
         {/* RESULTS */}
           <button onClick={() => {setIsLoading(true);navigateResults();}}> See Results </button>
-      </div>      
+      </div>  
+
+      <ImageModal isOpen={isOverlapOpen} setIsOpen={setIsOverlapOpen} imagePath={overlapInfo}/>
+      <ImageModal isOpen={isTimingModeOpen} setIsOpen={setIsTimingModeOpen} imagePath={timingModeHelp}/>
+      <ImageModal isOpen={isFlowRateOpen} setIsOpen={setIsFlowRateOpen} imagePath={estimatedFlowrateInfo}/>  
     </div>
   );
 }

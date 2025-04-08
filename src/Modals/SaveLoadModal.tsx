@@ -176,7 +176,7 @@ import '../styles/Modals.css';
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />
         <div className= "centered">
-          <div className= "modal">
+          <div className= "modal saveLoad">
           {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
             <div className= "save_load_header">
               <h2 className= "heading">Currently Open: {projectName}</h2>

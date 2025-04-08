@@ -20,7 +20,7 @@ import { useState } from "react";
       <>
         <div className= "darkBG" onClick={() => setIsOpen(false)} />       
         <div className= "centered">
-          <div className= "modal">
+          <div className= "modal profileModal">
               <h3>Profile</h3>
             <button className= "closeBtn" onClick={() => setIsOpen(false)}>
               <RiCloseLine style={{ marginBottom: "-3px" }} />
