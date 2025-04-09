@@ -91,11 +91,11 @@ import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
                 <div className= "modalActions">
                   <div className= "actionsContainer">
                     Number of Nozzles
-                      <Dropdown options={nozzleNumberOptions} onChange={(value) => setSelectedNozzleNum(value)}/>
+                      <Dropdown options={nozzleNumberOptions} currentSelected={"1"} onChange={(value) => setSelectedNozzleNum(value)}/>
                   </div>
                   <div className= "actionsContainer">
                     Spray Angle
-                      <Dropdown options={sprayAngleOptions} onChange={(value) => setSelectedSprayAngle(value)}/>
+                      <Dropdown options={sprayAngleOptions} currentSelected={"110"} onChange={(value) => setSelectedSprayAngle(value)}/>
                   </div>
                   {imagesrc && <img src = {imagesrc} alt = "ProjectConfiguration" width = "" height = ""/>}
               </div>
