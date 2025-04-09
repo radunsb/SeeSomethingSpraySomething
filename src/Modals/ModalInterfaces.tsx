@@ -98,6 +98,7 @@ export interface Option {
 export interface DropdownProps {
   options: Option[];
   onChange: (value: string) => void;
+  currentSelected: string;
 }
 
 export interface ImageModalProps extends ModalProps{

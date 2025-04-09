@@ -21,7 +21,11 @@ export const TextBox = ({isOpen, setIsOpen, title, setIsParentOpen, parameterMap
         const newMap = await createProjectMap(userID, selectedButton);
         console.log(selectedButton);
         setPMap(newMap);
-        setPlaceholder(String(newMap.get("project_description")?.value));  
+        setPlaceholder(String(newMap.get("project_description")?.value));
+        const textAreaElement: HTMLTextAreaElement|null = document.querySelector('#rename_project');
+        if(textAreaElement){
+          textAreaElement.value = String(newMap.get("project_description")?.value);
+        }
         setIsLoading(false);
     }
   if (!isOpen){ return null}
@@ -68,7 +72,7 @@ export const TextBox = ({isOpen, setIsOpen, title, setIsParentOpen, parameterMap
     <div className="darkBG">
         {isLoading && <Loading isOpen={isLoading} setIsOpen={setIsLoading} setBG={false}/>} 
         <div className= "textbox-modal centered modal">
-            <input id="rename_project" className="textbox-input" placeholder={placeholder}></input>
+            <textarea id="rename_project" className="textbox-input" placeholder={placeholder}></textarea>
             <br></br>
             <button className="saveBtn" onClick={doThing}>Confirm</button>
             <button className="saveBtn" onClick={() => {setIsOpen(false);setIsParentOpen(true);}}>Back</button>

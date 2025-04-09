@@ -11,7 +11,7 @@
 
 /* Position the navigation buttons at the top right */
 #navigation {
-  width: 15%;
+  width: 14%;
   position: absolute;
   top: 10px;
   right: 10px;
@@ -23,8 +23,9 @@
 
 /* Position the results section at the bottom right */
 #results {
+  width: 13%;
   position: absolute;
-  bottom: 10px;
+  bottom: 20px;
   right: 10px;
   display: flex;
   flex-direction: column;
@@ -72,4 +73,10 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
+  @media (max-width: 1000px) {
+    .primaryBtn{
+      font-size: 14px;
+    }
+  }
 

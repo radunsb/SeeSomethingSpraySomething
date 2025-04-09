@@ -116,6 +116,18 @@
   .modalActions {
     margin-top: -40px;
   }
+  .saveBtn{
+    padding: 0;
+    font-size: 13px;
+  }
+  .deleteBtn{
+    padding: 0;
+    font-size: 13px;
+  }
+  .save_actions_container{
+    bottom: 5px;
+    padding-top: 30px;
+  }
   .save_load_header {
     margin-top: -30px;
   }
