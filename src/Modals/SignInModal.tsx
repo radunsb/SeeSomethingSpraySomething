@@ -17,7 +17,7 @@ async function makeLoginRequest(username:string, password:string, setUserInfo:(r
 }
 
 
-export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFailedOpen, setUserInfo }: AccountModalProps) => {
+export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setFailedOpen, setUserInfo }: AccountModalProps) => {
   function closeModal(){
     setIsLIOpen(false);
     setUserName("");
@@ -61,9 +61,6 @@ export const SignIn = ({ isOpen, setIsLIOpen, setIsCAOpen, setIsFPOpen, setFaile
             </div>
             &nbsp;
             <div>
-              <button className= "forgetBtn" onClick={() => {setIsFPOpen(true);closeModal();}}>
-                Forgot Password
-              </button>
             </div>
               <div>
               <button className= "loginBtn" onClick={() => {makeLoginRequest(username, password, setUserInfo, setFailedOpen); closeModal();}}>

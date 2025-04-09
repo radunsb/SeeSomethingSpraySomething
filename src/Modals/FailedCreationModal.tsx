@@ -1,5 +1,5 @@
 import { RiCloseLine } from "react-icons/ri";
-import { AuthFailedProps, ModalProps } from "./ModalInterfaces";
+import { AuthFailedProps } from "./ModalInterfaces";
 
 export const AccountCreationFailed = ({isOpen, setIsOpen, setParentOpen}: AuthFailedProps) => {
   if (!isOpen){ return null}

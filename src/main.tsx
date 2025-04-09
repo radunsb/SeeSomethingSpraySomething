@@ -42,7 +42,7 @@ export function CustomAppRouting({defaultMap, projects} : CARprops){
   //I know adding more and more parameters here is bad.
   //this needs to get folded into project state or project map,
   //but there isn't time before the deadline to get that done and tested
-  const [timingMode, setTimingMode] = useState("auto");
+  const [timingMode, _setTimingMode] = useState("auto");
 
   return (
     <> 
