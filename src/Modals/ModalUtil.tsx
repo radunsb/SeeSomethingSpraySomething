@@ -8,13 +8,13 @@ export const TextField = ({ value, onChange }: TextFieldProps) => {
   );
 };
 
-export const Dropdown: React.FC<DropdownProps> = ({ options, onChange}) => {
-  const [selectedValue, setSelectedValue] = useState<string>(options.length > 0 ? options[0].value : "");
+export const Dropdown: React.FC<DropdownProps> = ({ options, currentSelected, onChange}) => {
+  const [selectedValue, setSelectedValue] = useState<string>(options.length > 0 ? currentSelected : "");
   useEffect(() => {
     if (options.length > 0){
-      setSelectedValue(options[0].value);
+      setSelectedValue(currentSelected);
     }
-  }, [options])
+  }, [options, currentSelected])
 
   const handleChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
     const value = event.target.value;

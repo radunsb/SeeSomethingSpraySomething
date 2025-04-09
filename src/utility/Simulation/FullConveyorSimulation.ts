@@ -151,6 +151,11 @@ export function updateParams(parameterMap:Map<string, UtilityInterfaces.Paramete
             GlobalParams.SPRAY_END_TIME = falling_edge_trigger_time + Number(new_stop_delay.value);
             GlobalParams.SPRAY_DURATION = GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME; 
     }
+    else if(timingMode === "auto" && typeof new_stop_delay !== "undefined" && typeof new_spray_duration !== "undefined"){
+        GlobalParams.SPRAY_START_TIME = GlobalParams.SENSOR_DISTANCE / GlobalParams.LINE_SPEED;
+        GlobalParams.SPRAY_DURATION = GlobalParams.PRODUCT_LENGTH / GlobalParams.LINE_SPEED;
+        GlobalParams.SPRAY_END_TIME = GlobalParams.SPRAY_START_TIME + GlobalParams.SPRAY_DURATION;
+}
 
     //if there was an error receiving or setting timing modes, default to automatic timing
     if(GlobalParams.SPRAY_DURATION.toFixed(2) !== (GlobalParams.SPRAY_END_TIME - GlobalParams.SPRAY_START_TIME).toFixed(2)){
