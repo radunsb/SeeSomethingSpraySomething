@@ -14,8 +14,7 @@ import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
   export const Wizard = ({ isOpen, setIsOpen, setIsSaveLoadOpen, updateMap, projectState, parameterMap, userIDstate}: WizardProps) => {
     const [selectedNozzleNum, setSelectedNozzleNum] = useState<string>("1");
     const [selectedSprayAngle, setSelectedSprayAngle] = useState<string>("110");
-    const [projName, setProjectName] = useState<string>("");
-    const [projects, setProjects] = projectState;
+    const [_projects, setProjects] = projectState;
     const [isLoading, setIsLoading] = useState(false);
     const [userID] = userIDstate;
     const [imagesrc, setImageSrc] = useState<string>("");

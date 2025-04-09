@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import './styles/App.css';
 import { NozzleDrawer, LineDrawer, ControllerDrawer } from './Drawers.tsx';
-import { Parameter, paraNames, paraUnits, paramDesc} from'./Parameter.tsx';
-import { nozzleIndex, nozzleSpacing, lineIndex, lineSpacing, controllerIndex, controllerSpacing } from './Parameter.tsx';
-import { sprayAngleOptions, nozzleNumberOptions, controllersOptions } from './Parameter.tsx';
+import { Parameter, paraUnits} from'./Parameter.tsx';
+import { nozzleIndex, lineIndex } from './Parameter.tsx';
+import { sprayAngleOptions } from './Parameter.tsx';
 import { SignIn } from './Modals/SignInModal.tsx'
 import { Documentation } from './Modals/DocumentationModal.tsx'
 import { SaveLoad } from './Modals/SaveLoadModal.tsx'
@@ -13,26 +13,20 @@ import { Profile } from './Modals/ProfileModal.tsx'
 import { ResetPassword, ResetPasswordConfirm } from './Modals/ResetPasswordModal.tsx'
 import { Info } from './Modals/InfoModal.tsx'
 import { UserInfoResponse } from './utility/auth_requests.ts';
-import { useState, useEffect, ChangeEvent, useRef } from "react";
+import { useState, useEffect, ChangeEvent } from "react";
 import { Models } from './utility/models';
 import { useNavigate} from 'react-router';
 import { Dropdown } from "./Modals/ModalUtil.tsx";
-import { Checkbox } from "./Drawers.tsx";
-import { Option } from "./Modals/ModalInterfaces.tsx";
 import { UtilityInterfaces } from "./utility/models";
-import { pushRunToDatabase, loadControllerOptions } from './utility/ProjectUtilities.ts';
-import { ParameterConstraints} from './utility/ParameterConstraints.ts';
+import { pushRunToDatabase } from './utility/ProjectUtilities.ts';
 import MainScreenVisual from './MainScreenVisual';
 import './utility/auth_requests.ts';
-
 import { getOrException, listUserProjects} from "./utility/ProjectUtilities.ts";
 import { flowRateEstimate, overlapPercentage } from './utility/Simulation/MathFunctions.ts';
-import { getFontEmbedCSS } from 'html-to-image';
 import { updateParamsAndRerender } from './utility/updateParamsAndRerender.ts';
 import { LoginFailed } from './Modals/FailedLoginModal.tsx';
 import { CreateAccount } from './Modals/CreateAccountModal.tsx';
 import { AccountCreationFailed } from './Modals/FailedCreationModal.tsx';
-//import { Console } from 'console';
 import overlapInfo from "./assets/Overlap Info.png";
 import estimatedFlowrateInfo from "./assets/EstimatedFlowrateInfo.png";
 import timingModeHelp from "./assets/TimingModeInfo.png";
@@ -70,13 +64,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [isWizardOpen, setIsWizardOpen] = useState(false);
   const [selectedId, setSelectedId] = useState<number | null>(null);
-  const [selectedController, setSelectedController] = useState<string>("");
-  const [controllerOptions, setControllerOptions] = useState<Option[]>([]);
   const [selectedNozzle, setSelectedNozzle] = useState<string>("");
-  const [nozzleOptions, setNozzleOptions] = useState<Option[]>([]);
-  const [selectedNum, setSelectedNum] = useState<string>("");
-  const [numOptions, setNumOptions] = useState<Option[]>([]);
-  const [isChecked, setIsChecked] = useState(true);
 
   //store email and username in a way that will persist across renders
   const [userID, setUserID] = userState.idState;
