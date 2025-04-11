@@ -139,16 +139,18 @@ export default function App({parameters, projectState, userState}: AppProps) {
   //On loading project, set the parameter map and change all of the parameter input elements
   async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
     console.log('loaded project');
-    await setParameterMap(params);
     updateParamsAndRerender(params, setParameterMap);
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
         console.log("found input");
-        inputElement.setAttribute("value", String(value.value));
+        inputElement.defaultValue = String(value.value);
+        const event = new Event('change');
+        inputElement.dispatchEvent(event);
       }   
     }
     
+
   }
 
   //Called when the results button is clicked. Not sure why this needs its own function.
@@ -166,12 +168,17 @@ export default function App({parameters, projectState, userState}: AppProps) {
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
   //For every parameter input, add an event listener that updates the parameter map
   //when the value is changed
-  for(const parameterInput of parameterInputs){
-    parameterInput.addEventListener("change", () => eventListenerStuff);
-  }
+  console.log(parameterInputs.length);
+  useEffect(() => {
+    for(const parameterInput of parameterInputs){
+      parameterInput.addEventListener("change", eventListenerStuff);
+    }
+  });    
 
-  function eventListenerStuff(parameterInput :HTMLInputElement){
-    const key = parameterInput.id.replace("_input", "");
+  function eventListenerStuff(event: Event){
+    if(event.target instanceof (HTMLInputElement)){
+      const parameterInput: HTMLInputElement = event.target;
+      const key = parameterInput.id.replace("_input", "");
       const currentParameter = parameterMap.get(key);
       //Type of value can be either string or number
       let newVal: string|number;
@@ -192,7 +199,10 @@ export default function App({parameters, projectState, userState}: AppProps) {
             newVal = parameterInput.value;      
         }
         currentParameter.value = newVal;
-        parameterMap.set(key, currentParameter)
+        parameterMap.set(key, currentParameter);
+        for(const parameterInput of parameterInputs){
+          parameterInput.removeEventListener("change", eventListenerStuff);
+        }
         updateParamsAndRerender(parameterMap, setParameterMap);
         parameterInput.value = String(newVal);
 
@@ -200,6 +210,8 @@ export default function App({parameters, projectState, userState}: AppProps) {
           autoCalculateTiming();  
         }
       }
+    }
+    
   }
   
   
