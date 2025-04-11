@@ -134,17 +134,21 @@ export default function App({parameters, projectState, userState}: AppProps) {
       setSelectedNozzle(String(parameterMap.get("spray_angle")?.value));
     }
     loadMap();
-  })
+  }, [parameterMap, timingMode, updateTimingModeHelper])
 
   //On loading project, set the parameter map and change all of the parameter input elements
   async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
-    setParameterMap(params); 
+    console.log('loaded project');
+    await setParameterMap(params);
+    updateParamsAndRerender(params, setParameterMap);
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
-        inputElement.defaultValue = String(value.value);
+        console.log("found input");
+        inputElement.setAttribute("value", String(value.value));
       }   
     }
+    
   }
 
   //Called when the results button is clicked. Not sure why this needs its own function.
@@ -153,19 +157,21 @@ export default function App({parameters, projectState, userState}: AppProps) {
     await pushRunToDatabase(userID, parameterMap)
     navigate('/results/');
   }
-
-  //Construct a list of the parameters and the values given
+   //Construct a list of the parameters and the values given
   //to App.tsx as props
   //parameterList is the list of HTML elements that are rendered in the drawers for
   //each parameter
-  let parameterList: any[] = []; 
-  constructParameterInputList();  
+  let parameterList: any[] = [];
+  constructParameterInputList(); 
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
   //For every parameter input, add an event listener that updates the parameter map
   //when the value is changed
   for(const parameterInput of parameterInputs){
-    parameterInput.addEventListener("change", () => {
-      const key = parameterInput.id.replace("_input", "");
+    parameterInput.addEventListener("change", () => eventListenerStuff);
+  }
+
+  function eventListenerStuff(parameterInput :HTMLInputElement){
+    const key = parameterInput.id.replace("_input", "");
       const currentParameter = parameterMap.get(key);
       //Type of value can be either string or number
       let newVal: string|number;
@@ -194,8 +200,8 @@ export default function App({parameters, projectState, userState}: AppProps) {
           autoCalculateTiming();  
         }
       }
-    });
   }
+  
   
   //Create all of the HTML elements for the input fields in the left side drawers
   function constructParameterInputList(){
