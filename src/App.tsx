@@ -126,11 +126,9 @@ export default function App({parameters, projectState, userState}: AppProps) {
 
   //On loading project, set the parameter map and change all of the parameter input elements
   async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
-    console.log('loaded project');   
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
-        console.log("found input");
         inputElement.value = String(value.value);
         const event = new Event('change');
         inputElement.dispatchEvent(event);
@@ -154,7 +152,6 @@ export default function App({parameters, projectState, userState}: AppProps) {
   const parameterInputs: NodeListOf<HTMLInputElement> = document.querySelectorAll(".parameter_input");
   //For every parameter input, add an event listener that updates the parameter map
   //when the value is changed
-  console.log(parameterInputs.length);
   useEffect(() => {
     for(const parameterInput of parameterInputs){
       parameterInput.addEventListener("change", eventListenerStuff);
