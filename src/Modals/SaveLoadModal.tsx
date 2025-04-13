@@ -32,7 +32,7 @@ import '../styles/Modals.css';
       }
       const projectButtons = document.getElementsByClassName("saves_project_button");
       for(const button of projectButtons){
-        button.addEventListener("blur", deselectProjectButton);
+        button.addEventListener("blur", (e) =>  {deselectProjectButton(e as MouseEvent)});
       }
       const currentElement = "pb_" + parameterMap.get("project_id")?.value;
       const curProjButton = document.getElementById(currentElement);
