@@ -138,19 +138,17 @@ export default function App({parameters, projectState, userState}: AppProps) {
 
   //On loading project, set the parameter map and change all of the parameter input elements
   async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
-    console.log('loaded project');
-    updateParamsAndRerender(params, setParameterMap);
+    console.log('loaded project');   
     for(const [key, value] of params){
       const inputElement: HTMLInputElement|null = document.querySelector("#" + key + "_input");
       if(inputElement){
         console.log("found input");
-        inputElement.defaultValue = String(value.value);
+        inputElement.value = String(value.value);
         const event = new Event('change');
         inputElement.dispatchEvent(event);
       }   
     }
-    
-
+    await setParameterMap(params);   
   }
 
   //Called when the results button is clicked. Not sure why this needs its own function.
