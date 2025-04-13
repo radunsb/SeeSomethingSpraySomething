@@ -122,7 +122,7 @@ export default function App({parameters, projectState, userState}: AppProps) {
       setSelectedNozzle(String(parameterMap.get("spray_angle")?.value));
     }
     loadMap();
-  }, [parameterMap, timingMode, updateTimingModeHelper])
+  })
 
   //On loading project, set the parameter map and change all of the parameter input elements
   async function loadProject(params: Map<string, UtilityInterfaces.Parameter>){
