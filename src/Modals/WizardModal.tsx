@@ -14,8 +14,7 @@ import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
   export const Wizard = ({ isOpen, setIsOpen, setIsSaveLoadOpen, updateMap, projectState, parameterMap, userIDstate}: WizardProps) => {
     const [selectedNozzleNum, setSelectedNozzleNum] = useState<string>("1");
     const [selectedSprayAngle, setSelectedSprayAngle] = useState<string>("110");
-    const [projName, setProjectName] = useState<string>("");
-    const [projects, setProjects] = projectState;
+    const [_projects, setProjects] = projectState;
     const [isLoading, setIsLoading] = useState(false);
     const [userID] = userIDstate;
     const [imagesrc, setImageSrc] = useState<string>("");
@@ -92,11 +91,11 @@ import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
                 <div className= "modalActions">
                   <div className= "actionsContainer">
                     Number of Nozzles
-                      <Dropdown options={nozzleNumberOptions} onChange={(value) => setSelectedNozzleNum(value)}/>
+                      <Dropdown options={nozzleNumberOptions} currentSelected={"1"} onChange={(value) => setSelectedNozzleNum(value)}/>
                   </div>
                   <div className= "actionsContainer">
                     Spray Angle
-                      <Dropdown options={sprayAngleOptions} onChange={(value) => setSelectedSprayAngle(value)}/>
+                      <Dropdown options={sprayAngleOptions} currentSelected={"110"} onChange={(value) => setSelectedSprayAngle(value)}/>
                   </div>
                   {imagesrc && <img src = {imagesrc} alt = "ProjectConfiguration" width = "" height = ""/>}
               </div>
