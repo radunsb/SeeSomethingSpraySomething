@@ -24,7 +24,7 @@ import '../styles/Modals.css';
     "The numerical representation of a user account",
     "The height of the product to be sprayed",
     "The length of the product to be sprayed",
-    "The width of the product to be sprayed. If line",
+    "The width of the product to be sprayed.",
     "Textual Representation of a projects purpose",
     "The numerical representation of a created project",
     "Text identifier of the project",
