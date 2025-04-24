@@ -99,6 +99,15 @@ def find_user_max_project_id(user_id):
     except Exception as e:
         return e
     
+def find_max_id():
+    try:
+        users = list(db.Users.find({}))
+        if(len(users) == 1):
+            return 1
+        return users[len(users)-1]['_id']
+    except Exception as e:
+        return e
+    
 def save_new_project(user_id, projectJSON):
     try:
         projectJSON['project_id'] = find_user_max_project_id(user_id) + 1

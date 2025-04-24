@@ -6,7 +6,7 @@ import json
 parent_dir = os.path.join(os.path.dirname(__file__), "..")
 sys.path.append(parent_dir)
 
-from db import get_users, get_db
+from db import get_users, get_db, find_max_id
 from authentication.Hasher import Hasher
 
 global_hasher = Hasher()
@@ -39,7 +39,7 @@ def create_user_account(un:str, pwd:str, email:str) -> int:
     if account_exists(un, email):
         return None
 
-    user_id = len(get_users()) + 1
+    user_id = find_max_id() + 1
     pwd_hash = global_hasher.hash_password(pwd)
     role = "user"
     projects = []
