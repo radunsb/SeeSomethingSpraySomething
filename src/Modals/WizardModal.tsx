@@ -9,6 +9,8 @@ import { Dropdown } from './ModalUtil.tsx';
 import { sprayAngleOptions, nozzleNumberOptions } from '../Parameter.tsx';
 import '../styles/Modals.css';
 import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
+import { WizardImage } from "./WizardModalImage.tsx";
+
 
   export const Wizard = ({ isOpen, setIsOpen, setIsSaveLoadOpen, setIsLoading, updateMap, projectState, parameterMap, userIDstate}: WizardProps) => {
     const [selectedNozzleNum, setSelectedNozzleNum] = useState<string>("1");
@@ -94,7 +96,7 @@ import { updateParamsAndRerender } from "../utility/updateParamsAndRerender.ts";
                     Spray Angle
                       <Dropdown options={sprayAngleOptions} currentSelected={"110"} onChange={(value) => setSelectedSprayAngle(value)}/>
                   </div>
-                  {imagesrc && <img src = {imagesrc} alt = "ProjectConfiguration" width = "" height = ""/>}
+                  <WizardImage nozzleNum={selectedNozzleNum} sprayAngle={selectedSprayAngle}/>
               </div>
             </div>
           </div>

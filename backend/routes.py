@@ -1,4 +1,4 @@
-from flask import Blueprint, request, jsonify
+from flask import Blueprint, request, jsonify, session
 from db import get_controllers, does_project_exist, get_users, get_user_by_id, get_nozzles, get_guns, get_email
 from db import save_new_project, overwrite_existing_project, delete_project, get_recents_for_this_project
 from db import push_recent_project, perm_delete_user
@@ -90,11 +90,14 @@ def api_post_run(user_id):
 
 @api_v1.route('/users/<int:user_id>/<int:project_id>/delete', methods=['GET', 'POST'])
 def api_delete_project(user_id, project_id):
-    user = delete_project(user_id, project_id)
-    return jsonify({
-        "retrieved": datetime.now(timezone.utc).isoformat(),
-		"user": user
-    })
+    if session["uid"] == user_id:
+        user = delete_project(user_id, project_id)
+        return jsonify({
+            "retrieved": datetime.now(timezone.utc).isoformat(),
+            "user": user
+        })
+    else:
+        return "Get out of town, you hacker!", 401
 
 @api_v1.route('/users/<int:user_id>/<int:project_id>/recent_runs', methods=['GET'])
 def api_get_project_recent_runs(user_id, project_id):
@@ -106,10 +109,13 @@ def api_get_project_recent_runs(user_id, project_id):
 
 @api_v1.route('/users/<int:user_id>/delete_user', methods=['POST'])
 def delete_user(user_id):
-    perm_delete_user(user_id)
-    return jsonify({
-        "retrieved": datetime.now(timezone.utc).isoformat()
-    })
+    if session["uid"] == user_id:
+        perm_delete_user(user_id)
+        return jsonify({
+            "retrieved": datetime.now(timezone.utc).isoformat()
+        })
+    else:
+        return "Get out of town, you hacker!", 401
 
 #@api_v1.route('/users/<int:user_id>/reset', methods=['GET', 'POST'])
 #def api_reset_password(user_id):
