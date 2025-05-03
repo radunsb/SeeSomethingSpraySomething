@@ -6,7 +6,7 @@ import { useRef, useState } from "react";
 import React from 'react';
 
 //------------------------------------------------------------------------------------------------------
-// Component for the simulation model
+// Component for the simulation model S
 type MainScreenVisualProps = {
   parameterMap: Map<string, UtilityInterfaces.Parameter>; //All of the project specs
 };

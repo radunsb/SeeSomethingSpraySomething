@@ -17,7 +17,7 @@ import { WizardImage } from "./WizardModalImage.tsx";
     const [selectedSprayAngle, setSelectedSprayAngle] = useState<string>("110");
     const [_projects, setProjects] = projectState;
     const [userID] = userIDstate;
-    const [imagesrc, setImageSrc] = useState<string>("");
+    const [_imagesrc, setImageSrc] = useState<string>("");
 
     useEffect(() => {
       if(selectedNozzleNum && selectedSprayAngle){
