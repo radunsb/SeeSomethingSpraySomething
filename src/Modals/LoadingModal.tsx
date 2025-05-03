@@ -1,7 +1,7 @@
 import { LoadingProps } from "./ModalInterfaces"
 import '../styles/Modals.css'
 
-export const Loading = ({isOpen, setIsOpen, setBG}: LoadingProps) => {
+export const Loading = ({isOpen, setBG}: LoadingProps) => {
     if(!isOpen){return null};
     return (
         <>
