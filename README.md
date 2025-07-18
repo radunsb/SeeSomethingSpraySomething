@@ -20,7 +20,7 @@ From the main folder,
 Run server:
 - navigate to SeeSomethingSpraySomething/backend
 - open terminal
-- node server.js
+- flask run
 
 Run front-end:
 - navigate to SeeSomethingSpraySomething folder
